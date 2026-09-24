@@ -1,0 +1,154 @@
+@import url("fontawesome-free-7.3.1-web/css/all.min.css");
+
+
+#main-header{
+  background-color: black;
+  color: white;
+  padding: 16px 0;
+}
+
+.padded{
+    margin: 90px 0;
+}
+
+.porcentaje-descuento{
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: red;
+    color: white;
+    padding: 4px 10px;
+    font-weight: bold;
+    border-bottom-left-radius: 4px;
+}
+
+.icono-carrito{                                      /* selector de los elementos con clase "icono-carrito" */
+    background-color: black;                        /* Pone el fondo del icono de color negro */
+    color: white;                                   /* Pone el color del icono en blanco */
+    padding: 10px;                                  /* Agrega 10px de espacio interno alrededor del icono */
+    border-radius: 50%;                             /* Hace que el elemento tenga forma circular */
+    position: absolute;                             /* Permite posicionarlo de forma precisa dentro de su contenedor */
+    bottom: 5px;                                    /* Lo coloca a 5px de distancia desde la parte inferior */
+    right: -60px;                                   /* Lo coloca 60px hacia la derecha, dejándolo inicialmente fuera */
+    width: 38px;                                    /* Define el ancho del elemento en 38px */
+    cursor: pointer;                                /* Cambia el cursor a una mano al pasar sobre el icono */
+    opacity: 0;                                     /* Hace que el icono sea completamente invisible */
+    transition: all ease-in .5s;                   /* Hace que los cambios de propiedades sean animados durante 0.5 segundos */
+}                                                   /* Fin de las reglas de .icono-carrito */
+
+#cuadricula-productos .card:hover .icono-carrito{   /* Cuando pasas el mouse sobre una card, selecciona su icono-carrito */
+    opacity: 1;                                     /* Hace visible el icono */
+    right: 1px;                                     /* Mueve el icono hasta quedar a 5px del lado derecho */
+}                                                   /* Fin de las reglas del hover */
+
+#tbody-directores tr i{                            /* Selecciona los <i> que están dentro de las filas de proveedores */
+    opacity: 0;                                     /* Oculta inicialmente los iconos */
+    cursor: pointer;                                /* Muestra la mano cuando pasas sobre el icono */
+}                                                   /* Fin de las reglas para los iconos */
+
+#tbody-directores tr:hover i{                      /* Cuando pasas el mouse sobre una fila, selecciona sus <i> */
+    opacity: 1;                                     /* Hace visibles los iconos */
+}                                                   
+
+
+.nav-link{
+    cursor: pointer;
+}
+
+
+.precio-anterior {
+    text-decoration: line-through;
+    color: #999999;
+    margin-left: 0.9em;
+}
+
+.lds-roller,            /*Nombre de la clase*/
+.lds-roller div,
+.lds-roller div:after {
+  box-sizing: border-box;
+}
+.lds-roller {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+.lds-roller div {
+  animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  transform-origin: 40px 40px;
+}
+.lds-roller div:after {
+  content: " ";
+  display: block;
+  position: absolute;
+  width: 7.2px;
+  height: 7.2px;
+  border-radius: 50%;
+  background: currentColor;
+  margin: -3.6px 0 0 -3.6px;
+}
+.lds-roller div:nth-child(1) {
+  animation-delay: -0.036s;
+}
+.lds-roller div:nth-child(1):after {
+  top: 62.62742px;
+  left: 62.62742px;
+}
+.lds-roller div:nth-child(2) {
+  animation-delay: -0.072s;
+}
+.lds-roller div:nth-child(2):after {
+  top: 67.71281px;
+  left: 56px;
+}
+.lds-roller div:nth-child(3) {
+  animation-delay: -0.108s;
+}
+.lds-roller div:nth-child(3):after {
+  top: 70.90963px;
+  left: 48.28221px;
+}
+.lds-roller div:nth-child(4) {
+  animation-delay: -0.144s;
+}
+.lds-roller div:nth-child(4):after {
+  top: 72px;
+  left: 40px;
+}
+.lds-roller div:nth-child(5) {
+  animation-delay: -0.18s;
+}
+.lds-roller div:nth-child(5):after {
+  top: 70.90963px;
+  left: 31.71779px;
+}
+.lds-roller div:nth-child(6) {
+  animation-delay: -0.216s;
+}
+.lds-roller div:nth-child(6):after {
+  top: 67.71281px;
+  left: 24px;
+}
+.lds-roller div:nth-child(7) {
+  animation-delay: -0.252s;
+}
+.lds-roller div:nth-child(7):after {
+  top: 62.62742px;
+  left: 17.37258px;
+}
+.lds-roller div:nth-child(8) {
+  animation-delay: -0.288s;
+}
+.lds-roller div:nth-child(8):after {
+  top: 56px;
+  left: 12.28719px;
+}
+@keyframes lds-roller {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+

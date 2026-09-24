@@ -1,0 +1,57 @@
+<header-component titulo="Directores" frase="">
+  
+</header-component>
+
+
+<section class="padded">
+    <div class="container">
+        <h1>Directores</h1>
+        <div>   
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#insertModal">Nuevo Director</button>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nombres</th>
+                    <th>Peliculas</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id = "tbody-directores">
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- Modal -->
+<div class="modal fade" id="insertModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Nuevo director</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="form-insertar">
+        <div class="modal-body">
+            <div class="mb-3">
+                <input type="text" id="txt-nombres" class="form-control" 
+                minlength ="4" required  
+                placeholder="Nombres">
+            </div>
+            <div class="mb-3">
+                <input type="text" id="txt-peliculas" class="form-control" 
+                  required minlength="6"
+                  placeholder="Películas">
+            </div> 
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="submit" class="btn btn-primary">Guardar</button> <!--Ese type="submit" le dice al navegador: "Este botón sirve para enviar este formulario. Al hacer clic en Guardar, el formulario dispara el evento submit. El navegador recarga la página como consecuencia de ese envío (carga la respuesta del servidor).-->
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
