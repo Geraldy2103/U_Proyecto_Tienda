@@ -38,17 +38,17 @@
 
 #cuadricula-productos .card:hover .icono-carrito{   /* Cuando pasas el mouse sobre una card, selecciona su icono-carrito */
     opacity: 1;                                     /* Hace visible el icono */
-    right: 1px;                                     /* Mueve el icono hasta quedar a 5px del lado derecho */
+    right: 1px;                                     /* Mueve el icono hasta quedar a 1px del lado derecho */
 }                                                   /* Fin de las reglas del hover */
 
-#tbody-directores tr i{                            /* Selecciona los <i> que están dentro de las filas de proveedores */
+#tbody-directores tr i{                            /* Selecciona los <i> que están dentro de las filas de directores */
     opacity: 0;                                     /* Oculta inicialmente los iconos */
     cursor: pointer;                                /* Muestra la mano cuando pasas sobre el icono */
 }                                                   /* Fin de las reglas para los iconos */
 
 #tbody-directores tr:hover i{                      /* Cuando pasas el mouse sobre una fila, selecciona sus <i> */
     opacity: 1;                                     /* Hace visibles los iconos */
-}                                                   
+}
 
 
 .nav-link{

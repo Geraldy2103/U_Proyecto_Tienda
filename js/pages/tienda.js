@@ -7,9 +7,12 @@
     const cuadriculaProductos = document.getElementById("cuadricula-productos")
 
 
-    fetch(rutaServicio)
-        .then(response => response.json())
+    obtenerJSON(rutaServicio)
         .then(data => {
+            if (data.length === 0) {
+                listaCategorias.innerHTML = `<li class="list-group-item">No hay categorías</li>`
+                return
+            }
             data.forEach(item => {
                 const fila = `<li class="list-group-item" title="${item.descripcion}">${item.nombre} (${item.total})</li>` //title es el texto que aparece al pasar el ratón por encima
                 listaCategorias.innerHTML += fila
@@ -17,40 +20,46 @@
             const itemsCategorias= listaCategorias.querySelectorAll("li")
             itemsCategorias.forEach((iCategoria, index) => {
                 iCategoria.addEventListener("click", () => {
-                    // console.log(data[index].nombre)
                     categoriasNombre.textContent = data[index].nombre
                     categoriasRecuento.textContent = "Mostrando " + data[index].total + " productos"
-                    
+
                     itemsCategorias.forEach(li => li.classList.remove("active"))
                     iCategoria.classList.add("active")
                     leerProductos(data[index].idcategoria)
                 })
             })
-            listaCategorias.querySelector("li:first-child").click() // Simula un click en el primer elemento de la lista para que se muestren los productos de la primera categoría al cargar la página   
+            listaCategorias.querySelector("li:first-child").click() // Simula un click en el primer elemento de la lista para que se muestren los productos de la primera categoría al cargar la página
 
+        })
+        .catch(error => {
+            console.error(error)
+            listaCategorias.innerHTML = mensajeError("No se pudieron cargar las categorías.")
         })
 
 
-        
+
     const leerProductos = (idcategoria) => {
         const rutaServicio = window.API_URL + "productos.php?idcategoria=" + idcategoria
-        fetch(rutaServicio)
-        .then(response => response.json())
+        obtenerJSON(rutaServicio)
         .then(data => {
-            cuadriculaProductos.innerHTML =""
+            if (data.length === 0) {
+                cuadriculaProductos.innerHTML = `<p>Esta categoría todavía no tiene productos.</p>`
+                return
+            }
+            let cards = ""
             data.forEach(item => {
-                const rutaImagen = item.imagenchica === null ? 
+                const rutaImagen = item.imagenchica === null ?
                 window.API_URL + "imagenes/nofoto.jpg" : window.API_URL + item.imagenchica
                 // Si no hay precio rebajado (0 o null) se usa el precio normal
                 const precioFinal = item.preciorebajado ? item.preciorebajado : item.precio
-                const precioAnterior = item.preciorebajado ? 
+                const precioAnterior = item.preciorebajado ?
                 `<span class="precio-anterior">S/${item.precio.toFixed(2)}</span>` : ""
                 const porcentajeDescuento = item.preciorebajado ?
                 ((item.preciorebajado/item.precio-1) * 100).toFixed(0) : 0
-                const verPorcentajeDescuento = item.preciorebajado ? 
+                const verPorcentajeDescuento = item.preciorebajado ?
                 `<div class="porcentaje-descuento">${porcentajeDescuento}%</div>` : ""
-                
-                const card = `            
+
+                cards += `
                 <div class="col">
                     <div class="card">
                         <img src="${rutaImagen}" class="card-img-top" alt="${item.nombre}">
@@ -62,14 +71,18 @@
                         </div>
                     </div>
                 </div>`
-                cuadriculaProductos.innerHTML += card
             })
+            cuadriculaProductos.innerHTML = cards
             const iconosCarrito = cuadriculaProductos.querySelectorAll(".icono-carrito")
             iconosCarrito.forEach((iCarrito, index) => {
-                iCarrito.addEventListener("click", () => 
+                iCarrito.addEventListener("click", () =>
                     agregarItemCarrito(data[index], 1))
 
             })
-        }) 
-    }  
+        })
+        .catch(error => {
+            console.error(error)
+            cuadriculaProductos.innerHTML = mensajeError("No se pudieron cargar los productos de esta categoría.")
+        })
+    }
 })()

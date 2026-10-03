@@ -17,7 +17,7 @@
     }
 
     const dibujarCarrito = () => {
-        carrito = JSON.parse(sessionStorage.getItem("carritocompras"))
+        carrito = leerCarrito() // definida en main.js: no falla aunque el dato guardado esté dañado
         carrito.forEach(item => {
             const fila = `<tr>
                 <td>${item.idproducto}</td>
@@ -25,14 +25,14 @@
                 <td class="text-end">${item.precio.toFixed(2)}</td>
                 <td class="text-end">${item.cantidad}</td>
                 <td class="text-end">${(item.precio * item.cantidad).toFixed(2)}</td>
-                <td><i class="fa-regular fa-trash-can icono-eliminar"></i></td> 
+                <td><i class="fa-regular fa-trash-can icono-eliminar" title="Quitar del carrito"></i></td>
             </tr>`
             tbodyCarrito.innerHTML += fila
         });
         calcularTotal()
 
         const iconosEliminar = tbodyCarrito.querySelectorAll(".icono-eliminar")
-        
+
         iconosEliminar.forEach((iEliminar, index) => {
             iEliminar.addEventListener("click", () => {
                 carrito.splice(index, 1)
@@ -48,16 +48,14 @@
         })
     }
 
-    if(sessionStorage.getItem("carritocompras")) {
+    if(leerCarrito().length > 0) {
         dibujarCarrito()
     } else{
         mostrarVacio()
-    } 
-
+    }
 
 
     btnVaciarCarrito.addEventListener("click", () => {
-        
         sessionStorage.removeItem("carritocompras")
         mostrarVacio()
     })
