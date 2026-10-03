@@ -1,0 +1,75 @@
+<header-component titulo="Mi cuenta"
+  frase="Ingresa para comprar o administrar la tienda">
+</header-component>
+
+
+<section class="padded">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+
+                <!-- Pestañas: Iniciar sesión / Crear cuenta -->
+                <ul class="nav nav-tabs mb-3" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#panel-ingresar"
+                            type="button" role="tab">Iniciar sesión</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#panel-registro"
+                            type="button" role="tab">Crear cuenta</button>
+                    </li>
+                </ul>
+
+                <!-- Aquí aparecen los errores o avisos -->
+                <div id="aviso-login"></div>
+
+                <div class="tab-content">
+                    <!-- Iniciar sesión -->
+                    <div class="tab-pane fade show active" id="panel-ingresar" role="tabpanel">
+                        <form id="form-ingresar" novalidate>
+                            <div class="mb-3">
+                                <label for="txt-correo-ingreso" class="form-label">Correo</label>
+                                <input type="email" id="txt-correo-ingreso" class="form-control" required
+                                    autocomplete="email">
+                                <div class="invalid-feedback">Escribe un correo válido.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="txt-clave-ingreso" class="form-label">Contraseña</label>
+                                <input type="password" id="txt-clave-ingreso" class="form-control" required
+                                    autocomplete="current-password">
+                                <div class="invalid-feedback">Escribe tu contraseña.</div>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Ingresar</button>
+                        </form>
+                    </div>
+
+                    <!-- Crear cuenta (siempre se crea como cliente) -->
+                    <div class="tab-pane fade" id="panel-registro" role="tabpanel">
+                        <form id="form-registro" novalidate>
+                            <div class="mb-3">
+                                <label for="txt-nombre-registro" class="form-label">Nombre</label>
+                                <input type="text" id="txt-nombre-registro" class="form-control" required
+                                    minlength="2" maxlength="60" autocomplete="name">
+                                <div class="invalid-feedback">Escribe tu nombre.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="txt-correo-registro" class="form-label">Correo</label>
+                                <input type="email" id="txt-correo-registro" class="form-control" required
+                                    autocomplete="email">
+                                <div class="invalid-feedback">Escribe un correo válido.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="txt-clave-registro" class="form-label">Contraseña</label>
+                                <input type="password" id="txt-clave-registro" class="form-control" required
+                                    minlength="6" autocomplete="new-password">
+                                <div class="invalid-feedback">Mínimo 6 caracteres.</div>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">Crear cuenta</button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>

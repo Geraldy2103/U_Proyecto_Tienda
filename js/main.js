@@ -76,20 +76,21 @@ const guardarCarrito = (carrito) => {
 /* Suma las cantidades de todos los productos (2 tés + 1 café = 3) y lo muestra en el menú */
 const actualizarContadorCarrito = () => {
     const contador = document.getElementById("contador-carrito")
+    if (!contador) return // el menú todavía no se ha dibujado
     const unidades = leerCarrito().reduce((suma, item) => suma + item.cantidad, 0)
     contador.textContent = unidades
     contador.style.display = unidades > 0 ? "inline-block" : "none" // si está vacío no se muestra
 }
 
 /* Muestra un aviso pequeño abajo a la derecha que desaparece solo (Toast de Bootstrap) */
-const mostrarNotificacion = (texto) => {
+const mostrarNotificacion = (texto, icono = "fa-check") => {
     const contenedor = document.getElementById("contenedor-notificaciones")
     const toast = document.createElement("div")
     toast.className = "toast align-items-center text-bg-dark border-0"
     toast.setAttribute("role", "status")
     toast.innerHTML = `
         <div class="d-flex">
-            <div class="toast-body"><i class="fa-solid fa-check"></i> ${texto}</div>
+            <div class="toast-body"><i class="fa-solid ${icono}"></i> ${texto}</div>
             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
         </div>`
     contenedor.appendChild(toast)
@@ -97,15 +98,61 @@ const mostrarNotificacion = (texto) => {
     bootstrap.Toast.getOrCreateInstance(toast, { delay: 2500 }).show()
 }
 
-/* Abre una sección del menú desde el código, por ejemplo irAPagina("Tienda") */
-const irAPagina = (etiqueta) => {
-    mainNav.querySelector(`a[data-etiqueta="${etiqueta}"]`).click()
+/* ---------- Sesión del usuario ---------- */
+
+/* null si nadie inició sesión; si no: { id, correo, nombre, rol } (rol = "cliente" o "admin") */
+let usuarioActual = null
+
+const esAdmin = () => usuarioActual !== null && usuarioActual.rol === "admin"
+
+/* Pregunta a Supabase si hay una sesión abierta y lee el rol del usuario en la tabla perfiles.
+   Supabase recuerda la sesión en el navegador, por eso sigue abierta al recargar la página. */
+const cargarUsuario = () => {
+    return db.auth.getSession().then(({ data }) => {
+        const sesion = data.session
+        if (!sesion) {
+            usuarioActual = null
+            return
+        }
+        const usuario = sesion.user
+        return obtenerDatos(db.from("perfiles").select("nombre, rol").eq("id", usuario.id).single())
+            .then(perfil => {
+                usuarioActual = { id: usuario.id, correo: usuario.email, nombre: perfil.nombre || usuario.email, rol: perfil.rol }
+            })
+            .catch(error => { // si no se pudo leer el perfil, por seguridad lo tratamos como cliente
+                console.error(error)
+                usuarioActual = { id: usuario.id, correo: usuario.email, nombre: usuario.email, rol: "cliente" }
+            })
+    })
 }
-/* 
+
+/* Se llama desde login.js cuando el usuario ingresa correctamente */
+const alIniciarSesion = () => {
+    return cargarUsuario().then(() => {
+        dibujarMenu()
+        mostrarNotificacion(`Hola, ${escaparHTML(usuarioActual.nombre)}`)
+        irAPagina(esAdmin() ? "Directores" : "Tienda")
+    })
+}
+
+const cerrarSesion = () => {
+    db.auth.signOut().then(() => {
+        usuarioActual = null
+        guardarCarrito([]) // el carrito era de esa persona: se vacía al salir
+        dibujarMenu()
+        mostrarNotificacion("Cerraste sesión")
+        irAPagina("Inicio")
+    })
+}
+
+
+/* ---------- Menú y navegación ---------- */
+/*
 etiqueta es el nombre de la opción que quieres mostrar al usuario.
 pagina es la ruta del archivo HTML al que quieres ir cuando el usuario haga clic.
+codigo es el JavaScript de esa página (opcional).
+rol: "admin" = solo la ven los administradores (intranet). Sin rol = la ve todo el mundo.
 */
-
 const menuItems = [
     {etiqueta: "Inicio",       pagina: "pages/inicio.html"},
     {etiqueta: "Nosotros",     pagina: "pages/nosotros.html"},
@@ -113,63 +160,112 @@ const menuItems = [
     {etiqueta: "Proveedores",  pagina: "pages/proveedores.html", codigo: "js/pages/proveedores.js"},
     {etiqueta: "Empleados",    pagina: "pages/empleados.html", codigo: "js/pages/empleados.js"},
     {etiqueta: "Tienda",       pagina: "pages/tienda.html", codigo: "js/pages/tienda.js"},
-    {etiqueta: "Directores",   pagina: "pages/directores.html", codigo: "js/pages/directores.js"},
+    {etiqueta: "Directores",   pagina: "pages/directores.html", codigo: "js/pages/directores.js", rol: "admin"},
     {etiqueta: "Carrito",      pagina: "pages/carrito.html", codigo: "js/pages/carrito.js"}
 ]
 
+/* La página de ingreso no va en el menú principal: se abre con el botón "Ingresar" de la derecha */
+const paginaIngresar = {etiqueta: "Ingresar", pagina: "pages/login.html", codigo: "js/pages/login.js"}
+
 const mainNav = document.getElementById("main-nav")
+const navUsuario = document.getElementById("nav-usuario")
 const mainContent = document.getElementById("main-content")
 
-menuItems.forEach(item => {
+/* ¿El usuario actual puede ver esta página? */
+const puedeVer = (item) => item.rol !== "admin" || esAdmin()
+
+/* Carga una página dentro de <main> */
+const cargarPagina = (item) => {
+    // marca como "active" el enlace de la página abierta
+    document.querySelectorAll("#navbarNav a").forEach(a => a.classList.toggle("active", a.dataset.etiqueta === item.etiqueta))
+
+    if (!puedeVer(item)) { // protección extra: aunque alguien llame irAPagina("Directores") sin ser admin
+        mainContent.innerHTML = `<section class="padded"><div class="container">
+            ${mensajeError("Esta sección es solo para administradores.")}</div></section>`
+        return
+    }
+
+    fetch(item.pagina) /*fetch() significa básicamente:"Ve a buscar este recurso."*/
+    .then(response => {
+        if (!response.ok) { /*si el archivo no existe (404) no seguimos*/
+            throw new Error("No se encontró " + item.pagina)
+        }
+        return response.text() /*response.text() convierte el contenido en texto.*/
+    })
+    .then(data => {  /*"Cuando termine lo anterior, recibe el resultado y llámalo data."*/
+        mainContent.innerHTML = data  /*"Mete el contenido de data dentro de mainContent como HTML."*/
+
+        if(item.codigo){ /*"Si item.codigo existe, entonces..."*/
+            const codigoPagina = document.createElement("script")
+            codigoPagina.setAttribute("src", item.codigo) /*<script src="js/pages/proveedores.js"></script> -- "Busca el archivo js/pages/proveedores.js, cárgalo y ejecuta el JavaScript que contiene."*/
+            mainContent.appendChild(codigoPagina)
+        }
+    })
+    .catch(error => { /*si algo falló arriba, mostramos un aviso en lugar de dejar la página en blanco*/
+        console.error(error)
+        mainContent.innerHTML = `
+        <section class="padded">
+            <div class="container">
+                ${mensajeError("No se pudo cargar la sección " + item.etiqueta + ". Intenta nuevamente.")}
+            </div>
+        </section>`
+    })
+}
+
+/* Abre una sección desde el código, por ejemplo irAPagina("Tienda") */
+const irAPagina = (etiqueta) => {
+    const item = [...menuItems, paginaIngresar].find(i => i.etiqueta === etiqueta)
+    cargarPagina(item)
+}
+
+/* Crea un enlace del menú. Se usa para las opciones de la izquierda y para "Ingresar" */
+const crearEnlace = (item) => {
     const menuLI = document.createElement("li")
     menuLI.className = "nav-item"
     const menuA = document.createElement("a")
     menuA.className = "nav-link"
     menuA.textContent = item.etiqueta
-    menuA.dataset.etiqueta = item.etiqueta /*data-etiqueta="Tienda": lo usa irAPagina() para encontrar el enlace*/
+    menuA.dataset.etiqueta = item.etiqueta /*data-etiqueta="Tienda": sirve para marcar el enlace activo*/
     if (item.etiqueta === "Carrito") { /*al enlace del carrito le agregamos el contador de productos*/
         menuA.innerHTML += ` <span class="badge rounded-pill text-bg-danger" id="contador-carrito"></span>`
     }
+    if (item.rol === "admin") { /*las opciones de la intranet llevan un candado*/
+        menuA.innerHTML = `<i class="fa-solid fa-lock"></i> ` + menuA.innerHTML
+    }
+    menuA.addEventListener("click", () => cargarPagina(item))
     menuLI.appendChild(menuA)
-    mainNav.appendChild(menuLI)
-    
-    menuA.addEventListener("click", () => {
-        mainNav.querySelectorAll("a").forEach(mli => mli.classList.remove("active"))
-        menuA.classList.add("active")
-        fetch(item.pagina) /*fetch() significa básicamente:"Ve a buscar este recurso."*/
-        .then(response => {
-            if (!response.ok) { /*si el archivo no existe (404) no seguimos*/
-                throw new Error("No se encontró " + item.pagina)
-            }
-            return response.text() /*response.text() convierte el contenido en texto.*/
-        })
-        .then(data => {  /*"Cuando termine lo anterior, recibe el resultado y llámalo data."*/ 
-            mainContent.innerHTML = data  /*"Mete el contenido de data dentro de mainContent como HTML."*/ 
+    return menuLI
+}
 
+/* Arma el menú según quién está conectado. Se vuelve a llamar al iniciar o cerrar sesión. */
+const dibujarMenu = () => {
+    mainNav.innerHTML = ""
+    menuItems.filter(puedeVer).forEach(item => mainNav.appendChild(crearEnlace(item)))
 
-            if(item.codigo){ /*"Si item.codigo existe, entonces..."*/ 
-                const codigoPagina = document.createElement("script")
-                codigoPagina.setAttribute("src", item.codigo) /*<script src="js/pages/proveedores.js"></script> -- "Busca el archivo js/pages/proveedores.js, cárgalo y ejecuta el JavaScript que contiene."*/
-                mainContent.appendChild(codigoPagina)
-            }
-        })
-        .catch(error => { /*si algo falló arriba, mostramos un aviso en lugar de dejar la página en blanco*/
-            console.error(error)
-            mainContent.innerHTML = `
-            <section class="padded">
-                <div class="container">
-                    ${mensajeError("No se pudo cargar la sección " + item.etiqueta + ". Intenta nuevamente.")}
-                </div>
-            </section>`
-        })
-    })
+    navUsuario.innerHTML = ""
+    if (usuarioActual === null) {
+        navUsuario.appendChild(crearEnlace(paginaIngresar))
+    } else {
+        navUsuario.innerHTML = `
+            <li class="nav-item">
+                <span class="navbar-text me-2">
+                    <i class="fa-regular fa-user"></i> ${escaparHTML(usuarioActual.nombre)}
+                    ${esAdmin() ? `<span class="badge text-bg-dark">Admin</span>` : ""}
+                </span>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="btn-cerrar-sesion"><i class="fa-solid fa-right-from-bracket"></i> Salir</a>
+            </li>`
+        document.getElementById("btn-cerrar-sesion").addEventListener("click", cerrarSesion)
+    }
+    actualizarContadorCarrito()
+}
+
+/* Al abrir la página: primero vemos si hay sesión, luego armamos el menú y mostramos Inicio */
+cargarUsuario().then(() => {
+    dibujarMenu()
+    irAPagina("Inicio")
 })
-
-
-actualizarContadorCarrito() /*muestra el número correcto si ya había productos guardados en esta pestaña*/
-mainNav.querySelector("li:first-child a").click()
-/*mainNav.querySelector("li:first-child a") busca el elemento <a> que está dentro del primer <li> de mainNav.
-.click() hace clic automáticamente sobre ese <a>, como si el usuario hubiera hecho clic con el mouse.*/
 
 class HeaderComponent extends HTMLElement { /*"HeaderComponent" es el nombre de la clase que define el componente personalizado. "extends HTMLElement" significa que este componente es un tipo especial de elemento HTML.*/
     connectedCallback() {/*Cuando mi <header-component> aparezca en la página, ejecuta este código*/
@@ -190,6 +286,11 @@ customElements.define("header-component", HeaderComponent) /*Cuando veas <header
 
 
 const agregarItemCarrito = (nuevoItem, cantidad) => {
+    if (usuarioActual === null) { /*para comprar hay que tener cuenta*/
+        mostrarNotificacion("Inicia sesión para agregar productos al carrito", "fa-circle-info")
+        irAPagina("Ingresar")
+        return
+    }
     const precioFinal = nuevoItem.preciorebajado ? nuevoItem.preciorebajado : nuevoItem.precio
     
     const itemCarrito = {                   //esto es un objeto json
