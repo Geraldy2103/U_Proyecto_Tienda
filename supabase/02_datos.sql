@@ -1,7 +1,7 @@
 -- =====================================================================
 -- Ideas Digitales | Tienda — Datos iniciales
--- Copiados (solo lectura) de servicios.campus.pe. De empleados solo se guardan
--- nombres, apellidos, cargo y foto (sin sueldos, usuarios ni claves).
+-- Catálogo copiado (solo lectura) de servicios.campus.pe. El equipo comercial usa
+-- nombres y fotos de los empleados del curso (sin sueldos ni claves); correos ficticios.
 -- Ejecutar DESPUÉS de 01_esquema.sql, en Supabase > SQL Editor.
 -- =====================================================================
 
@@ -100,49 +100,6 @@ insert into productos (idproducto, nombre, precio, preciorebajado, imagenchica, 
     (80, 'Pack Jamón Pizza BRAEDT Queso', 13.4, null, null, 6),
     (81, 'Cerveza TRES CRUCES Lager', 29.9, null, null, 1);
 
--- directores: 40 registros
-insert into directores (iddirector, nombres, peliculas) overriding system value values
-    (1, 'Steven Spielberg', 'Jurassic Park, Schindler''s List, E.T.'),
-    (3, 'Quentin Tarantinos', 'Pulp Fiction, Kill Bill, Django Unchained'),
-    (4, 'Martin Scorsese', 'Taxi Driver, Goodfellas, The Wolf of Wall Street'),
-    (5, 'Alfred Hitchcock', 'Psycho, Vertigo, Rear Window'),
-    (6, 'Stanley Kubrick', '2001: A Space Odyssey, The Shining, A Clockwork Orange'),
-    (7, 'James Cameron', 'Titanic, Avatar, Terminator 2'),
-    (8, 'Ridley Scott', 'Alien, Gladiator, Blade Runner'),
-    (9, 'Francis Ford Coppola', 'The Godfather, Apocalypse Now, The Godfather Part II'),
-    (10, 'David Fincher', 'Fight Club, Se7en, The Social Network'),
-    (11, 'Guillermo del Toro', 'El laberinto del fauno, The Shape of Water, Pinocchio'),
-    (12, 'Alfonso Cuarón', 'Gravity, Roma, Children of Men'),
-    (13, 'Alejandro González Iñárritu', 'Birdman, The Revenant, Amores perros'),
-    (14, 'Pedro Almodóvar', 'Todo sobre mi madre, Hable con ella, Dolor y gloria'),
-    (15, 'Denis Villeneuve', 'Dune, Blade Runner 2049, Arrival'),
-    (16, 'Tim Burton', 'Edward Scissorhands, Beetlejuice, Batman'),
-    (17, 'George Lucas', 'Star Wars: A New Hope, American Graffiti'),
-    (18, 'Peter Jackson', 'The Lord of the Rings, King Kong, The Hobbit'),
-    (19, 'Hayao Miyazaki', 'Spirited Away, Princess Mononoke, My Neighbor Totoro'),
-    (20, 'Akira Kurosawa', 'Seven Samurai, Rashomon, Ran'),
-    (21, 'Bong Joon-ho', 'Parasite, Snowpiercer, Memories of Murder'),
-    (22, 'Park Chan-wook', 'Oldboy, The Handmaiden, Decision to Leave'),
-    (23, 'Wes Anderson', 'The Grand Budapest Hotel, Moonrise Kingdom, Fantastic Mr. Fox'),
-    (24, 'Paul Thomas Anderson', 'There Will Be Blood, Magnolia, Boogie Nights'),
-    (25, 'Coen Brothers', 'Fargo, No Country for Old Men, The Big Lebowski'),
-    (26, 'David Lynch', 'Mulholland Drive, Blue Velvet, Eraserhead'),
-    (27, 'Federico Fellini', '8½, La Dolce Vita, Nights of Cabiria'),
-    (28, 'Ingmar Bergman', 'The Seventh Seal, Persona, Wild Strawberries'),
-    (29, 'Jean-Luc Godard', 'Breathless, Contempt, Pierrot le Fou'),
-    (30, 'François Truffaut', 'The 400 Blows, Jules and Jim, Day for Night'),
-    (31, 'Greta Gerwig', 'Lady Bird, Little Women, Barbie'),
-    (32, 'Sofia Coppola', 'Lost in Translation, The Virgin Suicides, Marie Antoinette'),
-    (33, 'Chloé Zhao', 'Nomadland, The Rider, Eternals'),
-    (34, 'Jane Campion', 'The Piano, The Power of the Dog'),
-    (35, 'Kathryn Bigelow', 'The Hurt Locker, Zero Dark Thirty, Point Break'),
-    (36, 'Sam Mendes', 'American Beauty, 1917, Skyfall'),
-    (37, 'Damien Chazelle', 'Whiplash, La La Land, Babylon'),
-    (38, 'Taika Waititi', 'Jojo Rabbit, Thor: Ragnarok, Hunt for the Wilderpeople'),
-    (39, 'Guy Ritchie', 'Snatch, Lock, Stock and Two Smoking Barrels, Sherlock Holmes'),
-    (40, 'Jordan Peele', 'Get Out, Us, Nope'),
-    (41, 'Elena navarro', 'Peruvian, 1999');
-
 -- proveedores: 29 registros
 insert into proveedores (idproveedor, nombreempresa, nombrecontacto, cargocontacto, direccion, ciudad, region, codigopostal, pais, telefono, fax) overriding system value values
     (1, 'Tiendas Charlotte', 'Charlotte Cooper', 'Gerente de compras', '88 Gilbert St.', 'Londres', null, 'EC1 4SD', 'Reino Unido', '(171) 555-2222', null),
@@ -183,36 +140,41 @@ Hunter''s Hill', 'Sydney', 'NSW', '2042', 'Australia', '(02) 555-5914', '(02) 55
 3, rue des Alpes', 'Annecy', null, '74000', 'Francia', '38.76.98.06', '38.76.98.58'),
     (29, 'Forêts d''érables', 'Chantal Goulet', 'Gerente de contabilidad', '148 rue Chasseur', 'Ste-Hyacinthe', 'Québec', 'J2S 7S8', 'Canadá', '(514) 555-2955', '(514) 555-2921');
 
--- empleados: 24 registros
-insert into empleados (idempleado, nombres, apellidos, cargo, foto) overriding system value values
-    (1, 'Alexander', 'Skarsgård', 'Supervisor de Ventas Corporativas (B2B)', 'https://servicios.campus.pe/imagenes/empleados/alexander_skarsgard.jpg'),
-    (2, 'Brooklyn', 'Decker', 'Jefe de Operaciones y Logística', 'https://servicios.campus.pe/imagenes/empleados/brooklyn_decker.jpg'),
-    (3, 'Doutzen', 'Kroes', 'Asistente Contable y Facturación', 'https://servicios.campus.pe/imagenes/empleados/doutzen_kroes.jpg'),
-    (4, 'Dua', 'Lipa', 'Especialista en Publicidad Digital y Redes', 'https://servicios.campus.pe/imagenes/empleados/dua_lipa.jpg'),
-    (5, 'Gigi', 'Hadid', 'Gerente General', 'https://servicios.campus.pe/imagenes/empleados/gigi_hadid.jpg'),
-    (6, 'Glen', 'Powell', 'Programador Web Full Stack', 'https://servicios.campus.pe/imagenes/empleados/glen_powell.jpg'),
-    (7, 'Jasmine', 'Tookes', 'Asistente de Tesorería y Cobranzas', 'https://servicios.campus.pe/imagenes/empleados/jasmine_tookes.jpg'),
-    (8, 'Jennie', 'Kim', 'Diseñadora Web y Gráfico Digital', 'https://servicios.campus.pe/imagenes/empleados/jennie_kim.jpg'),
-    (9, 'Joan', 'Smalls', 'Gerente Comercial', 'https://servicios.campus.pe/imagenes/empleados/joan_smalls.jpg'),
-    (10, 'Kaia', 'Gerber', 'Vendedora de Mostrador', 'https://servicios.campus.pe/imagenes/empleados/kaia_garber.jpg'),
-    (11, 'Kate', 'Upton', 'Vendedora y Atención de Retiro en Tienda', 'https://servicios.campus.pe/imagenes/empleados/kate_upton.jpg'),
-    (12, 'Kendall', 'Jenner', 'Supervisora de Ventas Web y Marketing Digital', 'https://servicios.campus.pe/imagenes/empleados/kendall_jenner.jpg'),
-    (13, 'Liu', 'Wen', 'Jefe de Sistemas y Desarrollo Web', 'https://servicios.campus.pe/imagenes/empleados/liu_wen.jpg'),
-    (14, 'Miles', 'Teller', 'Técnico de Soporte Informático', 'https://servicios.campus.pe/imagenes/empleados/milles_teller.jpg'),
-    (15, 'Nicholas', 'Galitzine', 'Ejecutivo de Ventas Corporativas', 'https://servicios.campus.pe/imagenes/empleados/nicholas_galitzine.jpg'),
-    (16, 'Patrick', 'Adams', 'Asistente de Inventarios y Compras', 'https://servicios.campus.pe/imagenes/empleados/patrick_adams.jpg'),
-    (17, 'Paul', 'Mescal', 'Auxiliar de Almacén y Embalaje', 'https://servicios.campus.pe/imagenes/empleados/paul_mescal.jpg'),
-    (18, 'Regé-Jean', 'Page', 'Asesor de Ventas a Empresas', 'https://servicios.campus.pe/imagenes/empleados/rege-jean_page.jpg'),
-    (19, 'Romee', 'Strijd', 'Asistente de Catálogo Web y Precios', 'https://servicios.campus.pe/imagenes/empleados/romee_strijd.jpg'),
-    (20, 'Rosie', 'Huntington', 'Supervisora de Tienda y Mostrador', 'https://servicios.campus.pe/imagenes/empleados/rosie_huntington.jpg'),
-    (21, 'Ryan', 'Gosling', 'Asesor de Atención al Cliente y Reclamos', 'https://servicios.campus.pe/imagenes/empleados/ryan_gosling.jpg'),
-    (22, 'Ryan', 'Reynolds', 'Coordinador de Despacho y Reparto', 'https://servicios.campus.pe/imagenes/empleados/ryan_reynolds.jpg'),
-    (23, 'Sana', 'Minatozaki', 'Cajera de Tienda', 'https://servicios.campus.pe/imagenes/empleados/sana_minatozaki.jpg'),
-    (24, 'Taylor', 'Swift', 'Jefe de Administración y Finanzas', 'https://servicios.campus.pe/imagenes/empleados/taylor_swift.jpg');
+-- sedes: 3 registros
+insert into sedes (idsede, nombre, direccion, distrito) overriding system value values
+    (1, 'Miraflores', 'Av. José Larco 1150', 'Miraflores'),
+    (2, 'San Isidro', 'Av. Camino Real 1050', 'San Isidro'),
+    (3, 'Callao', 'Av. Sáenz Peña 600', 'Callao');
+
+-- directores: 9 registros
+insert into directores (iddirector, nombres, apellidos, correo, foto, idsede) overriding system value values
+    (1, 'Gigi', 'Hadid', 'gigi.hadid@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/gigi_hadid.jpg', 1),
+    (2, 'Joan', 'Smalls', 'joan.smalls@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/joan_smalls.jpg', 1),
+    (3, 'Kendall', 'Jenner', 'kendall.jenner@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/kendall_jenner.jpg', 1),
+    (4, 'Alexander', 'Skarsgård', 'alexander.skarsgard@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/alexander_skarsgard.jpg', 2),
+    (5, 'Rosie', 'Huntington', 'rosie.huntington@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/rosie_huntington.jpg', 2),
+    (6, 'Brooklyn', 'Decker', 'brooklyn.decker@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/brooklyn_decker.jpg', 2),
+    (7, 'Taylor', 'Swift', 'taylor.swift@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/taylor_swift.jpg', 3),
+    (8, 'Liu', 'Wen', 'liu.wen@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/liu_wen.jpg', 3),
+    (9, 'Ryan', 'Reynolds', 'ryan.reynolds@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/ryan_reynolds.jpg', 3);
+
+-- asesores: 10 registros
+insert into asesores (idasesor, nombres, apellidos, correo, foto, iddirector) overriding system value values
+    (1, 'Nicholas', 'Galitzine', 'nicholas.galitzine@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/nicholas_galitzine.jpg', 1),
+    (2, 'Regé-Jean', 'Page', 'rege-jean.page@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/rege-jean_page.jpg', 1),
+    (3, 'Kaia', 'Gerber', 'kaia.gerber@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/kaia_garber.jpg', 2),
+    (4, 'Kate', 'Upton', 'kate.upton@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/kate_upton.jpg', 3),
+    (5, 'Ryan', 'Gosling', 'ryan.gosling@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/ryan_gosling.jpg', 4),
+    (6, 'Dua', 'Lipa', 'dua.lipa@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/dua_lipa.jpg', 5),
+    (7, 'Jennie', 'Kim', 'jennie.kim@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/jennie_kim.jpg', 6),
+    (8, 'Romee', 'Strijd', 'romee.strijd@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/romee_strijd.jpg', 7),
+    (9, 'Sana', 'Minatozaki', 'sana.minatozaki@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/sana_minatozaki.jpg', 8),
+    (10, 'Glen', 'Powell', 'glen.powell@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/glen_powell.jpg', 9);
 
 -- Los autonuméricos siguen después del último código cargado
 select setval(pg_get_serial_sequence('categorias', 'idcategoria'), (select max(idcategoria) from categorias));
 select setval(pg_get_serial_sequence('productos', 'idproducto'), (select max(idproducto) from productos));
-select setval(pg_get_serial_sequence('directores', 'iddirector'), (select max(iddirector) from directores));
 select setval(pg_get_serial_sequence('proveedores', 'idproveedor'), (select max(idproveedor) from proveedores));
-select setval(pg_get_serial_sequence('empleados', 'idempleado'), (select max(idempleado) from empleados));
+select setval(pg_get_serial_sequence('sedes', 'idsede'), (select max(idsede) from sedes));
+select setval(pg_get_serial_sequence('directores', 'iddirector'), (select max(iddirector) from directores));
+select setval(pg_get_serial_sequence('asesores', 'idasesor'), (select max(idasesor) from asesores));

@@ -1,0 +1,79 @@
+<header-component titulo="Asesores comerciales"
+  frase="Máximo 10 asesores; cada uno pertenece a un director de venta">
+</header-component>
+
+
+<section class="padded">
+    <div class="container">
+        <h1>Asesores comerciales <small class="text-body-secondary fs-5" id="contador-asesores"></small></h1>
+        <div class="mb-3">
+            <button class="btn btn-primary" id="btn-nuevo-asesor">
+                <i class="fa-solid fa-plus"></i> Nuevo asesor
+            </button>
+        </div>
+
+        <div id="aviso-asesores-admin"></div>
+
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Asesor</th>
+                        <th>Correo</th>
+                        <th>Director</th>
+                        <th>Sede</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-asesores">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- Modal: insertar y actualizar -->
+<div class="modal fade" id="modal-asesor" tabindex="-1" aria-labelledby="titulo-modal-asesor" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="titulo-modal-asesor">Nuevo asesor</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <form id="form-asesor" novalidate>
+        <div class="modal-body">
+            <input type="hidden" id="txt-idasesor">
+            <div class="row">
+                <div class="col-sm-6 mb-3">
+                    <label for="txt-nombres-asesor" class="form-label">Nombres</label>
+                    <input type="text" id="txt-nombres-asesor" class="form-control" minlength="2" maxlength="60" required>
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <label for="txt-apellidos-asesor" class="form-label">Apellidos</label>
+                    <input type="text" id="txt-apellidos-asesor" class="form-control" minlength="2" maxlength="60" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="txt-correo-asesor" class="form-label">Correo</label>
+                <input type="email" id="txt-correo-asesor" class="form-control" maxlength="100" required>
+            </div>
+            <div class="mb-3">
+                <label for="cbo-director" class="form-label">Director de venta</label>
+                <select id="cbo-director" class="form-select" required></select>
+                <div class="form-text">La sede del asesor es la de su director.</div>
+            </div>
+            <div class="mb-3">
+                <label for="txt-foto-asesor" class="form-label">Foto (URL, opcional)</label>
+                <input type="url" id="txt-foto-asesor" class="form-control" placeholder="https://...">
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="submit" class="btn btn-primary" id="btn-guardar-asesor">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

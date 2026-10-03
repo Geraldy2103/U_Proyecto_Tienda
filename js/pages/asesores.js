@@ -44,8 +44,9 @@
         </div>`
 
     /* ---------- Lista de asesores ---------- */
-    obtenerDatos(db.from("empleados").select("idempleado, nombres, apellidos, cargo, foto")
-            .eq("es_asesor", true).order("nombres"))
+    // cada asesor trae a su director y la sede del director
+    obtenerDatos(db.from("asesores").select("idasesor, nombres, apellidos, foto, directores(nombres, apellidos, sedes(nombre))")
+            .order("nombres"))
         .then(data => {
             asesores = data
             if (data.length === 0) {
@@ -57,11 +58,14 @@
                 cards += `
                 <div class="col">
                     <div class="card h-100">
-                        <img src="${item.foto}" class="card-img-top" alt="${escaparHTML(item.nombres + " " + item.apellidos)}">
+                        <img src="${item.foto || IMAGEN_SIN_FOTO}" class="card-img-top" alt="${escaparHTML(item.nombres + " " + item.apellidos)}">
                         <div class="card-body d-flex flex-column">
+                            <span class="badge text-bg-secondary align-self-start mb-2">
+                                <i class="fa-solid fa-location-dot"></i> Sede ${escaparHTML(item.directores.sedes.nombre)}</span>
                             <h5 class="card-title">${escaparHTML(item.nombres + " " + item.apellidos)}</h5>
-                            <p class="card-text">${escaparHTML(item.cargo)}</p>
-                            <button class="btn btn-primary mt-auto btn-elegir-asesor" data-id="${item.idempleado}">
+                            <p class="card-text small text-body-secondary">Asesor comercial · Equipo de
+                                ${escaparHTML(item.directores.nombres + " " + item.directores.apellidos)}</p>
+                            <button class="btn btn-primary mt-auto btn-elegir-asesor" data-id="${item.idasesor}">
                                 <i class="fa-regular fa-comments"></i> Hablar con este asesor
                             </button>
                         </div>
@@ -82,7 +86,7 @@
     cuadriculaAsesores.addEventListener("click", (event) => {
         const boton = event.target.closest(".btn-elegir-asesor")
         if (!boton) return
-        asesorElegido = asesores.find(a => a.idempleado == boton.dataset.id)
+        asesorElegido = asesores.find(a => a.idasesor == boton.dataset.id)
 
         textoAsesorElegido.innerHTML = `Enviarás esta solicitud a
             <strong>${escaparHTML(asesorElegido.nombres + " " + asesorElegido.apellidos)}</strong>:`
@@ -99,7 +103,7 @@
     formSolicitud.addEventListener("submit", (event) => {
         event.preventDefault()
         const solicitud = {
-            idempleado: asesorElegido.idempleado,
+            idasesor: asesorElegido.idasesor,
             // solo los productos con 12 o más unidades
             productos: productosMayoristas().map(({ idproducto, nombre, precio, cantidad }) => ({ idproducto, nombre, precio, cantidad })),
             mensaje: txtMensaje.value.trim() || null
@@ -115,6 +119,7 @@
                         <i class="fa-solid fa-circle-check"></i>
                         ¡Listo! <strong>${escaparHTML(asesorElegido.nombres)}</strong> se comunicará contigo a
                         <strong>${escaparHTML(usuarioActual.correo)}</strong> para coordinar tu compra mayorista.
+                        Cuando confirmes tu pedido en el carrito, elige a tu asesor para que la venta quede a su nombre.
                     </div>`
                 mostrarNotificacion("Solicitud enviada")
             })

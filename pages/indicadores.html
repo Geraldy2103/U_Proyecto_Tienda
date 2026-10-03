@@ -1,0 +1,44 @@
+<header-component titulo="Indicadores comerciales"
+  frase="Ventas por sede y desempeño de los asesores">
+</header-component>
+
+
+<section class="padded">
+    <div class="container">
+        <div id="aviso-indicadores"></div>
+
+        <!-- Totales -->
+        <div class="row row-cols-2 row-cols-lg-4 g-3 mb-4" id="tarjetas-totales"></div>
+
+        <!-- Asesores destacados -->
+        <div class="row g-3 mb-4" id="asesores-destacados"></div>
+
+        <div class="row g-4">
+            <!-- Ventas por sede -->
+            <div class="col-lg-5">
+                <h4>Ventas por sede</h4>
+                <div id="ventas-sedes"></div>
+            </div>
+
+            <!-- Ranking de asesores -->
+            <div class="col-lg-7">
+                <h4>Ranking de asesores</h4>
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Asesor</th>
+                                <th>Sede / Director</th>
+                                <th class="text-center">Solicitudes</th>
+                                <th class="text-center">Pedidos</th>
+                                <th class="text-end">Ventas</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-ranking"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

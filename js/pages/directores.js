@@ -1,4 +1,4 @@
-(() => { /*"Crea esta función, mete todo este código dentro y ejecútala inmediatamente.Y crea otra ejecución independiente de esa función"*/
+(() => { /*"Crea esta función, mete todo este código dentro y ejecútala inmediatamente."*/
 
     const tbodyDirectores = document.getElementById("tbody-directores")
     const avisoDirectores = document.getElementById("aviso-directores")
@@ -8,12 +8,16 @@
     const btnGuardar = document.getElementById("btn-guardar-director")
     const txtIdDirector = document.getElementById("txt-iddirector")
     const txtNombres = document.getElementById("txt-nombres")
-    const txtPeliculas = document.getElementById("txt-peliculas")
+    const txtApellidos = document.getElementById("txt-apellidos")
+    const txtCorreo = document.getElementById("txt-correo")
+    const cboSede = document.getElementById("cbo-sede")
 
     /* Objeto de Bootstrap para abrir y cerrar el modal desde JavaScript */
     const modalDirector = bootstrap.Modal.getOrCreateInstance(document.getElementById("modal-director"))
 
-    let directores = [] // copia de la última lista leída, para buscar un director por su código
+    const MAXIMO_POR_SEDE = 3   // la base de datos aplica la misma regla
+    let directores = []         // última lista leída, para buscar un director por su código
+    let sedes = []
 
     /* Muestra un aviso arriba de la tabla. tipo: "success" (verde) o "danger" (rojo) */
     const mostrarAviso = (texto, tipo) => {
@@ -23,20 +27,22 @@
 
     /* ---------- LEER (Read) ---------- */
     const leerDirectores = () => {
-        obtenerDatos(db.from("directores").select("*").order("iddirector"))
+        // sedes(nombre) y asesores(count) traen datos de las tablas relacionadas
+        obtenerDatos(db.from("directores").select("*, sedes(nombre), asesores(count)").order("idsede").order("apellidos"))
             .then(data => {
                 directores = data
                 if (data.length === 0) {
-                    tbodyDirectores.innerHTML = `<tr><td colspan="5" class="text-center">No hay directores registrados</td></tr>`
+                    tbodyDirectores.innerHTML = `<tr><td colspan="7" class="text-center">No hay directores registrados</td></tr>`
                     return
                 }
                 let filas = ""
                 data.forEach(item => {
-                    // escaparHTML: el texto lo escribe el usuario, así se muestra tal cual y no como HTML
                     filas += `<tr>
                             <td>${item.iddirector}</td>
-                            <td>${escaparHTML(item.nombres)}</td>
-                            <td>${escaparHTML(item.peliculas)}</td>
+                            <td>${escaparHTML(item.nombres + " " + item.apellidos)}</td>
+                            <td>${escaparHTML(item.correo || "")}</td>
+                            <td><span class="badge text-bg-secondary">${escaparHTML(item.sedes.nombre)}</span></td>
+                            <td class="text-center">${item.asesores[0].count}</td>
                             <td><i class="fa-regular fa-pen-to-square icono-actualizar" data-id="${item.iddirector}" title="Editar"></i></td>
                             <td><i class="fa-regular fa-trash-can icono-eliminar" data-id="${item.iddirector}" title="Eliminar"></i></td>
                           </tr>`
@@ -45,8 +51,20 @@
             })
             .catch(error => {
                 console.error(error)
-                tbodyDirectores.innerHTML = `<tr><td colspan="5">${mensajeError("No se pudo cargar la lista de directores.")}</td></tr>`
+                tbodyDirectores.innerHTML = `<tr><td colspan="7">${mensajeError("No se pudo cargar la lista de directores.")}</td></tr>`
             })
+    }
+
+    /* Llena la lista de sedes del formulario, indicando cuántos directores tiene cada una */
+    const llenarSedes = (idsedeActual) => {
+        cboSede.innerHTML = `<option value="">Elige una sede</option>` + sedes.map(sede => {
+            const cantidad = directores.filter(d => d.idsede === sede.idsede).length
+            // una sede llena no se puede elegir, salvo que sea la del director que estamos editando
+            const llena = cantidad >= MAXIMO_POR_SEDE && sede.idsede !== idsedeActual
+            return `<option value="${sede.idsede}" ${llena ? "disabled" : ""}>
+                ${escaparHTML(sede.nombre)} (${cantidad}/${MAXIMO_POR_SEDE})</option>`
+        }).join("")
+        cboSede.value = idsedeActual || ""
     }
 
     /* Abre el modal vacío (insertar) o con los datos de un director (actualizar) */
@@ -57,61 +75,68 @@
             tituloModal.textContent = "Editar director"
             txtIdDirector.value = director.iddirector
             txtNombres.value = director.nombres
-            txtPeliculas.value = director.peliculas
+            txtApellidos.value = director.apellidos
+            txtCorreo.value = director.correo || ""
+            llenarSedes(director.idsede)
         } else {
             tituloModal.textContent = "Nuevo director"
             txtIdDirector.value = ""
+            llenarSedes(null)
         }
         modalDirector.show()
     }
 
     btnNuevoDirector.addEventListener("click", () => abrirModal())
 
-    /* Un solo "escucha" en el tbody para todos los iconos (delegación de eventos):
-       funciona aunque las filas se vuelvan a dibujar después de cada cambio. */
+    /* Un solo "escucha" en el tbody para todos los iconos (delegación de eventos) */
     tbodyDirectores.addEventListener("click", (event) => {
         const icono = event.target
         const director = directores.find(d => d.iddirector == icono.dataset.id)
         if (!director) return
 
-        /* ---------- ACTUALIZAR (Update): abre el modal con sus datos ---------- */
         if (icono.classList.contains("icono-actualizar")) {
             abrirModal(director)
         }
 
         /* ---------- ELIMINAR (Delete) ---------- */
         if (icono.classList.contains("icono-eliminar")) {
-            if (!confirm(`¿Eliminar al director "${director.nombres}"?`)) return
-            // DELETE FROM directores WHERE iddirector = ...
+            if (director.asesores[0].count > 0) { // la base también lo impide
+                mostrarAviso("No se puede eliminar: primero reasigna sus asesores a otro director (en la página Asesores).", "danger")
+                return
+            }
+            if (!confirm(`¿Eliminar al director "${director.nombres} ${director.apellidos}"?`)) return
             obtenerDatos(db.from("directores").delete().eq("iddirector", director.iddirector).select())
                 .then(verificarCambio)
                 .then(() => {
-                    mostrarAviso(`Se eliminó a ${escaparHTML(director.nombres)}.`, "success")
+                    mostrarAviso(`Se eliminó a ${escaparHTML(director.nombres + " " + director.apellidos)}.`, "success")
                     leerDirectores()
                 })
                 .catch(error => {
                     console.error(error)
-                    mostrarAviso("No se pudo eliminar el director. Intenta nuevamente.", "danger")
+                    mostrarAviso(mensajeDeLaBase(error, "No se pudo eliminar el director. Intenta nuevamente."), "danger")
                 })
         }
     })
 
     /* ---------- GUARDAR: insertar (Create) o actualizar (Update) ---------- */
-    formDirector.addEventListener("submit", (event) => { // es un "escucha": cuando el formulario se envía (al pulsar el botón Guardar), ejecuta el código de la función.
+    formDirector.addEventListener("submit", (event) => {
         event.preventDefault()                          // evita que el formulario recargue la página
 
-        // quitamos espacios al inicio y al final; así "    " no cuenta como un nombre válido
         txtNombres.value = txtNombres.value.trim()
-        txtPeliculas.value = txtPeliculas.value.trim()
-        if (!formDirector.checkValidity()) {            // vuelve a revisar required y minlength
+        txtApellidos.value = txtApellidos.value.trim()
+        txtCorreo.value = txtCorreo.value.trim().toLowerCase()
+        if (!formDirector.checkValidity()) {
             formDirector.classList.add("was-validated") // Bootstrap pinta en rojo los campos mal llenados
             return
         }
 
         const esNuevo = txtIdDirector.value === ""
-        const datos = { nombres: txtNombres.value, peliculas: txtPeliculas.value }
-
-        // INSERT INTO directores ... o UPDATE directores SET ... WHERE iddirector = ...
+        const datos = {
+            nombres: txtNombres.value,
+            apellidos: txtApellidos.value,
+            correo: txtCorreo.value,
+            idsede: Number(cboSede.value)
+        }
         const consulta = esNuevo ?
             db.from("directores").insert(datos).select() :
             db.from("directores").update(datos).eq("iddirector", txtIdDirector.value).select()
@@ -121,19 +146,22 @@
             .then(verificarCambio)
             .then(() => {
                 modalDirector.hide()
-                mostrarAviso(esNuevo ? `Se registró a ${escaparHTML(datos.nombres)}.` :
-                    `Se actualizaron los datos de ${escaparHTML(datos.nombres)}.`, "success")
+                const nombre = escaparHTML(datos.nombres + " " + datos.apellidos)
+                mostrarAviso(esNuevo ? `Se registró a ${nombre}.` : `Se actualizaron los datos de ${nombre}.`, "success")
                 leerDirectores()
             })
             .catch(error => {
                 console.error(error)
                 modalDirector.hide()
-                mostrarAviso("No se pudo guardar el director. Intenta nuevamente.", "danger")
+                mostrarAviso(mensajeDeLaBase(error, "No se pudo guardar el director. Intenta nuevamente."), "danger")
             })
             .finally(() => {
                 btnGuardar.disabled = false
             })
     })
 
+    obtenerDatos(db.from("sedes").select("*").order("idsede"))
+        .then(data => sedes = data)
+        .catch(error => console.error(error))
     leerDirectores()
 })()

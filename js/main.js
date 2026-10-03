@@ -26,6 +26,18 @@ const obtenerDatos = (consulta) => {
     })
 }
 
+/* Convierte un error de la base de datos en un mensaje para el usuario.
+   P0001 = mensaje escrito por nosotros en la base (ej. "La sede ya tiene 3 directores...")
+   23503 = el registro está relacionado con otros (ej. borrar un director que tiene asesores) */
+const mensajeDeLaBase = (error, porDefecto) => {
+    if (error && error.code === "P0001") return error.message
+    if (error && error.code === "23503") return "No se puede completar: el registro está relacionado con otros datos."
+    return porDefecto
+}
+
+/* Formato de moneda: 1234.5 -> "S/ 1,234.50" */
+const soles = (monto) => "S/ " + Number(monto).toLocaleString("es-PE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
 /* .select() al final de un insert/update/delete devuelve las filas afectadas.
    Si no se afectó ninguna (por ejemplo, el usuario no tiene permiso) lo tratamos como error. */
 const verificarCambio = (filas) => {
@@ -138,7 +150,7 @@ const alIniciarSesion = () => {
     return cargarUsuario().then(() => {
         dibujarMenu()
         mostrarNotificacion(`Hola, ${escaparHTML(usuarioActual.nombre)}`)
-        irAPagina(esAdmin() ? "Directores" : "Tienda")
+        irAPagina(esAdmin() ? "Indicadores" : "Tienda")
     })
 }
 
@@ -169,9 +181,11 @@ const menuItems = [
     {etiqueta: "Carrito",      pagina: "pages/carrito.html", codigo: "js/pages/carrito.js"},
     {etiqueta: "Asesores comerciales", pagina: "pages/asesores.html", codigo: "js/pages/asesores.js", oculto: true},
     // Intranet (solo admin)
-    {etiqueta: "Proveedores",  pagina: "pages/proveedores.html", codigo: "js/pages/proveedores.js", rol: "admin"},
+    {etiqueta: "Indicadores",  pagina: "pages/indicadores.html", codigo: "js/pages/indicadores.js", rol: "admin"},
     {etiqueta: "Directores",   pagina: "pages/directores.html", codigo: "js/pages/directores.js", rol: "admin"},
-    {etiqueta: "Solicitudes",  pagina: "pages/solicitudes.html", codigo: "js/pages/solicitudes.js", rol: "admin"}
+    {etiqueta: "Asesores",     pagina: "pages/asesores-admin.html", codigo: "js/pages/asesores-admin.js", rol: "admin"},
+    {etiqueta: "Solicitudes",  pagina: "pages/solicitudes.html", codigo: "js/pages/solicitudes.js", rol: "admin"},
+    {etiqueta: "Proveedores",  pagina: "pages/proveedores.html", codigo: "js/pages/proveedores.js", rol: "admin"}
 ]
 
 /* La página de ingreso no va en el menú principal: se abre con el botón "Ingresar" de la derecha */

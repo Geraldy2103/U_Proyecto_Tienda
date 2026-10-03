@@ -61,6 +61,22 @@
     text-align: center;
 }
 
+#tbody-asesores tr i{                              /* iconos de editar/eliminar de asesores (intranet) */
+    opacity: 0;
+    cursor: pointer;
+}
+
+#tbody-asesores tr:hover i{
+    opacity: 1;
+}
+
+.foto-destacado{                                    /* foto redonda del asesor destacado (Indicadores) */
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
 #tbody-carrito .icono-eliminar{
     cursor: pointer;
     color: #dc3545;                                 /* rojo de Bootstrap (danger) */

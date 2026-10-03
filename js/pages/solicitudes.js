@@ -9,9 +9,9 @@
     const leerSolicitudes = () => {
         const estado = document.querySelector("input[name=filtro-estado]:checked").value
 
-        // perfiles(...) y empleados(...) traen los datos relacionados (como un JOIN de SQL)
+        // perfiles(...) y asesores(...) traen los datos relacionados (como un JOIN de SQL)
         let consulta = db.from("solicitudes_mayoristas")
-            .select("*, perfiles(nombre, correo), empleados(nombres, apellidos)")
+            .select("*, perfiles(nombre, correo), asesores(nombres, apellidos, directores(sedes(nombre)))")
             .order("fecha", { ascending: false })
         if (estado !== "todas") {
             consulta = consulta.eq("estado", estado)
@@ -36,7 +36,8 @@
                         <td class="text-nowrap">${formatearFecha(item.fecha)}</td>
                         <td>${escaparHTML(item.perfiles.nombre || "")}<br>
                             <small><a href="mailto:${escaparHTML(item.perfiles.correo || "")}">${escaparHTML(item.perfiles.correo || "")}</a></small></td>
-                        <td>${escaparHTML(item.empleados.nombres + " " + item.empleados.apellidos)}</td>
+                        <td>${escaparHTML(item.asesores.nombres + " " + item.asesores.apellidos)}<br>
+                            <span class="badge text-bg-secondary">${escaparHTML(item.asesores.directores.sedes.nombre)}</span></td>
                         <td>${productos}</td>
                         <td>${escaparHTML(item.mensaje || "")}</td>
                         <td>${botonEstado}</td>

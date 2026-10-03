@@ -1,33 +1,37 @@
-<header-component titulo="Directores" frase="">
-
+<header-component titulo="Directores de venta"
+  frase="Tres directores por sede, cada uno con su equipo de asesores">
 </header-component>
 
 
 <section class="padded">
     <div class="container">
-        <h1>Directores</h1>
+        <h1>Directores de venta</h1>
         <div class="mb-3">
             <button class="btn btn-primary" id="btn-nuevo-director">
-                <i class="fa-solid fa-plus"></i> Nuevo Director
+                <i class="fa-solid fa-plus"></i> Nuevo director
             </button>
         </div>
 
         <!-- Aquí aparecen los avisos de "guardado", "eliminado" o de error -->
         <div id="aviso-directores"></div>
 
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Código</th>
-                    <th>Nombres</th>
-                    <th>Peliculas</th>
-                    <th></th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody id = "tbody-directores">
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Director</th>
+                        <th>Correo</th>
+                        <th>Sede</th>
+                        <th class="text-center">Asesores</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id = "tbody-directores">
+                </tbody>
+            </table>
+        </div>
     </div>
 </section>
 
@@ -39,26 +43,33 @@
         <h1 class="modal-title fs-5" id="titulo-modal-director">Nuevo director</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
-      <form id="form-director">
+      <form id="form-director" novalidate>
         <div class="modal-body">
             <!-- Vacío = insertar; con un código = actualizar ese director -->
             <input type="hidden" id="txt-iddirector">
-            <div class="mb-3">
-                <label for="txt-nombres" class="form-label">Nombres</label>
-                <input type="text" id="txt-nombres" class="form-control"
-                minlength ="4" maxlength="100" required
-                placeholder="Ej. Steven Spielberg">
+            <div class="row">
+                <div class="col-sm-6 mb-3">
+                    <label for="txt-nombres" class="form-label">Nombres</label>
+                    <input type="text" id="txt-nombres" class="form-control" minlength="2" maxlength="60" required>
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <label for="txt-apellidos" class="form-label">Apellidos</label>
+                    <input type="text" id="txt-apellidos" class="form-control" minlength="2" maxlength="60" required>
+                </div>
             </div>
             <div class="mb-3">
-                <label for="txt-peliculas" class="form-label">Películas</label>
-                <input type="text" id="txt-peliculas" class="form-control"
-                  required minlength="6" maxlength="255"
-                  placeholder="Separadas por comas">
+                <label for="txt-correo" class="form-label">Correo</label>
+                <input type="email" id="txt-correo" class="form-control" maxlength="100" required>
+            </div>
+            <div class="mb-3">
+                <label for="cbo-sede" class="form-label">Sede</label>
+                <select id="cbo-sede" class="form-select" required></select>
+                <div class="form-text">Cada sede puede tener como máximo 3 directores.</div>
             </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-          <button type="submit" class="btn btn-primary" id="btn-guardar-director">Guardar</button> <!--type="submit" hace que al pulsar Guardar el formulario dispare el evento submit (lo capturamos en directores.js)-->
+          <button type="submit" class="btn btn-primary" id="btn-guardar-director">Guardar</button>
         </div>
       </form>
     </div>

@@ -7,6 +7,8 @@
 <section class="padded">
     <div class="container">
         <h1>Mi carrito</h1>
+        <!-- Avisos: pedido registrado o errores -->
+        <div id="aviso-carrito"></div>
         <p id="resumen-carrito"></p>
         <div class="table-responsive">
             <table class="table align-middle">
@@ -41,6 +43,40 @@
             <button class="btn btn-danger" id="btn-vaciar-carrito">
                 <i class="fa-regular fa-trash-can"></i> Vaciar carrito
             </button>
+            <button class="btn btn-success ms-auto" id="btn-confirmar-pedido">
+                <i class="fa-solid fa-check"></i> Confirmar pedido
+            </button>
         </div>
     </div>
 </section>
+
+<!-- Modal: confirmar el pedido -->
+<div class="modal fade" id="modal-pedido" tabindex="-1" aria-labelledby="titulo-modal-pedido" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="titulo-modal-pedido">Confirmar pedido</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <form id="form-pedido" novalidate>
+        <div class="modal-body">
+            <p>Total a pagar: <strong id="total-pedido"></strong></p>
+            <div class="mb-3" id="grupo-asesor">
+                <label for="cbo-asesor-pedido" class="form-label">Asesor que te atendió (compra mayorista)</label>
+                <select id="cbo-asesor-pedido" class="form-select"></select>
+                <div class="form-text">Si eliges un asesor, el pedido se registra en su sede.</div>
+            </div>
+            <div class="mb-3" id="grupo-sede">
+                <label for="cbo-sede-pedido" class="form-label">Sede de atención / recojo</label>
+                <select id="cbo-sede-pedido" class="form-select" required></select>
+                <div class="invalid-feedback">Elige una sede.</div>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-success" id="btn-enviar-pedido">Confirmar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
