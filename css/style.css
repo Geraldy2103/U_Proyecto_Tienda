@@ -55,6 +55,18 @@
     cursor: pointer;
 }
 
+/* ---------- Carrito ---------- */
+.cantidad-carrito{                                  /* número entre los botones - y + */
+    display: inline-block;
+    min-width: 2.5em;                               /* ancho fijo para que los botones no "salten" al pasar de 9 a 10 */
+    text-align: center;
+}
+
+#tbody-carrito .icono-eliminar{
+    cursor: pointer;
+    color: #dc3545;                                 /* rojo de Bootstrap (danger) */
+}
+
 
 .precio-anterior {
     text-decoration: line-through;

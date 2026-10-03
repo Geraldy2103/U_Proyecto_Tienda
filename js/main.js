@@ -42,6 +42,46 @@ const leerCarrito = () => {
         return []
     }
 }
+
+/* Guarda el carrito en sessionStorage (o lo borra si quedó vacío)
+   y actualiza el número que aparece junto a "Carrito" en el menú. */
+const guardarCarrito = (carrito) => {
+    if (carrito.length > 0) {
+        sessionStorage.setItem("carritocompras", JSON.stringify(carrito)) //sessionStorage solo guarda texto, por eso JSON.stringify
+    } else {
+        sessionStorage.removeItem("carritocompras")
+    }
+    actualizarContadorCarrito()
+}
+
+/* Suma las cantidades de todos los productos (2 tés + 1 café = 3) y lo muestra en el menú */
+const actualizarContadorCarrito = () => {
+    const contador = document.getElementById("contador-carrito")
+    const unidades = leerCarrito().reduce((suma, item) => suma + item.cantidad, 0)
+    contador.textContent = unidades
+    contador.style.display = unidades > 0 ? "inline-block" : "none" // si está vacío no se muestra
+}
+
+/* Muestra un aviso pequeño abajo a la derecha que desaparece solo (Toast de Bootstrap) */
+const mostrarNotificacion = (texto) => {
+    const contenedor = document.getElementById("contenedor-notificaciones")
+    const toast = document.createElement("div")
+    toast.className = "toast align-items-center text-bg-dark border-0"
+    toast.setAttribute("role", "status")
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body"><i class="fa-solid fa-check"></i> ${texto}</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+        </div>`
+    contenedor.appendChild(toast)
+    toast.addEventListener("hidden.bs.toast", () => toast.remove()) // al ocultarse, se borra del HTML
+    bootstrap.Toast.getOrCreateInstance(toast, { delay: 2500 }).show()
+}
+
+/* Abre una sección del menú desde el código, por ejemplo irAPagina("Tienda") */
+const irAPagina = (etiqueta) => {
+    mainNav.querySelector(`a[data-etiqueta="${etiqueta}"]`).click()
+}
 /* 
 etiqueta es el nombre de la opción que quieres mostrar al usuario.
 pagina es la ruta del archivo HTML al que quieres ir cuando el usuario haga clic.
@@ -67,6 +107,10 @@ menuItems.forEach(item => {
     const menuA = document.createElement("a")
     menuA.className = "nav-link"
     menuA.textContent = item.etiqueta
+    menuA.dataset.etiqueta = item.etiqueta /*data-etiqueta="Tienda": lo usa irAPagina() para encontrar el enlace*/
+    if (item.etiqueta === "Carrito") { /*al enlace del carrito le agregamos el contador de productos*/
+        menuA.innerHTML += ` <span class="badge rounded-pill text-bg-danger" id="contador-carrito"></span>`
+    }
     menuLI.appendChild(menuA)
     mainNav.appendChild(menuLI)
     
@@ -103,6 +147,7 @@ menuItems.forEach(item => {
 })
 
 
+actualizarContadorCarrito() /*muestra el número correcto si ya había productos guardados en esta pestaña*/
 mainNav.querySelector("li:first-child a").click()
 /*mainNav.querySelector("li:first-child a") busca el elemento <a> que está dentro del primer <li> de mainNav.
 .click() hace clic automáticamente sobre ese <a>, como si el usuario hubiera hecho clic con el mouse.*/
@@ -143,11 +188,11 @@ const agregarItemCarrito = (nuevoItem, cantidad) => {
         carrito[index].cantidad += itemCarrito.cantidad
     }
 
-    sessionStorage.setItem("carritocompras",JSON.stringify(carrito))  //sessionStorage solo guarda valores como string (texto). No guarda objetos JavaScript directamente.
+    guardarCarrito(carrito)
     /*Piensa que sessionStorage es como una cajita de almacenamiento del navegador donde puedes guardar información mientras la pestaña/sesión está activa.
     setItem() significa:"Guarda algo". Tiene esta estructura:sessionStorage.setItem("clave", "valor")
-    guarda JSON.stringify(carrito) usando la clave "carritocompras". 
-    JSON.stringify() Convierte este objeto/array de JavaScript en un texto JSON
-    carga carrito, todo el paquete en sessionStorage, es paquete por paquete, */
-    
+    guardarCarrito() guarda JSON.stringify(carrito) usando la clave "carritocompras".
+    JSON.stringify() Convierte este objeto/array de JavaScript en un texto JSON*/
+
+    mostrarNotificacion(`${escaparHTML(itemCarrito.nombre)} se agregó al carrito`)
 }
