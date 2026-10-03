@@ -574,6 +574,49 @@ footer strong{ color: #fff; }
 
 #tbody-carrito .icono-eliminar{ color: var(--acento); }
 
+/* Segmentador (botones unidos para filtrar: Todos | Registrados | Entregados ...) */
+.segmentador{
+    display: inline-flex;
+    flex-wrap: wrap;
+    padding: 4px;
+    gap: 2px;
+    background-color: var(--fondo-suave);
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+}
+
+.segmentador button{
+    border: 0;
+    background: none;
+    padding: 6px 14px;
+    border-radius: 7px;
+    font-size: .88rem;
+    font-weight: 600;
+    color: var(--texto-suave);
+}
+
+.segmentador button span{                           /* cantidad de pedidos de cada opción */
+    font-weight: 500;
+    opacity: .7;
+    margin-left: 4px;
+}
+
+.segmentador button:hover{ color: var(--texto); }
+
+.segmentador button.activo{
+    background-color: #fff;
+    color: var(--marca);
+    box-shadow: 0 1px 3px rgba(29, 36, 32, .12);
+}
+
+/* Detalle de pedidos: columnas de ancho fijo para que se alineen entre tarjetas */
+.tabla-detalle{
+    table-layout: fixed;
+}
+
+.tabla-detalle td:nth-child(2){ width: 9.5rem; }
+.tabla-detalle td:nth-child(3){ width: 7.5rem; }
+
 .pedido .estado{
     font-size: .75rem;
     font-weight: 700;

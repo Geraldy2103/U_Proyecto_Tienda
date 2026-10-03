@@ -4,6 +4,13 @@
 
 <section class="padded">
     <div class="container">
+        <!-- Segmentadores: los llena mis-pedidos.js con la cantidad de pedidos de cada opción -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3" id="filtros-pedidos" hidden>
+            <div class="segmentador" role="group" aria-label="Filtrar por estado" id="filtro-estado"></div>
+            <div class="segmentador" role="group" aria-label="Filtrar por tipo" id="filtro-tipo"></div>
+        </div>
+        <p class="small text-body-secondary mb-3" id="resumen-pedidos"></p>
+
         <div id="lista-pedidos"></div>
     </div>
 </section>
