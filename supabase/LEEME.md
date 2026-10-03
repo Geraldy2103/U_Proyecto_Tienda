@@ -9,6 +9,7 @@ La página ya no usa la API del curso (`servicios.campus.pe`): usa una base de d
 |---|---|
 | `01_esquema.sql` | Crea las tablas, los roles (`cliente` / `admin`) y las reglas de seguridad |
 | `02_datos.sql` | Carga los datos iniciales (8 categorías, 81 productos, 40 directores, 29 proveedores, 24 empleados) |
+| `03_mayoristas.sql` | Proveedores solo para admin, asesores comerciales y solicitudes mayoristas (12+ unidades por producto) |
 
 ## Pasos para crear la base (una sola vez)
 
@@ -22,8 +23,9 @@ La página ya no usa la API del curso (`servicios.campus.pe`): usa una base de d
 3. Menú izquierdo → **SQL Editor** → **New query** → pegar todo `01_esquema.sql` → **Run**.
    Debe decir *Success. No rows returned*.
 4. **New query** otra vez → pegar todo `02_datos.sql` → **Run**.
-5. Comprobar: menú izquierdo → **Table Editor** → deben aparecer las tablas con datos.
-6. Copiar los datos de conexión: **Project Settings** (engranaje) → **API Keys** / **Data API**:
+5. **New query** → pegar todo `03_mayoristas.sql` → **Run**.
+6. Comprobar: menú izquierdo → **Table Editor** → deben aparecer las tablas con datos.
+7. Copiar los datos de conexión: **Project Settings** (engranaje) → **API Keys** / **Data API**:
    - **Project URL** (algo como `https://abcdxyz.supabase.co`)
    - **anon / publishable key** (empieza con `eyJ...` o `sb_publishable_...`)
 
@@ -45,8 +47,10 @@ where id = (select id from auth.users where email = 'tu-correo@ejemplo.com');
 
 ## Notas
 
-- Si vuelves a ejecutar `01_esquema.sql`, se borran todas las tablas y los roles; luego hay que
-  ejecutar de nuevo `02_datos.sql` y volver a asignar el admin.
+- Si vuelves a ejecutar `01_esquema.sql`, se borran todas las tablas, los roles y las solicitudes;
+  luego hay que ejecutar de nuevo `02_datos.sql` y `03_mayoristas.sql` y volver a asignar el admin.
+- Los asesores comerciales son los empleados con `es_asesor = true`. Para cambiarlos, en
+  **Table Editor** → `empleados` se marca o desmarca esa columna.
 - El plan gratuito **pausa el proyecto tras 1 semana sin uso**. Se reactiva desde el panel de
   Supabase con **Restore project**; conviene hacerlo antes de una presentación.
 - Las imágenes todavía se leen del servidor del curso; en una fase posterior se subirán a

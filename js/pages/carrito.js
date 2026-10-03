@@ -4,6 +4,7 @@
     const btnSeguirComprando = document.getElementById("btn-seguir-comprando")
     const cajaTotal = document.getElementById("caja-total")
     const resumenCarrito = document.getElementById("resumen-carrito")
+    const cajaMayorista = document.getElementById("caja-mayorista")
 
     let carrito = leerCarrito() // definida en main.js: no falla aunque el dato guardado esté dañado
 
@@ -12,10 +13,31 @@
         cajaTotal.innerText = "S/ " + total.toFixed(2)
     }
 
+    /* Muestra si el carrito califica como compra mayorista y el botón para hablar con un asesor */
+    const dibujarMayorista = () => {
+        const mayoristas = carrito.filter(item => item.cantidad >= MINIMO_MAYORISTA)
+        const califica = mayoristas.length > 0
+        cajaMayorista.innerHTML = `
+            <div class="card-body d-flex flex-wrap align-items-center gap-3">
+                <i class="fa-solid fa-boxes-stacked fa-2x ${califica ? "text-success" : "text-secondary"}"></i>
+                <div class="flex-grow-1">
+                    <strong>Compras mayoristas</strong><br>
+                    <small>${califica ?
+                        `${mayoristas.length} producto(s) con ${MINIMO_MAYORISTA}+ unidades. Un asesor puede atenderte personalmente.` :
+                        `Lleva ${MINIMO_MAYORISTA} unidades o más de un mismo producto para hablar con un asesor comercial.`}</small>
+                </div>
+                <button class="btn ${califica ? "btn-success" : "btn-outline-secondary"}" id="btn-mayoristas" ${califica ? "" : "disabled"}>
+                    <i class="fa-regular fa-comments"></i> Mayoristas
+                </button>
+            </div>`
+        document.getElementById("btn-mayoristas").addEventListener("click", () => irAPagina("Asesores comerciales"))
+    }
+
     /* Dibuja la tabla completa a partir del array carrito.
        Se llama al inicio y después de cada cambio (sumar, restar, quitar, vaciar). */
     const dibujarCarrito = () => {
         btnVaciarCarrito.disabled = carrito.length === 0 // no tiene sentido vaciar un carrito vacío
+        dibujarMayorista()
 
         if (carrito.length === 0) {
             // Mensaje dentro de una fila de la tabla para no romper el HTML
@@ -37,7 +59,8 @@
                         title="Quitar uno" ${item.cantidad === 1 ? "disabled" : ""}>
                         <i class="fa-solid fa-minus"></i>
                     </button>
-                    <span class="cantidad-carrito">${item.cantidad}</span>
+                    <input type="number" class="form-control form-control-sm d-inline-block cantidad-carrito"
+                        data-index="${index}" value="${item.cantidad}" min="1" max="9999" aria-label="Cantidad">
                     <button class="btn btn-sm btn-outline-secondary btn-cantidad" data-index="${index}" data-cambio="1"
                         title="Agregar uno">
                         <i class="fa-solid fa-plus"></i>
@@ -77,6 +100,15 @@
             carrito.splice(iconoEliminar.dataset.index, 1) // splice quita 1 elemento en esa posición
             guardarYDibujar()
         }
+    })
+
+    /* Si el usuario escribe la cantidad directamente (por ejemplo 12) */
+    tbodyCarrito.addEventListener("change", (event) => {
+        const caja = event.target.closest(".cantidad-carrito")
+        if (!caja) return
+        const cantidad = Math.floor(Number(caja.value))
+        carrito[caja.dataset.index].cantidad = cantidad >= 1 ? Math.min(cantidad, 9999) : 1 // solo números enteros desde 1
+        guardarYDibujar()
     })
 
     btnVaciarCarrito.addEventListener("click", () => {

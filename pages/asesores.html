@@ -1,0 +1,43 @@
+<header-component titulo="Asesores comerciales"
+  frase="Atención personalizada para compras mayoristas">
+</header-component>
+
+
+<section class="padded">
+    <div class="container">
+        <h1>Elige a tu asesor</h1>
+
+        <!-- Requisitos, productos mayoristas del carrito o avisos -->
+        <div id="aviso-asesores"></div>
+
+        <div class="lds-roller" id="precarga"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4" id="cuadricula-asesores">
+
+        </div>
+    </div>
+</section>
+
+<!-- Modal: confirmar la solicitud al asesor elegido -->
+<div class="modal fade" id="modal-solicitud" tabindex="-1" aria-labelledby="titulo-modal-solicitud" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="titulo-modal-solicitud">Solicitud mayorista</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <form id="form-solicitud">
+        <div class="modal-body">
+            <p id="texto-asesor-elegido"></p>
+            <ul class="list-group mb-3" id="lista-productos-solicitud"></ul>
+            <label for="txt-mensaje" class="form-label">Mensaje para el asesor (opcional)</label>
+            <textarea id="txt-mensaje" class="form-control" rows="3" maxlength="500"
+                placeholder="Ej. Necesito entrega en Lima el próximo lunes"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btn-enviar-solicitud">Enviar solicitud</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

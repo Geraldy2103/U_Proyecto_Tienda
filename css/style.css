@@ -56,9 +56,8 @@
 }
 
 /* ---------- Carrito ---------- */
-.cantidad-carrito{                                  /* número entre los botones - y + */
-    display: inline-block;
-    min-width: 2.5em;                               /* ancho fijo para que los botones no "salten" al pasar de 9 a 10 */
+.cantidad-carrito{                                  /* caja de cantidad entre los botones - y + */
+    width: 4.5em !important;                        /* !important: Bootstrap le pone width 100% a .form-control */
     text-align: center;
 }
 

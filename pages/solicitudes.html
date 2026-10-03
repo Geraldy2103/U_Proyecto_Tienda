@@ -1,0 +1,38 @@
+<header-component titulo="Solicitudes mayoristas"
+  frase="Clientes que pidieron hablar con un asesor">
+</header-component>
+
+
+<section class="padded">
+    <div class="container">
+        <h1>Solicitudes mayoristas</h1>
+
+        <div class="btn-group mb-3" role="group" aria-label="Filtrar por estado">
+            <input type="radio" class="btn-check" name="filtro-estado" id="filtro-pendiente" value="pendiente" checked>
+            <label class="btn btn-outline-primary" for="filtro-pendiente">Pendientes</label>
+            <input type="radio" class="btn-check" name="filtro-estado" id="filtro-atendida" value="atendida">
+            <label class="btn btn-outline-primary" for="filtro-atendida">Atendidas</label>
+            <input type="radio" class="btn-check" name="filtro-estado" id="filtro-todas" value="todas">
+            <label class="btn btn-outline-primary" for="filtro-todas">Todas</label>
+        </div>
+
+        <div id="aviso-solicitudes"></div>
+
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Cliente</th>
+                        <th>Asesor</th>
+                        <th>Productos</th>
+                        <th>Mensaje</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-solicitudes">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

@@ -62,6 +62,13 @@ const leerCarrito = () => {
     }
 }
 
+/* Compra mayorista: 12 unidades o más de un mismo producto (SKU).
+   La base de datos revisa la misma regla al guardar una solicitud. */
+const MINIMO_MAYORISTA = 12
+
+/* Productos del carrito que cumplen la cantidad mayorista */
+const productosMayoristas = () => leerCarrito().filter(item => item.cantidad >= MINIMO_MAYORISTA)
+
 /* Guarda el carrito en sessionStorage (o lo borra si quedó vacío)
    y actualiza el número que aparece junto a "Carrito" en el menú. */
 const guardarCarrito = (carrito) => {
@@ -152,16 +159,19 @@ etiqueta es el nombre de la opción que quieres mostrar al usuario.
 pagina es la ruta del archivo HTML al que quieres ir cuando el usuario haga clic.
 codigo es el JavaScript de esa página (opcional).
 rol: "admin" = solo la ven los administradores (intranet). Sin rol = la ve todo el mundo.
+oculto: true = no aparece en el menú; se abre con un botón (por ejemplo "Mayoristas").
 */
 const menuItems = [
     {etiqueta: "Inicio",       pagina: "pages/inicio.html"},
     {etiqueta: "Nosotros",     pagina: "pages/nosotros.html"},
     {etiqueta: "Inversiones",  pagina: "pages/inversiones.html"},
-    {etiqueta: "Proveedores",  pagina: "pages/proveedores.html", codigo: "js/pages/proveedores.js"},
-    {etiqueta: "Empleados",    pagina: "pages/empleados.html", codigo: "js/pages/empleados.js"},
     {etiqueta: "Tienda",       pagina: "pages/tienda.html", codigo: "js/pages/tienda.js"},
+    {etiqueta: "Carrito",      pagina: "pages/carrito.html", codigo: "js/pages/carrito.js"},
+    {etiqueta: "Asesores comerciales", pagina: "pages/asesores.html", codigo: "js/pages/asesores.js", oculto: true},
+    // Intranet (solo admin)
+    {etiqueta: "Proveedores",  pagina: "pages/proveedores.html", codigo: "js/pages/proveedores.js", rol: "admin"},
     {etiqueta: "Directores",   pagina: "pages/directores.html", codigo: "js/pages/directores.js", rol: "admin"},
-    {etiqueta: "Carrito",      pagina: "pages/carrito.html", codigo: "js/pages/carrito.js"}
+    {etiqueta: "Solicitudes",  pagina: "pages/solicitudes.html", codigo: "js/pages/solicitudes.js", rol: "admin"}
 ]
 
 /* La página de ingreso no va en el menú principal: se abre con el botón "Ingresar" de la derecha */
@@ -240,7 +250,7 @@ const crearEnlace = (item) => {
 /* Arma el menú según quién está conectado. Se vuelve a llamar al iniciar o cerrar sesión. */
 const dibujarMenu = () => {
     mainNav.innerHTML = ""
-    menuItems.filter(puedeVer).forEach(item => mainNav.appendChild(crearEnlace(item)))
+    menuItems.filter(item => puedeVer(item) && !item.oculto).forEach(item => mainNav.appendChild(crearEnlace(item)))
 
     navUsuario.innerHTML = ""
     if (usuarioActual === null) {

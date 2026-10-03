@@ -6,6 +6,8 @@
 
 -- ---------- 0. Limpieza (para poder ejecutar el script más de una vez) ----------
 drop view     if exists categorias_con_total;
+drop table    if exists solicitudes_mayoristas cascade;
+drop function if exists es_pedido_mayorista(jsonb) cascade;
 drop table    if exists productos   cascade;
 drop table    if exists categorias  cascade;
 drop table    if exists directores  cascade;
