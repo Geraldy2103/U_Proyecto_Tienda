@@ -328,7 +328,7 @@ class HeaderComponent extends HTMLElement { /*"HeaderComponent" es el nombre de 
         <header id="main-header">
             <div class="container">
                 <h1>${titulo}</h1>
-                <p>${frase}</p>
+                ${frase ? `<p>${frase}</p>` : ""}
             </div>
         </header>
         `
@@ -336,6 +336,42 @@ class HeaderComponent extends HTMLElement { /*"HeaderComponent" es el nombre de 
 }
 customElements.define("header-component", HeaderComponent) /*Cuando veas <header-component>, utiliza la clase HeaderComponent*/
 
+
+/* ---------- Tarjeta de producto (la misma en Tienda e Inicio) ---------- */
+/* Devuelve el HTML de la tarjeta. El botón "Agregar" lleva data-id con el código del producto. */
+const tarjetaProducto = (item) => {
+    const precioFinal = item.preciorebajado ? item.preciorebajado : item.precio
+    const descuento = item.preciorebajado ? Math.round((1 - item.preciorebajado / item.precio) * 100) : 0
+    const agotado = item.stock === 0
+    const estadoStock = agotado ? `<span class="text-body-secondary"><i class="fa-solid fa-ban"></i> Agotado</span>` :
+        item.stock <= item.stock_minimo ? `<span class="text-danger"><i class="fa-solid fa-fire"></i> ¡Solo quedan ${item.stock}!</span>` :
+        `<span class="text-success"><i class="fa-solid fa-check"></i> Disponible</span>`
+    return `
+        <div class="col">
+            <div class="card card-producto ${agotado ? "producto-agotado" : ""}">
+                ${descuento > 0 ? `<span class="etiqueta-descuento">-${descuento}%</span>` : ""}
+                <div class="foto">
+                    <img src="${item.imagenchica || IMAGEN_SIN_FOTO}" alt="${escaparHTML(item.nombre)}" loading="lazy">
+                </div>
+                <div class="card-body">
+                    <h3 class="nombre" title="${escaparHTML(item.nombre)}">${escaparHTML(item.nombre)}</h3>
+                    <div><span class="precio">${soles(precioFinal)}</span>
+                        ${descuento > 0 ? `<span class="precio-anterior">${soles(item.precio)}</span>` : ""}</div>
+                    <div class="estado-stock">${estadoStock}</div>
+                    <button class="btn btn-primary btn-sm w-100 btn-agregar" data-id="${item.idproducto}" ${agotado ? "disabled" : ""}>
+                        <i class="fa-solid fa-cart-plus"></i> ${agotado ? "Sin stock" : "Agregar"}
+                    </button>
+                </div>
+            </div>
+        </div>`
+}
+
+/* Conecta los botones "Agregar" de un contenedor con su lista de productos */
+const activarBotonesAgregar = (contenedor, productos) => {
+    contenedor.querySelectorAll(".btn-agregar").forEach(boton =>
+        boton.addEventListener("click", () =>
+            agregarItemCarrito(productos.find(p => p.idproducto == boton.dataset.id), 1)))
+}
 
 const agregarItemCarrito = (nuevoItem, cantidad) => {
     if (usuarioActual === null) { /*para comprar hay que tener cuenta*/

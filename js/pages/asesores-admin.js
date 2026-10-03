@@ -28,7 +28,7 @@
         obtenerDatos(db.from("asesores").select("*, directores(nombres, apellidos, sedes(nombre))").order("idasesor"))
             .then(data => {
                 asesores = data
-                contadorAsesores.textContent = `(${data.length}/${MAXIMO_ASESORES})`
+                contadorAsesores.textContent = `${data.length} de ${MAXIMO_ASESORES} asesores`
                 btnNuevoAsesor.disabled = data.length >= MAXIMO_ASESORES
                 btnNuevoAsesor.title = data.length >= MAXIMO_ASESORES ? "Ya hay 10 asesores (es el máximo)" : ""
                 if (data.length === 0) {

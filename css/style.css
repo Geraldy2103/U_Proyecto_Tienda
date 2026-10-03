@@ -1,104 +1,181 @@
 @import url("fontawesome-free-7.3.1-web/css/all.min.css");
 
+/* =====================================================================
+   El Galpón del Costo — Sistema de diseño
+   Todas las páginas usan estas variables: si cambias un color aquí,
+   cambia en toda la tienda.
+   ===================================================================== */
 
-#main-header{
-  background-color: black;
-  color: white;
-  padding: 16px 0;
+:root{
+    /* Colores de marca */
+    --marca:          #198754;   /* verde principal (botones, enlaces, activos) */
+    --marca-oscuro:   #0f5132;   /* verde oscuro (textos destacados, hover) */
+    --marca-claro:    #e8f3ed;   /* verde muy claro (fondos suaves) */
+    --acento:         #dc3545;   /* rojo: ofertas, alertas, contador del carrito */
+    --texto:          #212529;
+    --texto-suave:    #6c757d;
+    --borde:          #e3e6e4;
+    --fondo-suave:    #f6f8f7;
+
+    /* Forma */
+    --radio:          12px;
+    --sombra:         0 2px 10px rgba(16, 24, 20, .06);
+    --sombra-hover:   0 8px 24px rgba(16, 24, 20, .12);
+
+    /* Bootstrap usa estas variables: así su "primary" (azul) pasa a ser nuestro verde */
+    --bs-primary:            var(--marca);
+    --bs-primary-rgb:        25, 135, 84;
+    --bs-link-color:         var(--marca);
+    --bs-link-color-rgb:     25, 135, 84;
+    --bs-link-hover-color:   var(--marca-oscuro);
+    --bs-link-hover-color-rgb: 15, 81, 50;
+    --bs-body-font-family:   "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --bs-border-radius:      .5rem;
 }
 
-.padded{
-    margin: 90px 0;
+body{
+    color: var(--texto);
+    background-color: #fff;
+    display: flex;                 /* el pie de página se queda abajo aunque haya poco contenido */
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-.porcentaje-descuento{
-    position: absolute;
-    top: 0;
-    right: 0;
-    background-color: red;
-    color: white;
-    padding: 4px 10px;
-    font-weight: bold;
-    border-bottom-left-radius: 4px;
+main{
+    flex: 1;
 }
 
-.icono-carrito{                                      /* selector de los elementos con clase "icono-carrito" */
-    background-color: black;                        /* Pone el fondo del icono de color negro */
-    color: white;                                   /* Pone el color del icono en blanco */
-    padding: 10px;                                  /* Agrega 10px de espacio interno alrededor del icono */
-    border-radius: 50%;                             /* Hace que el elemento tenga forma circular */
-    position: absolute;                             /* Permite posicionarlo de forma precisa dentro de su contenedor */
-    bottom: 5px;                                    /* Lo coloca a 5px de distancia desde la parte inferior */
-    right: -60px;                                   /* Lo coloca 60px hacia la derecha, dejándolo inicialmente fuera */
-    width: 38px;                                    /* Define el ancho del elemento en 38px */
-    cursor: pointer;                                /* Cambia el cursor a una mano al pasar sobre el icono */
-    opacity: 0;                                     /* Hace que el icono sea completamente invisible */
-    transition: all ease-in .5s;                   /* Hace que los cambios de propiedades sean animados durante 0.5 segundos */
-}                                                   /* Fin de las reglas de .icono-carrito */
-
-#cuadricula-productos .card:hover .icono-carrito{   /* Cuando pasas el mouse sobre una card, selecciona su icono-carrito */
-    opacity: 1;                                     /* Hace visible el icono */
-    right: 1px;                                     /* Mueve el icono hasta quedar a 1px del lado derecho */
-}                                                   /* Fin de las reglas del hover */
-
-#tbody-directores tr i{                            /* Selecciona los <i> que están dentro de las filas de directores */
-    opacity: 0;                                     /* Oculta inicialmente los iconos */
-    cursor: pointer;                                /* Muestra la mano cuando pasas sobre el icono */
-}                                                   /* Fin de las reglas para los iconos */
-
-#tbody-directores tr:hover i{                      /* Cuando pasas el mouse sobre una fila, selecciona sus <i> */
-    opacity: 1;                                     /* Hace visibles los iconos */
+h1, h2, h3, h4, h5, h6{
+    font-weight: 700;
+    letter-spacing: -.01em;
 }
 
+/* ---------- Bootstrap con los colores de la marca ---------- */
+.btn-primary{
+    --bs-btn-bg: var(--marca);
+    --bs-btn-border-color: var(--marca);
+    --bs-btn-hover-bg: var(--marca-oscuro);
+    --bs-btn-hover-border-color: var(--marca-oscuro);
+    --bs-btn-active-bg: var(--marca-oscuro);
+    --bs-btn-active-border-color: var(--marca-oscuro);
+    --bs-btn-disabled-bg: var(--marca);
+    --bs-btn-disabled-border-color: var(--marca);
+}
 
-.nav-link{
+.btn-outline-primary{
+    --bs-btn-color: var(--marca);
+    --bs-btn-border-color: var(--marca);
+    --bs-btn-hover-bg: var(--marca);
+    --bs-btn-hover-border-color: var(--marca);
+    --bs-btn-active-bg: var(--marca);
+    --bs-btn-active-border-color: var(--marca);
+}
+
+.btn{
+    font-weight: 500;
+}
+
+.list-group{
+    --bs-list-group-active-bg: var(--marca);
+    --bs-list-group-active-border-color: var(--marca);
+}
+
+.nav-tabs .nav-link.active{
+    color: var(--marca);
+    font-weight: 600;
+}
+
+.nav-tabs .nav-link{
+    color: var(--texto-suave);
+}
+
+.form-control:focus, .form-select:focus{
+    border-color: var(--marca);
+    box-shadow: 0 0 0 .2rem rgba(25, 135, 84, .2);
+}
+
+.dropdown-menu{
+    --bs-dropdown-link-active-bg: var(--marca);
+    border-color: var(--borde);
+    box-shadow: var(--sombra-hover);
+}
+
+.dropdown-item{
     cursor: pointer;
 }
 
-/* ---------- Carrito ---------- */
-.cantidad-carrito{                                  /* caja de cantidad entre los botones - y + */
-    width: 4.5em !important;                        /* !important: Bootstrap le pone width 100% a .form-control */
-    text-align: center;
+.card{
+    border-color: var(--borde);
+    border-radius: var(--radio);
 }
 
-#tbody-asesores tr i{                              /* iconos de editar/eliminar de asesores (intranet) */
-    opacity: 0;
+.progress-bar.bg-primary{
+    background-color: var(--marca) !important;
+}
+
+/* ---------- Tablas (todas iguales) ---------- */
+.table > thead th{
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    color: var(--texto-suave);
+    font-weight: 600;
+    border-bottom-width: 2px;
+    white-space: nowrap;
+}
+
+/* Iconos de acción (editar / eliminar) en tablas de la intranet:
+   siempre visibles (en celular no hay "pasar el mouse"), más fuertes al pasar el mouse */
+.icono-actualizar, .icono-eliminar{
     cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    color: var(--texto-suave);
+    transition: background-color .15s, color .15s;
 }
 
-#tbody-asesores tr:hover i{
-    opacity: 1;
+.icono-actualizar:hover{
+    color: var(--marca);
+    background-color: var(--marca-claro);
 }
 
-.foto-destacado{                                    /* foto redonda del asesor destacado (Indicadores) */
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 50%;
+.icono-eliminar:hover{
+    color: var(--acento);
+    background-color: #fbe9eb;
 }
 
-#tbody-carrito .icono-eliminar{
-    cursor: pointer;
-    color: #dc3545;                                 /* rojo de Bootstrap (danger) */
+/* =====================================================================
+   Estructura: barra, encabezado de página, secciones y pie
+   ===================================================================== */
+
+.navbar{
+    background-color: #fff !important;
+    border-bottom: 1px solid var(--borde);
 }
 
-
-/* ---------- Marca ---------- */
 .marca{
     font-weight: 800;
     letter-spacing: -.02em;
-    color: #146c43 !important;                      /* verde oscuro */
+    color: var(--marca-oscuro) !important;
 }
 
 .marca span{
     font-weight: 400;
-    color: #495057;
+    color: var(--texto-suave);
 }
 
-/* ---------- Barra de navegación ---------- */
+.nav-link{
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.navbar .nav-link.active{
+    color: var(--marca) !important;
+}
+
 .enlace-destacado{                                  /* "Tienda": la opción más importante */
-    font-weight: 600;
-    color: #146c43 !important;
+    font-weight: 700;
+    color: var(--marca) !important;
 }
 
 .btn-carrito{                                       /* ícono del carrito, siempre visible */
@@ -109,16 +186,16 @@
     width: 42px;
     height: 42px;
     border-radius: 50%;
-    background-color: #198754;
-    color: white;
+    background-color: var(--marca);
+    color: #fff;
     cursor: pointer;
     font-size: 1.1rem;
     text-decoration: none;
 }
 
 .btn-carrito:hover, .btn-carrito.active{
-    background-color: #146c43;
-    color: white;
+    background-color: var(--marca-oscuro);
+    color: #fff;
 }
 
 .btn-carrito .badge{                                /* número de unidades sobre el ícono */
@@ -126,79 +203,221 @@
     top: -4px;
     right: -6px;
     font-size: .7rem;
+    background-color: var(--acento) !important;
 }
 
-.dropdown-item{
-    cursor: pointer;
+/* Encabezado de cada página (<header-component>) */
+#main-header{
+    background: linear-gradient(120deg, var(--marca-oscuro), var(--marca));
+    color: #fff;
+    padding: 28px 0 26px;
 }
 
-/* ---------- Ofertas de Inicio ---------- */
-.oferta{
+#main-header h1{
+    font-size: clamp(1.6rem, 3vw, 2.1rem);
+    margin: 0;
+}
+
+#main-header p{
+    margin: 4px 0 0;
+    opacity: .85;
+}
+
+/* Todas las secciones con el mismo espacio */
+.padded, .padded-sm{
+    margin: 40px 0 56px;
+}
+
+footer{
+    background-color: #102a1e;
+    color: rgba(255, 255, 255, .75);
+    font-size: .9rem;
+    padding: 22px 0;
+}
+
+footer strong{
+    color: #fff;
+}
+
+/* =====================================================================
+   Tarjeta de producto (una sola para Tienda e Inicio)
+   ===================================================================== */
+
+.card-producto{
     position: relative;
+    height: 100%;
+    overflow: hidden;
+    box-shadow: var(--sombra);
+    transition: transform .2s, box-shadow .2s;
 }
 
-.oferta-descuento{
-    position: absolute;
-    top: 8px;
-    left: 8px;
+.card-producto:hover{
+    transform: translateY(-3px);
+    box-shadow: var(--sombra-hover);
+}
+
+.card-producto .foto{                               /* todas las fotos del mismo tamaño */
+    aspect-ratio: 1 / 1;
+    padding: 16px;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-producto .foto img{
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;                            /* la foto entra completa, sin deformarse */
+}
+
+.card-producto .card-body{
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px 14px 14px;
+    border-top: 1px solid var(--borde);
+}
+
+.card-producto .nombre{
+    font-size: .95rem;
+    font-weight: 600;
+    line-height: 1.3;
+    min-height: 2.6em;                              /* siempre el espacio de 2 líneas: precios alineados */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;                          /* nombres largos: máximo 2 líneas con "..." */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin: 0;
+}
+
+.card-producto .precio{
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--marca-oscuro);
+}
+
+.precio-anterior{
+    text-decoration: line-through;
+    color: #9aa19d;
     font-size: .85rem;
+    font-weight: 400;
+    margin-left: .4em;
 }
 
-/* ---------- Páginas de contenido (Inicio, Nosotros, Mayoristas) ---------- */
+.card-producto .estado-stock{
+    font-size: .8rem;
+    min-height: 1.2em;
+}
+
+.etiqueta-descuento{                                /* "-50%" arriba a la izquierda */
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 1;
+    background-color: var(--acento);
+    color: #fff;
+    font-weight: 700;
+    font-size: .8rem;
+    padding: 3px 9px;
+    border-radius: 999px;
+}
+
+.producto-agotado .foto img{                        /* producto sin stock: imagen apagada */
+    opacity: .45;
+    filter: grayscale(1);
+}
+
+/* Lista de categorías de la Tienda */
+.lista-categorias .list-group-item{
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.lista-categorias .list-group-item:not(.active):hover{
+    background-color: var(--fondo-suave);
+}
+
+@media (min-width: 768px){
+    .columna-categorias{                            /* en escritorio las categorías acompañan al bajar */
+        position: sticky;
+        top: 80px;
+        align-self: flex-start;
+    }
+}
+
+/* Avisos tipo franja (mayoristas en Tienda, carrito, etc.) */
+.franja{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 16px;
+    padding: 14px 18px;
+    border-radius: var(--radio);
+    background-color: var(--marca-claro);
+    border: 1px solid #cfe6d9;
+}
+
+.franja > i{
+    font-size: 1.6rem;
+    color: var(--marca);
+}
+
+/* =====================================================================
+   Páginas de contenido (Inicio, Nosotros, Mayoristas)
+   ===================================================================== */
+
 .cifra{                                             /* número grande con su texto */
-    background-color: #f1f8f4;
-    border-radius: 12px;
+    background-color: var(--marca-claro);
+    border-radius: var(--radio);
     padding: 18px 12px;
+    height: 100%;
 }
 
 .cifra strong{
     display: block;
     font-size: 2.2rem;
     line-height: 1;
-    color: #146c43;
+    color: var(--marca-oscuro);
 }
 
 .cifra span{
     font-size: .9rem;
-    color: #495057;
+    color: var(--texto-suave);
 }
 
 .tarjeta-beneficio{
     border: 0;
-    border-top: 4px solid #198754;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, .06);
+    border-top: 4px solid var(--marca);
+    box-shadow: var(--sombra);
 }
 
-.sede{
-    border: 1px solid #dee2e6;
-    border-radius: 10px;
-    padding: 14px 16px;
+.sede, .paso{
+    height: 100%;
+    padding: 16px;
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
 }
 
 .valor{
     height: 100%;
     padding: 16px;
-    border-radius: 10px;
-    background-color: #f8f9fa;
+    border-radius: var(--radio);
+    background-color: var(--fondo-suave);
 }
 
 .valor i{
     font-size: 1.5rem;
-    color: #198754;
+    color: var(--marca);
     margin-bottom: 8px;
 }
 
 .valor p, .paso p{
     margin-bottom: 0;
     font-size: .92rem;
-    color: #495057;
-}
-
-.paso{                                              /* pasos numerados de Mayoristas */
-    height: 100%;
-    padding: 18px 16px 16px;
-    border: 1px solid #dee2e6;
-    border-radius: 10px;
+    color: var(--texto-suave);
 }
 
 .paso .numero{
@@ -209,13 +428,38 @@
     height: 32px;
     margin-bottom: 8px;
     border-radius: 50%;
-    background-color: #198754;
-    color: white;
-    font-weight: bold;
+    background-color: var(--marca);
+    color: #fff;
+    font-weight: 700;
 }
 
-.padded-sm{                                         /* sección con menos espacio arriba y abajo */
-    margin: 40px 0;
+/* =====================================================================
+   Carrito
+   ===================================================================== */
+
+.cantidad-carrito{                                  /* caja de cantidad entre los botones - y + */
+    width: 4.5em !important;                        /* !important: Bootstrap le pone width 100% a .form-control */
+    text-align: center;
+}
+
+#tbody-carrito .icono-eliminar{
+    color: var(--acento);
+}
+
+/* =====================================================================
+   Intranet
+   ===================================================================== */
+
+.kpi{
+    border-left: 4px solid var(--marca);
+    box-shadow: var(--sombra);
+}
+
+.foto-destacado{                                    /* foto redonda del asesor destacado (Indicadores) */
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 50%;
 }
 
 .celda-degradado{                                   /* celdas con color según el valor (Proveedores) */
@@ -232,31 +476,19 @@
     background: linear-gradient(to right, rgba(25, 135, 84, .08), rgba(25, 135, 84, .9));
 }
 
-.kpi{
-    border-left: 4px solid #198754;
-}
-
 .tabla-proveedores thead .grupos th{                /* fila de grupos: más pequeña y con línea inferior */
-    font-size: .8em;
-    text-transform: uppercase;
-    color: #6c757d;
-    border-bottom: 2px solid #dee2e6;
+    font-size: .72rem;
+    color: var(--texto-suave);
+    border-bottom: 2px solid var(--borde);
 }
 
 .tabla-proveedores thead th[title]{                 /* los encabezados con explicación muestran el cursor de ayuda */
     cursor: help;
 }
 
-.producto-agotado img{                              /* producto sin stock: imagen apagada */
-    opacity: .45;
-    filter: grayscale(1);
-}
-
-.precio-anterior {
-    text-decoration: line-through;
-    color: #999999;
-    margin-left: 0.9em;
-}
+/* =====================================================================
+   Animación de carga
+   ===================================================================== */
 
 .lds-roller,            /*Nombre de la clase*/
 .lds-roller div,

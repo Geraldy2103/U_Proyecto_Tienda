@@ -36,7 +36,7 @@
                         `${mayoristas.length} producto(s) con ${MINIMO_MAYORISTA}+ unidades. Un asesor puede atenderte personalmente.` :
                         `Lleva ${MINIMO_MAYORISTA} unidades o más de un mismo producto para hablar con un asesor comercial.`}</small>
                 </div>
-                <button class="btn ${califica ? "btn-success" : "btn-outline-secondary"}" id="btn-mayoristas" ${califica ? "" : "disabled"}>
+                <button class="btn ${califica ? "btn-primary" : "btn-outline-secondary"}" id="btn-mayoristas" ${califica ? "" : "disabled"}>
                     <i class="fa-regular fa-comments"></i> Mayoristas
                 </button>
             </div>`

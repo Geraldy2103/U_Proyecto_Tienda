@@ -16,14 +16,15 @@
                 return
             }
             data.forEach(item => {
-                const fila = `<li class="list-group-item" title="${item.descripcion}">${item.nombre} (${item.total})</li>` //title es el texto que aparece al pasar el ratón por encima
+                const fila = `<li class="list-group-item" title="${escaparHTML(item.descripcion || "")}">
+                    ${escaparHTML(item.nombre)} <span class="badge rounded-pill text-bg-light">${item.total}</span></li>` //title es el texto que aparece al pasar el ratón por encima
                 listaCategorias.innerHTML += fila
             });
             const itemsCategorias= listaCategorias.querySelectorAll("li")
             itemsCategorias.forEach((iCategoria, index) => {
                 iCategoria.addEventListener("click", () => {
                     categoriasNombre.textContent = data[index].nombre
-                    categoriasRecuento.textContent = "Mostrando " + data[index].total + " productos"
+                    categoriasRecuento.textContent = data[index].total + " productos"
 
                     itemsCategorias.forEach(li => li.classList.remove("active"))
                     iCategoria.classList.add("active")
@@ -51,43 +52,9 @@
                 cuadriculaProductos.innerHTML = `<p>Esta categoría todavía no tiene productos.</p>`
                 return
             }
-            let cards = ""
-            data.forEach(item => {
-                const rutaImagen = item.imagenchica ? item.imagenchica : IMAGEN_SIN_FOTO
-                // Si no hay precio rebajado (0 o null) se usa el precio normal
-                const precioFinal = item.preciorebajado ? item.preciorebajado : item.precio
-                const precioAnterior = item.preciorebajado ?
-                `<span class="precio-anterior">S/${item.precio.toFixed(2)}</span>` : ""
-                const porcentajeDescuento = item.preciorebajado ?
-                ((item.preciorebajado/item.precio-1) * 100).toFixed(0) : 0
-                const verPorcentajeDescuento = item.preciorebajado ?
-                `<div class="porcentaje-descuento">${porcentajeDescuento}%</div>` : ""
-                // Stock: agotado (sin botón de carrito) o pocas unidades
-                const agotado = item.stock === 0
-                const avisoStock = agotado ? `<span class="badge text-bg-dark">Agotado</span>` :
-                    item.stock <= item.stock_minimo ? `<small class="text-danger">¡Solo quedan ${item.stock}!</small>` : ""
-
-                cards += `
-                <div class="col">
-                    <div class="card ${agotado ? "producto-agotado" : ""}">
-                        <img src="${rutaImagen}" class="card-img-top" alt="${escaparHTML(item.nombre)}">
-                        ${verPorcentajeDescuento}
-                        <div class="card-body">
-                             <h5 class="card-title">${escaparHTML(item.nombre)}</h5>
-                             <p class="card-text mb-1">S/ ${precioFinal.toFixed(2)} ${precioAnterior}</p>
-                             ${avisoStock}
-                        ${agotado ? "" : `<i class="fa-solid fa-cart-shopping icono-carrito" data-id="${item.idproducto}" title="Agregar al carrito"></i>`}
-                        </div>
-                    </div>
-                </div>`
-            })
-            cuadriculaProductos.innerHTML = cards
-            // data-id dice qué producto es (no la posición: los agotados no tienen ícono)
-            const iconosCarrito = cuadriculaProductos.querySelectorAll(".icono-carrito")
-            iconosCarrito.forEach(iCarrito => {
-                iCarrito.addEventListener("click", () =>
-                    agregarItemCarrito(data.find(p => p.idproducto == iCarrito.dataset.id), 1))
-            })
+            // tarjetaProducto (main.js): la misma tarjeta que en Inicio
+            cuadriculaProductos.innerHTML = data.map(tarjetaProducto).join("")
+            activarBotonesAgregar(cuadriculaProductos, data)
         })
         .catch(error => {
             console.error(error)

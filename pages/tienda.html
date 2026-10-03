@@ -1,34 +1,36 @@
-<header-component titulo="Tienda" frase="">
-  
+<header-component titulo="Tienda"
+  frase="Abarrotes del mundo y del Perú, por unidad o por caja">
 </header-component>
 
 
 <section class="padded">
     <div class="container">
         <!-- Aviso para compras al por mayor -->
-        <div class="alert alert-light border d-flex flex-wrap align-items-center gap-3 mb-4">
-            <i class="fa-solid fa-boxes-stacked fa-2x text-success"></i>
+        <div class="franja mb-4">
+            <i class="fa-solid fa-boxes-stacked"></i>
             <div class="flex-grow-1">
                 <strong>¿Compras al por mayor?</strong>
                 Desde 12 unidades por producto, un asesor comercial te atiende personalmente.
             </div>
-            <button class="btn btn-success" id="btn-ir-mayoristas"><i class="fa-solid fa-circle-info"></i> Cómo funciona</button>
+            <button class="btn btn-primary btn-sm" id="btn-ir-mayoristas"><i class="fa-solid fa-circle-info"></i> Cómo funciona</button>
         </div>
-        <div class="row">
-            <div class="col-md-3">
-                <h3>Categorías</h3>
-                <ul class="list-group" id="lista-categorias">
+
+        <div class="row g-4">
+            <div class="col-md-3 columna-categorias">
+                <h2 class="h6 text-uppercase text-body-secondary mb-2">Categorías</h2>
+                <ul class="list-group lista-categorias" id="lista-categorias">
 
                 </ul>
             </div>
             <div class="col-md-9">
-                <h5 id="categorias-nombre"></h5>
-                <p id="categorias-recuento"></p>
-                
-                <div class="row row-cols-xl-4 row-cols-lg-3 row-cols-md-2  g-4" id="cuadricula-productos">
-                
+                <div class="d-flex align-items-baseline gap-2 mb-3">
+                    <h2 class="h4 mb-0" id="categorias-nombre"></h2>
+                    <span class="text-body-secondary small" id="categorias-recuento"></span>
                 </div>
 
+                <div class="row row-cols-2 row-cols-lg-3 row-cols-xl-4 g-3" id="cuadricula-productos">
+
+                </div>
             </div>
         </div>
     </div>
