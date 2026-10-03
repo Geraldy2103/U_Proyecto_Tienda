@@ -1,6 +1,5 @@
 (() => { /*"Crea esta función, mete todo este código dentro y ejecútala inmediatamente.Y crea otra ejecución independiente de esa función"*/
 
-    const rutaServicio = window.API_URL + "directores.php"
     const tbodyDirectores = document.getElementById("tbody-directores")
     const avisoDirectores = document.getElementById("aviso-directores")
     const btnNuevoDirector = document.getElementById("btn-nuevo-director")
@@ -22,25 +21,9 @@
             `<div class="alert alert-${tipo}" role="alert">${texto}</div>`
     }
 
-    /* Envía datos a la API con el método POST, igual que un formulario.
-       FormData arma los datos como "clave=valor" que PHP lee con $_POST. */
-    const enviarDatos = (archivoPHP, datos) => {
-        const formData = new FormData()
-        for (const clave in datos) {
-            formData.append(clave, datos[clave])
-        }
-        return fetch(window.API_URL + archivoPHP, { method: "POST", body: formData })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Error " + response.status + " en " + archivoPHP)
-                }
-                return response.text()
-            })
-    }
-
     /* ---------- LEER (Read) ---------- */
     const leerDirectores = () => {
-        obtenerJSON(rutaServicio)
+        obtenerDatos(db.from("directores").select("*").order("iddirector"))
             .then(data => {
                 directores = data
                 if (data.length === 0) {
@@ -99,7 +82,9 @@
         /* ---------- ELIMINAR (Delete) ---------- */
         if (icono.classList.contains("icono-eliminar")) {
             if (!confirm(`¿Eliminar al director "${director.nombres}"?`)) return
-            enviarDatos("directoresdelete.php", { iddirector: director.iddirector })
+            // DELETE FROM directores WHERE iddirector = ...
+            obtenerDatos(db.from("directores").delete().eq("iddirector", director.iddirector).select())
+                .then(verificarCambio)
                 .then(() => {
                     mostrarAviso(`Se eliminó a ${escaparHTML(director.nombres)}.`, "success")
                     leerDirectores()
@@ -125,12 +110,15 @@
 
         const esNuevo = txtIdDirector.value === ""
         const datos = { nombres: txtNombres.value, peliculas: txtPeliculas.value }
-        if (!esNuevo) {
-            datos.iddirector = txtIdDirector.value
-        }
+
+        // INSERT INTO directores ... o UPDATE directores SET ... WHERE iddirector = ...
+        const consulta = esNuevo ?
+            db.from("directores").insert(datos).select() :
+            db.from("directores").update(datos).eq("iddirector", txtIdDirector.value).select()
 
         btnGuardar.disabled = true // evita que un doble clic guarde dos veces
-        enviarDatos(esNuevo ? "directoresinsert.php" : "directoresupdate.php", datos)
+        obtenerDatos(consulta)
+            .then(verificarCambio)
             .then(() => {
                 modalDirector.hide()
                 mostrarAviso(esNuevo ? `Se registró a ${escaparHTML(datos.nombres)}.` :

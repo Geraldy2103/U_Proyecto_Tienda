@@ -1,19 +1,38 @@
 "use strict"
 
-window.API_URL = "https://servicios.campus.pe/" /*"window.API_URL" es una variable global que contiene la URL de la API.*/
+/* ---------- Conexión con la base de datos (Supabase) ---------- */
+/* La URL y la clave "publishable" son públicas a propósito: lo que cada visitante puede hacer
+   lo deciden las reglas de seguridad de la base (ver supabase/01_esquema.sql).
+   NUNCA poner aquí la clave "secret" / "service_role". */
+const SUPABASE_URL = "https://jihuusyseitojyboxkqb.supabase.co"
+const SUPABASE_CLAVE = "sb_publishable_H1VxMhB0pJOt2sCptESbqw_gDyCAz2I"
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_CLAVE) /*"db" es el objeto con el que consultamos las tablas*/
+
+/* Imagen que se muestra cuando un producto no tiene foto */
+const IMAGEN_SIN_FOTO = "https://servicios.campus.pe/imagenes/nofoto.jpg"
 
 /* ---------- Funciones compartidas (las usan todos los js/pages/*.js) ---------- */
 
-/* Pide un recurso a la API y devuelve el JSON.
-   fetch() solo falla si no hay red; si el servidor responde 404 o 500 no lanza error,
-   por eso revisamos response.ok y lanzamos el error nosotros. */
-const obtenerJSON = (url) => {
-    return fetch(url).then(response => {
-        if (!response.ok) {
-            throw new Error("Error " + response.status + " al leer " + url)
+/* Ejecuta una consulta de Supabase y devuelve solo los datos.
+   Supabase no lanza error si algo falla: responde { data, error }.
+   Si viene un error lo lanzamos nosotros, así funciona el .catch() de cada página.
+   Ejemplo: obtenerDatos(db.from("proveedores").select("*")) */
+const obtenerDatos = (consulta) => {
+    return consulta.then(({ data, error }) => {
+        if (error) {
+            throw error
         }
-        return response.json()
+        return data
     })
+}
+
+/* .select() al final de un insert/update/delete devuelve las filas afectadas.
+   Si no se afectó ninguna (por ejemplo, el usuario no tiene permiso) lo tratamos como error. */
+const verificarCambio = (filas) => {
+    if (filas.length === 0) {
+        throw new Error("No se modificó ningún registro (¿falta permiso de administrador?)")
+    }
+    return filas
 }
 
 /* Devuelve el HTML de una alerta roja de Bootstrap con el texto indicado */

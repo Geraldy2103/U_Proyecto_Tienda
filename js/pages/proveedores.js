@@ -1,9 +1,8 @@
 
 (() => { /*"Crea esta función, mete todo este código dentro y ejecútala inmediatamente.Y crea otra ejecución independiente de esa función"*/
-    const rutaServicio = window.API_URL + "proveedores.php"
     const tbodyProveedores = document.getElementById("tbody-proveedores")
 
-    obtenerJSON(rutaServicio) // fetch + revisión de errores (definida en main.js)
+    obtenerDatos(db.from("proveedores").select("*").order("idproveedor")) // consulta + revisión de errores (definida en main.js)
         .then(data => {
             if (data.length === 0) {
                 tbodyProveedores.innerHTML = `<tr><td colspan="4" class="text-center">No hay proveedores registrados</td></tr>`

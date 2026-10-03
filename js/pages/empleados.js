@@ -1,10 +1,9 @@
 (() => {
-    const rutaServicio = window.API_URL + "empleados.php"
     const cuadriculaEmpleados = document.getElementById("cuadricula-empleados")
     const precarga = document.getElementById("precarga")
     cuadriculaEmpleados.style.display = "none" /*oculta el elemento const cuadriculaEmpleados de la página."*/
 
-    obtenerJSON(rutaServicio)
+    obtenerDatos(db.from("empleados").select("*").order("idempleado"))
         .then(data => {
             if (data.length === 0) {
                 cuadriculaEmpleados.insertAdjacentHTML("beforebegin", `<p>No hay empleados registrados.</p>`)
@@ -15,7 +14,7 @@
                 cards += `
                 <div class="col">
                     <div class="card">
-                        <img src="${window.API_URL + item.foto}" class="card-img-top" alt="${item.nombres} ${item.apellidos}">
+                        <img src="${item.foto}" class="card-img-top" alt="${item.nombres} ${item.apellidos}">
                          <div class="card-body">
                              <h5 class="card-title">${item.nombres +" "+ item.apellidos}</h5>
                              <p class="card-text">${item.cargo}</p>

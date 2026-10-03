@@ -1,13 +1,13 @@
 
 (() => { /*"Crea esta función, mete todo este código dentro y ejecútala inmediatamente.Y crea otra ejecución independiente de esa función"*/
-    const rutaServicio = window.API_URL + "categorias.php"
     const listaCategorias = document.getElementById("lista-categorias")
     const categoriasNombre = document.getElementById("categorias-nombre")
     const categoriasRecuento = document.getElementById("categorias-recuento")
     const cuadriculaProductos = document.getElementById("cuadricula-productos")
 
 
-    obtenerJSON(rutaServicio)
+    // categorias_con_total es una vista: cada categoría con su cantidad de productos
+    obtenerDatos(db.from("categorias_con_total").select("*").order("nombre"))
         .then(data => {
             if (data.length === 0) {
                 listaCategorias.innerHTML = `<li class="list-group-item">No hay categorías</li>`
@@ -39,8 +39,8 @@
 
 
     const leerProductos = (idcategoria) => {
-        const rutaServicio = window.API_URL + "productos.php?idcategoria=" + idcategoria
-        obtenerJSON(rutaServicio)
+        // .eq("idcategoria", x) es el WHERE idcategoria = x de SQL
+        obtenerDatos(db.from("productos").select("*").eq("idcategoria", idcategoria).order("nombre"))
         .then(data => {
             if (data.length === 0) {
                 cuadriculaProductos.innerHTML = `<p>Esta categoría todavía no tiene productos.</p>`
@@ -48,8 +48,7 @@
             }
             let cards = ""
             data.forEach(item => {
-                const rutaImagen = item.imagenchica === null ?
-                window.API_URL + "imagenes/nofoto.jpg" : window.API_URL + item.imagenchica
+                const rutaImagen = item.imagenchica ? item.imagenchica : IMAGEN_SIN_FOTO
                 // Si no hay precio rebajado (0 o null) se usa el precio normal
                 const precioFinal = item.preciorebajado ? item.preciorebajado : item.precio
                 const precioAnterior = item.preciorebajado ?
