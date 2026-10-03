@@ -200,6 +200,9 @@ const menuCategorias = document.getElementById("menu-categorias")
 const menuSecciones = document.getElementById("menu-secciones")
 const menuLateral = document.getElementById("menu-lateral")
 
+/* Número distinto cada vez que se abre la tienda (se usa para no leer scripts viejos de la caché) */
+const VERSION_CARGA = Date.now()
+
 /* Lo que la Tienda debe mostrar al abrirse: una categoría o el resultado de una búsqueda.
    Lo llenan el panel lateral (☰) y el buscador; lo lee tienda.js. */
 const filtroTienda = { idcategoria: null, texto: "" }
@@ -240,7 +243,8 @@ const cargarPagina = (item) => {
 
         if(item.codigo){ /*"Si item.codigo existe, entonces..."*/
             const codigoPagina = document.createElement("script")
-            codigoPagina.setAttribute("src", item.codigo) /*<script src="js/pages/proveedores.js"></script> -- "Busca el archivo js/pages/proveedores.js, cárgalo y ejecuta el JavaScript que contiene."*/
+            // "?v=..." cambia en cada carga de la tienda: así el navegador no usa una copia vieja del script
+            codigoPagina.setAttribute("src", item.codigo + "?v=" + VERSION_CARGA) /*<script src="js/pages/proveedores.js"></script> -- "Busca el archivo js/pages/proveedores.js, cárgalo y ejecuta el JavaScript que contiene."*/
             mainContent.appendChild(codigoPagina)
         }
     })
