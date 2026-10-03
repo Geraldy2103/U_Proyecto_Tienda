@@ -36,9 +36,21 @@ begin
             v_sede   := 1 + floor(random() * 3)::int;
         end if;
 
-        insert into pedidos (idusuario, idsede, idasesor, tipo, fecha, estado)
-            values (v_cliente, v_sede, v_asesor, case when v_mayorista then 'mayorista' else 'minorista' end,
-                    v_fecha, case when random() < 0.8 then 'entregado' else 'registrado' end)
+        -- la mitad recoge en sede y la otra mitad pide delivery en Lima (S/ 10)
+        insert into pedidos (idusuario, idsede, idasesor, tipo, fecha, estado, entrega, departamento,
+                             distrito, direccion, telefono, plazo, costo_envio, metodo_pago, pago_estado)
+            select v_cliente, v_sede, v_asesor, case when v_mayorista then 'mayorista' else 'minorista' end,
+                   v_fecha, case when random() < 0.8 then 'entregado' else 'registrado' end,
+                   e.entrega, e.departamento, e.distrito, e.direccion, e.telefono, e.plazo, e.costo,
+                   case when random() < 0.6 then 'tarjeta' else 'yape' end, 'pagado'
+            from (select case when random() < 0.5 then 'recojo' else 'delivery' end as entrega) t
+            cross join lateral (select t.entrega,
+                       case when t.entrega = 'delivery' then 'Lima Metropolitana' end as departamento,
+                       case when t.entrega = 'delivery' then 'Surco' end as distrito,
+                       case when t.entrega = 'delivery' then 'Av. Demostración 123' end as direccion,
+                       case when t.entrega = 'delivery' then '987654321' end as telefono,
+                       case when t.entrega = 'delivery' then '1 día' end as plazo,
+                       case when t.entrega = 'delivery' then 10 else 0 end as costo) e
             returning idpedido into v_pedido;
 
         -- 1 a 4 productos distintos; mayorista: 12 a 60 unidades, minorista: 1 a 5
@@ -49,7 +61,9 @@ begin
                    case when v_mayorista then 12 + floor(random() * 49)::int else 1 + floor(random() * 5)::int end
             from (select * from productos order by random() limit 1 + floor(random() * 4)::int) p;
 
-        update pedidos set total = (select sum(subtotal) from pedido_detalle where idpedido = v_pedido)
+        update pedidos
+            set subtotal = (select sum(subtotal) from pedido_detalle where idpedido = v_pedido),
+                total    = (select sum(subtotal) from pedido_detalle where idpedido = v_pedido) + coalesce(costo_envio, 0)
             where idpedido = v_pedido;
 
         -- cada pedido mayorista viene de una solicitud; además hay solicitudes que no se concretaron

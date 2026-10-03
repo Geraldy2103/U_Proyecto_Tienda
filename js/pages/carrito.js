@@ -7,14 +7,6 @@
     const cajaMayorista = document.getElementById("caja-mayorista")
     const avisoCarrito = document.getElementById("aviso-carrito")
     const btnConfirmarPedido = document.getElementById("btn-confirmar-pedido")
-    const formPedido = document.getElementById("form-pedido")
-    const totalPedido = document.getElementById("total-pedido")
-    const grupoAsesor = document.getElementById("grupo-asesor")
-    const grupoSede = document.getElementById("grupo-sede")
-    const cboAsesor = document.getElementById("cbo-asesor-pedido")
-    const cboSede = document.getElementById("cbo-sede-pedido")
-    const btnEnviarPedido = document.getElementById("btn-enviar-pedido")
-    const modalPedido = bootstrap.Modal.getOrCreateInstance(document.getElementById("modal-pedido"))
 
     let carrito = leerCarrito() // definida en main.js: no falla aunque el dato guardado esté dañado
 
@@ -138,78 +130,14 @@
 
     btnSeguirComprando.addEventListener("click", () => irAPagina("Tienda"))
 
-    /* ---------- Confirmar pedido ---------- */
-    const total = () => carrito.reduce((suma, item) => suma + item.precio * item.cantidad, 0)
-
-    /* Si se eligió un asesor, la sede es la suya: se oculta la lista de sedes */
-    const actualizarSede = () => {
-        const hayAsesor = cboAsesor.value !== ""
-        grupoSede.style.display = hayAsesor ? "none" : "block"
-        cboSede.required = !hayAsesor
-    }
-    cboAsesor.addEventListener("change", actualizarSede)
-
+    /* ---------- Continuar: entrega y pago en "Finalizar compra" ---------- */
     btnConfirmarPedido.addEventListener("click", () => {
         if (usuarioActual === null) {
-            mostrarNotificacion("Inicia sesión para confirmar tu pedido", "fa-circle-info")
+            mostrarNotificacion("Inicia sesión para continuar con tu compra", "fa-circle-info")
             irAPagina("Ingresar")
             return
         }
-        formPedido.classList.remove("was-validated")
-        totalPedido.textContent = soles(total())
-        const esMayorista = carrito.some(item => item.cantidad >= MINIMO_MAYORISTA)
-        grupoAsesor.style.display = esMayorista ? "block" : "none"
-
-        // las dos listas se piden a la vez; Promise.all espera a que lleguen ambas
-        Promise.all([
-            obtenerDatos(db.from("sedes").select("idsede, nombre, direccion").order("idsede")),
-            esMayorista ? obtenerDatos(db.from("asesores").select("idasesor, nombres, apellidos, directores(sedes(nombre))").order("nombres")) : []
-        ])
-            .then(([sedes, asesores]) => {
-                cboSede.innerHTML = `<option value="">Elige una sede</option>` + sedes.map(s =>
-                    `<option value="${s.idsede}">${escaparHTML(s.nombre)} — ${escaparHTML(s.direccion || "")}</option>`).join("")
-                cboAsesor.innerHTML = `<option value="">Sin asesor</option>` + asesores.map(a =>
-                    `<option value="${a.idasesor}">${escaparHTML(a.nombres + " " + a.apellidos)} (${escaparHTML(a.directores.sedes.nombre)})</option>`).join("")
-                actualizarSede()
-                modalPedido.show()
-            })
-            .catch(error => {
-                console.error(error)
-                avisoCarrito.innerHTML = mensajeError("No se pudieron cargar las sedes. Intenta nuevamente.")
-            })
-    })
-
-    formPedido.addEventListener("submit", (event) => {
-        event.preventDefault()
-        if (!formPedido.checkValidity()) {
-            formPedido.classList.add("was-validated")
-            return
-        }
-        const montoMostrado = total()
-        btnEnviarPedido.disabled = true
-        // rpc() llama a una función de la base de datos: ella calcula los precios y el total
-        obtenerDatos(db.rpc("confirmar_pedido", {
-            p_idsede: cboSede.value ? Number(cboSede.value) : null,
-            p_idasesor: cboAsesor.value ? Number(cboAsesor.value) : null,
-            p_productos: carrito.map(item => ({ idproducto: item.idproducto, cantidad: item.cantidad }))
-        }))
-            .then(idpedido => {
-                modalPedido.hide()
-                carrito = []
-                guardarYDibujar()
-                avisoCarrito.innerHTML = `<div class="alert alert-success">
-                    <i class="fa-solid fa-circle-check"></i> ¡Gracias! Tu pedido <strong>N° ${idpedido}</strong>
-                    por <strong>${soles(montoMostrado)}</strong> quedó registrado.</div>`
-                mostrarNotificacion("Pedido registrado")
-            })
-            .catch(error => {
-                console.error(error)
-                modalPedido.hide()
-                avisoCarrito.innerHTML = mensajeError(mensajeDeLaBase(error, "No se pudo registrar el pedido. Intenta nuevamente."))
-            })
-            .finally(() => {
-                btnEnviarPedido.disabled = false
-            })
+        irAPagina("Finalizar compra")
     })
 
     dibujarCarrito()

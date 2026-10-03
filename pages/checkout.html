@@ -1,0 +1,120 @@
+<header-component titulo="Finalizar compra"
+  frase="Elige cómo recibir tu pedido y cómo pagarlo">
+</header-component>
+
+<section class="padded">
+    <div class="container">
+        <div id="aviso-checkout"></div>
+
+        <div class="row g-4" id="contenido-checkout">
+            <!-- Columna izquierda: pasos -->
+            <div class="col-lg-8">
+                <form id="form-checkout" novalidate>
+
+                    <!-- 1. Entrega -->
+                    <div class="panel mb-4">
+                        <h2 class="panel-titulo"><span class="paso-numero">1</span> Entrega</h2>
+                        <div class="row g-3 mb-3">
+                            <div class="col-sm-6">
+                                <label class="opcion-tarjeta">
+                                    <input type="radio" name="tipo-entrega" value="recojo" checked>
+                                    <span>
+                                        <strong>Recojo en sede</strong>
+                                        <small>Gratis · Miraflores, San Isidro o Callao</small>
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="opcion-tarjeta">
+                                    <input type="radio" name="tipo-entrega" value="delivery">
+                                    <span>
+                                        <strong>Delivery</strong>
+                                        <small>Lima S/ 10 · Departamentos cercanos S/ 30</small>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Recojo -->
+                        <div id="bloque-recojo">
+                            <label for="cbo-sede" class="form-label">Sede de recojo</label>
+                            <select id="cbo-sede" class="form-select" required></select>
+                            <div class="invalid-feedback">Elige una sede.</div>
+                        </div>
+
+                        <!-- Delivery -->
+                        <div id="bloque-delivery" hidden>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="cbo-departamento" class="form-label">Departamento</label>
+                                    <select id="cbo-departamento" class="form-select"></select>
+                                    <div class="invalid-feedback">Elige un departamento.</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="txt-distrito" class="form-label">Distrito</label>
+                                    <input type="text" id="txt-distrito" class="form-control" minlength="3" maxlength="60">
+                                    <div class="invalid-feedback">Escribe el distrito.</div>
+                                </div>
+                                <div class="col-12">
+                                    <label for="txt-direccion" class="form-label">Dirección</label>
+                                    <input type="text" id="txt-direccion" class="form-control" minlength="5" maxlength="150"
+                                        placeholder="Av. / Calle, número, dpto.">
+                                    <div class="invalid-feedback">Escribe la dirección de entrega.</div>
+                                </div>
+                                <div class="col-md-7">
+                                    <label for="txt-referencia" class="form-label">Referencia <span class="text-body-secondary">(opcional)</span></label>
+                                    <input type="text" id="txt-referencia" class="form-control" maxlength="150">
+                                </div>
+                                <div class="col-md-5">
+                                    <label for="txt-telefono" class="form-label">Celular de contacto</label>
+                                    <input type="tel" id="txt-telefono" class="form-control" inputmode="numeric"
+                                        pattern="9[0-9]{8}" maxlength="9" placeholder="9XXXXXXXX">
+                                    <div class="invalid-feedback">Celular de 9 dígitos que empiece con 9.</div>
+                                </div>
+                            </div>
+                            <div class="info-envio mt-3" id="info-envio"></div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Asesor (solo compras mayoristas) -->
+                    <div class="panel mb-4" id="panel-asesor" hidden>
+                        <h2 class="panel-titulo"><span class="paso-numero">2</span> Asesor comercial</h2>
+                        <p class="small text-body-secondary mb-2">Tu compra es mayorista (12 o más unidades de un producto).
+                            Si un asesor te atendió, elígelo: la venta queda registrada en su sede.</p>
+                        <select id="cbo-asesor" class="form-select"></select>
+                        <div class="invalid-feedback">Para envíos a esta zona, elige al asesor que cotizará tu envío.</div>
+                    </div>
+
+                    <!-- 3. Pago -->
+                    <div class="panel" id="panel-pago">
+                        <h2 class="panel-titulo"><span class="paso-numero" id="numero-paso-pago">3</span> Pago</h2>
+                        <div id="formulario-pago"></div>
+                    </div>
+
+                    <!-- Envío por cotizar: no se paga ahora -->
+                    <div class="panel" id="panel-cotizacion" hidden>
+                        <h2 class="panel-titulo">Envío por cotizar</h2>
+                        <p class="mb-0">El envío a <strong id="texto-departamento-cotizar"></strong> lo cotiza tu asesor.
+                            Registraremos tu pedido (y reservaremos el stock); cuando el asesor confirme el costo del
+                            envío, podrás pagar desde <strong>Mis pedidos</strong>.</p>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Columna derecha: resumen -->
+            <div class="col-lg-4">
+                <div class="panel resumen-compra">
+                    <h2 class="panel-titulo">Resumen</h2>
+                    <ul class="lista-resumen" id="lista-resumen"></ul>
+                    <dl class="totales">
+                        <dt>Productos</dt><dd id="resumen-subtotal"></dd>
+                        <dt>Envío</dt><dd id="resumen-envio"></dd>
+                        <dt class="total">Total</dt><dd class="total" id="resumen-total"></dd>
+                    </dl>
+                    <button type="submit" form="form-checkout" class="btn btn-primary btn-lg w-100" id="btn-pagar"></button>
+                    <button type="button" class="btn btn-link w-100 mt-1" onclick="irAPagina('Carrito')">Volver al carrito</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

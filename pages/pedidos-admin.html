@@ -1,0 +1,34 @@
+<header-component titulo="Pedidos"
+  frase="Cotiza envíos, marca entregas y revisa pagos">
+</header-component>
+
+<section class="padded">
+    <div class="container">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+            <div class="segmentador" role="group" aria-label="Filtrar por estado" id="filtro-estado-admin"></div>
+            <span class="small text-body-secondary" id="resumen-pedidos-admin"></span>
+        </div>
+        <div id="aviso-pedidos-admin"></div>
+
+        <div class="panel">
+            <div class="table-responsive">
+                <table class="table align-middle mb-0 tabla-compacta">
+                    <thead>
+                        <tr>
+                            <th>N°</th>
+                            <th>Fecha</th>
+                            <th>Cliente</th>
+                            <th>Entrega</th>
+                            <th>Tipo</th>
+                            <th class="text-end">Total</th>
+                            <th>Pago</th>
+                            <th>Estado</th>
+                            <th class="text-end">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-pedidos-admin"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>

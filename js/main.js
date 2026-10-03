@@ -180,11 +180,13 @@ const menuItems = [
     {etiqueta: "Tienda",       pagina: "pages/tienda.html", codigo: "js/pages/tienda.js"},
     {etiqueta: "Carrito",      pagina: "pages/carrito.html", codigo: "js/pages/carrito.js"},
     {etiqueta: "Mis pedidos",  pagina: "pages/mis-pedidos.html", codigo: "js/pages/mis-pedidos.js", rol: "cuenta"},
+    {etiqueta: "Finalizar compra", pagina: "pages/checkout.html", codigo: "js/pages/checkout.js", rol: "cuenta"},
     {etiqueta: "Asesores comerciales", pagina: "pages/asesores.html", codigo: "js/pages/asesores.js"},
     {etiqueta: "Mayoristas",   pagina: "pages/mayoristas.html", grupo: "mas"},
     {etiqueta: "Nosotros",     pagina: "pages/nosotros.html", grupo: "mas"},
     // Intranet (solo admin)
     {etiqueta: "Indicadores",  pagina: "pages/indicadores.html", codigo: "js/pages/indicadores.js", rol: "admin", grupo: "intranet"},
+    {etiqueta: "Pedidos",      pagina: "pages/pedidos-admin.html", codigo: "js/pages/pedidos-admin.js", rol: "admin", grupo: "intranet"},
     {etiqueta: "Directores",   pagina: "pages/directores.html", codigo: "js/pages/directores.js", rol: "admin", grupo: "intranet"},
     {etiqueta: "Asesores",     pagina: "pages/asesores-admin.html", codigo: "js/pages/asesores-admin.js", rol: "admin", grupo: "intranet"},
     {etiqueta: "Solicitudes",  pagina: "pages/solicitudes.html", codigo: "js/pages/solicitudes.js", rol: "admin", grupo: "intranet"},
@@ -223,7 +225,7 @@ const cargarPagina = (item) => {
         return
     }
     if (item.rol === "cuenta" && usuarioActual === null) { // ej. "Mis pedidos" sin haber ingresado
-        mostrarNotificacion("Inicia sesión para ver tus pedidos", "fa-circle-info")
+        mostrarNotificacion("Inicia sesión para continuar", "fa-circle-info")
         irAPagina("Ingresar")
         return
     }
@@ -395,6 +397,157 @@ const activarBotonesAgregar = (contenedor, productos) => {
     contenedor.querySelectorAll(".btn-agregar").forEach(boton =>
         boton.addEventListener("click", () =>
             agregarItemCarrito(productos.find(p => p.idproducto == boton.dataset.id), 1)))
+}
+
+/* Estados de un pedido: texto para mostrar, plural para los filtros y clase de color */
+const ESTADOS_PEDIDO = {
+    por_cotizar: { texto: "Por cotizar", plural: "Por cotizar", clase: "estado-alerta" },
+    cotizado:    { texto: "Pendiente de pago", plural: "Por pagar", clase: "estado-alerta" },
+    registrado:  { texto: "Registrado", plural: "Registrados", clase: "estado-info" },
+    entregado:   { texto: "Entregado",  plural: "Entregados",  clase: "estado-ok" },
+    anulado:     { texto: "Anulado",    plural: "Anulados",    clase: "estado-anulado" }
+}
+
+/* "Recojo en sede Miraflores" o "Delivery a Surco, Lima Metropolitana · 1 día" */
+const textoEntrega = (p) => p.entrega === "delivery" ?
+    `Delivery a ${escaparHTML(p.distrito || "")}, ${escaparHTML(p.departamento || "")}${p.plazo ? " · " + escaparHTML(p.plazo) : ""}` :
+    `Recojo en sede ${escaparHTML(p.sedes ? p.sedes.nombre : "")}`
+
+/* ---------- Formulario de pago (SIMULADO) ----------
+   Se usa en "Finalizar compra" y para pagar un pedido cotizado en "Mis pedidos".
+   IMPORTANTE: los datos de la tarjeta solo se revisan aquí, en el navegador. Nunca se envían
+   a la base de datos ni se guardan: al servidor solo llega el método ("tarjeta" o "yape").
+   Devuelve { validar() } -> { ok, metodo, error } */
+const crearFormularioPago = (contenedor) => {
+    contenedor.innerHTML = `
+        <div class="form-pago">
+            <div class="row g-3 mb-3">
+                <div class="col-sm-6">
+                    <label class="opcion-tarjeta">
+                        <input type="radio" name="metodo-pago" value="tarjeta" checked>
+                        <span><strong><i class="fa-regular fa-credit-card"></i> Tarjeta</strong>
+                            <small>Crédito o débito</small></span>
+                    </label>
+                </div>
+                <div class="col-sm-6">
+                    <label class="opcion-tarjeta">
+                        <input type="radio" name="metodo-pago" value="yape">
+                        <span><strong><i class="fa-solid fa-mobile-screen-button"></i> Yape</strong>
+                            <small>Paga con tu celular</small></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="pago-tarjeta">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label">Número de tarjeta</label>
+                        <input type="text" class="form-control campo-numero" inputmode="numeric" autocomplete="off"
+                            maxlength="19" placeholder="0000 0000 0000 0000">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Nombre como figura en la tarjeta</label>
+                        <input type="text" class="form-control campo-nombre" autocomplete="off" maxlength="60">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">Vencimiento</label>
+                        <input type="text" class="form-control campo-vence" inputmode="numeric" autocomplete="off"
+                            maxlength="5" placeholder="MM/AA">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">CVV</label>
+                        <input type="password" class="form-control campo-cvv" inputmode="numeric" autocomplete="off"
+                            maxlength="4" placeholder="•••">
+                    </div>
+                </div>
+                <p class="small text-body-secondary mt-2 mb-0">Para probar puedes usar la tarjeta de prueba 4111 1111 1111 1111.</p>
+            </div>
+
+            <div class="pago-yape" hidden>
+                <div class="d-flex flex-wrap gap-3 align-items-center mb-3">
+                    <div class="qr-yape" aria-hidden="true"><i class="fa-solid fa-qrcode"></i></div>
+                    <div class="small">
+                        Yapea el total a <strong>El Galpón del Costo</strong><br>
+                        Celular <strong>999 000 111</strong> <span class="text-body-secondary">(número de ejemplo)</span><br>
+                        Luego escribe tu celular y el código de aprobación que te muestra Yape.
+                    </div>
+                </div>
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <label class="form-label">Tu celular Yape</label>
+                        <input type="tel" class="form-control campo-celular" inputmode="numeric" maxlength="9" placeholder="9XXXXXXXX">
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Código de aprobación</label>
+                        <input type="text" class="form-control campo-codigo" inputmode="numeric" maxlength="6" placeholder="6 dígitos">
+                    </div>
+                </div>
+            </div>
+
+            <p class="aviso-simulado"><i class="fa-solid fa-lock"></i> Pago simulado del prototipo: no se realiza ningún
+                cobro y los datos de tu tarjeta no se envían ni se guardan.</p>
+        </div>`
+
+    const campo = (clase) => contenedor.querySelector(clase)
+    const metodo = () => contenedor.querySelector("input[name=metodo-pago]:checked").value
+    const soloNumeros = (texto) => texto.replace(/\D/g, "")
+
+    // Mostrar el formulario del método elegido
+    contenedor.querySelectorAll("input[name=metodo-pago]").forEach(radio =>
+        radio.addEventListener("change", () => {
+            campo(".pago-tarjeta").hidden = metodo() !== "tarjeta"
+            campo(".pago-yape").hidden = metodo() !== "yape"
+        }))
+
+    // Formatos mientras se escribe: "4111 1111 ..." y "MM/AA"
+    campo(".campo-numero").addEventListener("input", (e) =>
+        e.target.value = soloNumeros(e.target.value).slice(0, 16).replace(/(\d{4})(?=\d)/g, "$1 "))
+    campo(".campo-vence").addEventListener("input", (e) => {
+        const n = soloNumeros(e.target.value).slice(0, 4)
+        e.target.value = n.length > 2 ? n.slice(0, 2) + "/" + n.slice(2) : n
+    })
+    ;[".campo-cvv", ".campo-celular", ".campo-codigo"].forEach(c =>
+        campo(c).addEventListener("input", (e) => e.target.value = soloNumeros(e.target.value)))
+
+    /* Algoritmo de Luhn: el dígito de control que tienen todas las tarjetas reales */
+    const numeroValido = (numero) => {
+        let suma = 0
+        numero.split("").reverse().forEach((d, i) => {
+            let n = Number(d)
+            if (i % 2 === 1) { n *= 2; if (n > 9) n -= 9 }
+            suma += n
+        })
+        return numero.length >= 13 && suma % 10 === 0
+    }
+
+    const marcar = (elemento, valido) => elemento.classList.toggle("is-invalid", !valido)
+
+    const validar = () => {
+        if (metodo() === "tarjeta") {
+            const numero = soloNumeros(campo(".campo-numero").value)
+            const [mes, anio] = campo(".campo-vence").value.split("/").map(Number)
+            const hoy = new Date()
+            const venceOk = mes >= 1 && mes <= 12 && anio >= 0 &&
+                new Date(2000 + anio, mes, 0) >= new Date(hoy.getFullYear(), hoy.getMonth(), 1)
+            const checks = [
+                [campo(".campo-numero"), numeroValido(numero)],
+                [campo(".campo-nombre"), campo(".campo-nombre").value.trim().length >= 3],
+                [campo(".campo-vence"), venceOk],
+                [campo(".campo-cvv"), /^\d{3,4}$/.test(campo(".campo-cvv").value)]
+            ]
+            checks.forEach(([el, ok]) => marcar(el, ok))
+            return checks.every(([, ok]) => ok) ? { ok: true, metodo: "tarjeta" } :
+                { ok: false, error: "Revisa los datos de la tarjeta (número, nombre, vencimiento y CVV)." }
+        }
+        const celularOk = /^9\d{8}$/.test(campo(".campo-celular").value)
+        const codigoOk = /^\d{6}$/.test(campo(".campo-codigo").value)
+        marcar(campo(".campo-celular"), celularOk)
+        marcar(campo(".campo-codigo"), codigoOk)
+        return celularOk && codigoOk ? { ok: true, metodo: "yape" } :
+            { ok: false, error: "Escribe tu celular Yape (9 dígitos) y el código de aprobación (6 dígitos)." }
+    }
+
+    return { validar }
 }
 
 const agregarItemCarrito = (nuevoItem, cantidad) => {

@@ -172,6 +172,36 @@ insert into asesores (idasesor, nombres, apellidos, correo, foto, iddirector) ov
     (9, 'Sana', 'Minatozaki', 'sana.minatozaki@galpondelcosto.pe', 'https://servicios.campus.pe/imagenes/empleados/sana_minatozaki.jpg', 8),
     (10, 'Glen', 'Powell', 'glen.powell@galpondelcosto.pe', 'https://servicios.campus.pe/imagenes/empleados/glen_powell.jpg', 9);
 
+
+-- zonas_envio: 25 departamentos (Lima dividida en Metropolitana y Provincias)
+insert into zonas_envio (departamento, zona, costo, plazo) values
+    ('Lima Metropolitana', 'lima', 10, '1 día'),
+    ('Callao', 'lima', 10, '1 día'),
+    ('Lima Provincias', 'cercana', 30, '3 a 5 días hábiles'),
+    ('Áncash', 'cercana', 30, '3 a 5 días hábiles'),
+    ('Ica', 'cercana', 30, '3 a 5 días hábiles'),
+    ('Junín', 'cercana', 30, '3 a 5 días hábiles'),
+    ('Pasco', 'cercana', 30, '3 a 5 días hábiles'),
+    ('Huánuco', 'cercana', 30, '3 a 5 días hábiles'),
+    ('Huancavelica', 'cercana', 30, '3 a 5 días hábiles'),
+    ('Ayacucho', 'cercana', 30, '3 a 5 días hábiles'),
+    ('Amazonas', 'alejada', null, 'Según cotización'),
+    ('Apurímac', 'alejada', null, 'Según cotización'),
+    ('Arequipa', 'alejada', null, 'Según cotización'),
+    ('Cajamarca', 'alejada', null, 'Según cotización'),
+    ('Cusco', 'alejada', null, 'Según cotización'),
+    ('La Libertad', 'alejada', null, 'Según cotización'),
+    ('Lambayeque', 'alejada', null, 'Según cotización'),
+    ('Loreto', 'alejada', null, 'Según cotización'),
+    ('Madre de Dios', 'alejada', null, 'Según cotización'),
+    ('Moquegua', 'alejada', null, 'Según cotización'),
+    ('Piura', 'alejada', null, 'Según cotización'),
+    ('Puno', 'alejada', null, 'Según cotización'),
+    ('San Martín', 'alejada', null, 'Según cotización'),
+    ('Tacna', 'alejada', null, 'Según cotización'),
+    ('Tumbes', 'alejada', null, 'Según cotización'),
+    ('Ucayali', 'alejada', null, 'Según cotización');
+
 -- Los autonuméricos siguen después del último código cargado
 select setval(pg_get_serial_sequence('categorias', 'idcategoria'), (select max(idcategoria) from categorias));
 select setval(pg_get_serial_sequence('proveedores', 'idproveedor'), (select max(idproveedor) from proveedores));

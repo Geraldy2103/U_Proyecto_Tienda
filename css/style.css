@@ -617,11 +617,139 @@ footer strong{ color: #fff; }
 .tabla-detalle td:nth-child(2){ width: 9.5rem; }
 .tabla-detalle td:nth-child(3){ width: 7.5rem; }
 
-.pedido .estado{
+/* ---------- Finalizar compra ---------- */
+.opcion-tarjeta{                                    /* opción elegible tipo tarjeta (entrega y método de pago) */
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    height: 100%;
+    padding: 14px 16px;
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    background-color: #fff;
+    cursor: pointer;
+    transition: border-color .15s, background-color .15s;
+}
+
+.opcion-tarjeta:has(input:checked){
+    border-color: var(--marca);
+    background-color: var(--marca-claro);
+}
+
+.opcion-tarjeta input{
+    margin-top: 4px;
+    accent-color: var(--marca);
+}
+
+.opcion-tarjeta span{
+    display: flex;
+    flex-direction: column;
+}
+
+.opcion-tarjeta small{
+    color: var(--texto-suave);
+}
+
+.paso-numero{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    margin-right: 6px;
+    border-radius: 50%;
+    background-color: var(--marca);
+    color: #fff;
+    font-size: .8rem;
+}
+
+.info-envio{
+    font-size: .92rem;
+    min-height: 1.4em;
+}
+
+.resumen-compra{
+    position: sticky;
+    top: 100px;
+}
+
+.lista-resumen{
+    list-style: none;
+    padding: 0;
+    margin: 0 0 12px;
+    max-height: 260px;
+    overflow-y: auto;
+    font-size: .9rem;
+}
+
+.lista-resumen li{
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--borde);
+}
+
+.totales{
+    display: grid;
+    grid-template-columns: 1fr auto;
+    row-gap: 6px;
+    margin-bottom: 16px;
+}
+
+.totales dd{
+    margin: 0;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.totales .total{
+    font-size: 1.15rem;
+    font-weight: 800;
+    padding-top: 8px;
+    border-top: 1px solid var(--borde);
+}
+
+.qr-yape{                                           /* espacio del QR (de ejemplo) */
+    width: 96px;
+    height: 96px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    font-size: 3.5rem;
+    color: #742284;                                 /* morado Yape */
+}
+
+.aviso-simulado{
+    margin: 14px 0 0;
+    font-size: .8rem;
+    color: var(--texto-suave);
+}
+
+/* Los campos de pago se validan con JavaScript: sin el "verde" automático de Bootstrap */
+.was-validated .form-pago .form-control:valid{
+    border-color: var(--bs-border-color);
+    background-image: none;
+    padding-right: .75rem;
+}
+
+/* Estado de un pedido (Mis pedidos y Pedidos de la intranet) */
+.estado-pedido{
     font-size: .75rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: .04em;
+}
+
+.estado-alerta{ color: #b45309; }
+.estado-info{ color: var(--marca); }
+.estado-ok{ color: var(--texto-suave); }
+.estado-anulado{ color: var(--acento); }
+
+.fila-envio td{
+    color: var(--texto-suave);
 }
 
 /* =====================================================================

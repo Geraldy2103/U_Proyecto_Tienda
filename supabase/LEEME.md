@@ -26,7 +26,8 @@ categorias ──< productos >── proveedores (solo admin)
 | `directores` | Directores de venta: máximo 3 por sede |
 | `asesores` | Asesores comerciales: máximo 10; cada uno pertenece a un director (y a su sede) |
 | `perfiles` | Rol de cada cuenta: `cliente` o `admin` |
-| `pedidos`, `pedido_detalle` | Ventas. Se registran con la función `confirmar_pedido` |
+| `zonas_envio` | Costo y plazo de delivery por departamento: Lima/Callao S/ 10 (1 día), cercanos S/ 30 (3–5 días hábiles), resto del país lo cotiza el asesor |
+| `pedidos`, `pedido_detalle` | Ventas, con entrega (recojo o delivery), envío y pago. Se registran con `confirmar_pedido` |
 | `solicitudes_mayoristas` | Clientes que pidieron hablar con un asesor (12+ unidades por producto) |
 | `resumen_asesores` (vista) | Solicitudes, pedidos y ventas de cada asesor |
 | `ventas_por_sede` (vista) | Ventas minoristas y mayoristas por sede |
@@ -39,6 +40,12 @@ categorias ──< productos >── proveedores (solo admin)
 - `confirmar_pedido` calcula precios y total con los precios del catálogo (el navegador no los puede
   cambiar) y solo permite asignar un asesor si el pedido es mayorista; en ese caso la venta queda en
   la sede del asesor.
+- `confirmar_pedido` calcula también el **envío** según el departamento (el navegador no puede cambiarlo).
+  Envío a zonas alejadas: solo pedidos mayoristas con asesor; queda **por cotizar** hasta que el admin
+  usa `cotizar_envio`, y el cliente paga después con `pagar_pedido`.
+- **Pago simulado:** solo se guarda el método (tarjeta o Yape). Los datos de la tarjeta se validan en
+  el navegador y nunca se envían ni se guardan. Las ventas de Indicadores cuentan solo pedidos pagados
+  y sin el costo de envío.
 - `confirmar_pedido` también **descuenta el stock** y rechaza el pedido si no alcanza. Guarda el
   costo de cada producto para calcular el margen. Si el admin anula un pedido, el stock se devuelve.
 - Visitantes: solo leen el catálogo y el equipo comercial. Clientes: ven sus propios pedidos y
