@@ -7,55 +7,65 @@
     <div class="container">
         <div id="aviso-indicadores"></div>
 
-        <!-- Totales -->
+        <!-- Fila 1: totales -->
         <div class="row row-cols-2 row-cols-md-3 row-cols-xl-5 g-3 mb-4" id="tarjetas-totales"></div>
 
-        <!-- Asesores destacados -->
-        <div class="row g-3 mb-4" id="asesores-destacados"></div>
-
-        <div class="row g-4">
-            <!-- Ventas por sede -->
-            <div class="col-lg-5">
-                <h4>Ventas por sede</h4>
-                <div id="ventas-sedes"></div>
+        <!-- Fila 2: destacados + sedes | ranking -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-4 d-flex flex-column gap-4">
+                <div class="panel">
+                    <h2 class="panel-titulo">Asesores destacados</h2>
+                    <div id="asesores-destacados"></div>
+                </div>
+                <div class="panel flex-grow-1">
+                    <h2 class="panel-titulo">Ventas por sede</h2>
+                    <div id="ventas-sedes"></div>
+                </div>
             </div>
 
-            <!-- Ranking de asesores -->
-            <div class="col-lg-7">
-                <h4>Ranking de asesores</h4>
-                <div class="table-responsive">
-                    <table class="table table-sm align-middle">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Asesor</th>
-                                <th>Sede / Director</th>
-                                <th class="text-center">Solicitudes</th>
-                                <th class="text-center">Pedidos</th>
-                                <th class="text-end">Ventas</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody-ranking"></tbody>
-                    </table>
+            <div class="col-lg-8">
+                <div class="panel h-100">
+                    <h2 class="panel-titulo">Ranking de asesores</h2>
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0 tabla-compacta">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th>Asesor</th>
+                                    <th>Sede</th>
+                                    <th>Director</th>
+                                    <th class="text-end" title="Solicitudes mayoristas recibidas">Solic.</th>
+                                    <th class="text-end" title="Pedidos atendidos">Ped.</th>
+                                    <th class="text-end">Ventas</th>
+                                    <th class="col-barra"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-ranking"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Productos por reponer -->
-        <h4 class="mt-4">Productos por reponer <span class="badge text-bg-danger" id="cantidad-reponer"></span></h4>
-        <div class="table-responsive">
-            <table class="table table-sm align-middle">
-                <thead>
-                    <tr>
-                        <th>Producto</th>
-                        <th class="text-center">Stock</th>
-                        <th class="text-center">Mínimo</th>
-                        <th>Proveedor</th>
-                        <th>Contacto</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody-reponer"></tbody>
-            </table>
+        <!-- Fila 3: productos por reponer -->
+        <div class="panel">
+            <h2 class="panel-titulo">Productos por reponer <span class="text-body-secondary fw-normal" id="cantidad-reponer"></span></h2>
+            <div class="table-responsive">
+                <table class="table table-sm align-middle mb-0 tabla-compacta">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th class="text-end">Stock</th>
+                            <th class="text-end">Mínimo</th>
+                            <th>Proveedor</th>
+                            <th>País</th>
+                            <th>Contacto</th>
+                            <th>Teléfono</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-reponer"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 </section>

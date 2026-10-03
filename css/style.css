@@ -628,6 +628,103 @@ footer strong{ color: #fff; }
    Intranet
    ===================================================================== */
 
+/* ---------- Paneles de la intranet (Indicadores) ---------- */
+.panel{
+    background-color: #fff;
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    padding: 18px 20px;
+}
+
+.panel-titulo{
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 14px;
+}
+
+.indicador{                                         /* tarjeta de un total (Ventas, Pedidos, ...) */
+    height: 100%;
+    background-color: #fff;
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    padding: 14px 16px;
+}
+
+.indicador-titulo{
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--texto-suave);
+}
+
+.indicador-valor{
+    font-size: 1.45rem;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    margin-top: 2px;
+    font-variant-numeric: tabular-nums;
+}
+
+.indicador-detalle{
+    font-size: .8rem;
+    color: var(--texto-suave);
+}
+
+.destacado{                                         /* asesor destacado: foto + datos en una fila */
+    display: flex;
+    gap: 14px;
+    align-items: center;
+}
+
+.destacado + .destacado{
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--borde);
+}
+
+.destacado img{
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.sede-fila + .sede-fila{
+    margin-top: 16px;
+}
+
+.barra{                                             /* barra horizontal fina */
+    height: 6px;
+    margin: 6px 0 4px;
+    border-radius: 3px;
+    background-color: var(--fondo-suave);
+    overflow: hidden;
+}
+
+.barra span{
+    display: block;
+    height: 100%;
+    border-radius: 3px;
+    background-color: var(--marca);
+}
+
+.tabla-compacta td, .tabla-compacta th{
+    padding-top: 9px;
+    padding-bottom: 9px;
+    font-variant-numeric: tabular-nums;
+}
+
+.tabla-compacta .col-barra{
+    width: 18%;
+    min-width: 90px;
+}
+
+.tabla-compacta .col-barra .barra{
+    margin: 0;
+}
+
 .kpi{
     border-left: 3px solid var(--marca);
 }
