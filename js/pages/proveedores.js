@@ -20,10 +20,12 @@
                         <td class="text-nowrap">${escaparHTML(item.telefono || "")}</td>
                         <td class="text-center">${item.productos}</td>
                         <td class="text-center">${item.por_reponer > 0 ?
-                            `<span class="badge text-bg-danger">${item.por_reponer}</span>` : "0"}</td>
-                        <td class="text-end">${item.unidades_vendidas}</td>
+                            `<span class="badge text-bg-danger" title="Hay que pedirle reposición">${item.por_reponer}</span>` :
+                            `<span class="text-success" title="Stock suficiente"><i class="fa-solid fa-check"></i></span>`}</td>
+                        <td class="text-end">${item.unidades_vendidas} <small class="text-body-secondary">und</small></td>
                         <td class="text-end text-nowrap">${soles(item.ventas)}</td>
-                        <td class="text-end text-nowrap">${soles(item.margen)} <small class="text-body-secondary">${porcentajeMargen}</small></td>
+                        <td class="text-end text-nowrap">${soles(item.margen)}
+                            ${porcentajeMargen ? `<br><small class="text-body-secondary">${porcentajeMargen} de las ventas</small>` : ""}</td>
                       </tr>`
             });
             tbodyProveedores.innerHTML = filas

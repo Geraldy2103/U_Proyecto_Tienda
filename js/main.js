@@ -209,7 +209,10 @@ const cargarPagina = (item) => {
         return
     }
 
-    fetch(item.pagina) /*fetch() significa básicamente:"Ve a buscar este recurso."*/
+    /*fetch() significa básicamente:"Ve a buscar este recurso."
+      cache "no-cache": pregunta siempre al servidor si hay una versión nueva (si no, el navegador
+      podría mostrar una copia vieja de la sección después de actualizar la página)*/
+    fetch(item.pagina, { cache: "no-cache" })
     .then(response => {
         if (!response.ok) { /*si el archivo no existe (404) no seguimos*/
             throw new Error("No se encontró " + item.pagina)

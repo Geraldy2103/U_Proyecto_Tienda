@@ -83,6 +83,21 @@
 }
 
 
+.tabla-proveedores thead .grupos th{                /* fila de grupos: más pequeña y con línea inferior */
+    font-size: .8em;
+    text-transform: uppercase;
+    color: #6c757d;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.tabla-proveedores thead th[title]{                 /* los encabezados con explicación muestran el cursor de ayuda */
+    cursor: help;
+}
+
+.leyenda-proveedores{
+    padding-left: 1.2em;
+}
+
 .producto-agotado img{                              /* producto sin stock: imagen apagada */
     opacity: .45;
     filter: grayscale(1);
