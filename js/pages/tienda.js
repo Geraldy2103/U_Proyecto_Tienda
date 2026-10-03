@@ -20,9 +20,10 @@
                     ${escaparHTML(item.nombre)} <span class="badge rounded-pill text-bg-light">${item.total}</span></li>` //title es el texto que aparece al pasar el ratón por encima
                 listaCategorias.innerHTML += fila
             });
-            const itemsCategorias= listaCategorias.querySelectorAll("li")
+            const itemsCategorias = listaCategorias.querySelectorAll("li")
             itemsCategorias.forEach((iCategoria, index) => {
                 iCategoria.addEventListener("click", () => {
+                    limpiarBusqueda()
                     categoriasNombre.textContent = data[index].nombre
                     categoriasRecuento.textContent = data[index].total + " productos"
 
@@ -31,7 +32,14 @@
                     leerProductos(data[index].idcategoria)
                 })
             })
-            listaCategorias.querySelector("li:first-child").click() // Simula un click en el primer elemento de la lista para que se muestren los productos de la primera categoría al cargar la página
+            // ¿Qué mostrar al abrir? Lo que pidió el encabezado (búsqueda o categoría del ☰); si no, la primera categoría
+            if (filtroTienda.texto) {
+                buscar(filtroTienda.texto)
+            } else {
+                const posicion = data.findIndex(c => c.idcategoria === filtroTienda.idcategoria)
+                itemsCategorias[posicion >= 0 ? posicion : 0].click()
+            }
+            filtroTienda.idcategoria = null
 
         })
         .catch(error => {
@@ -41,6 +49,50 @@
 
 
 
+    /* Muestra una lista de productos con la tarjeta común (main.js) */
+    const mostrarProductos = (data, textoVacio) => {
+        if (data.length === 0) {
+            cuadriculaProductos.innerHTML = `<p class="text-body-secondary">${textoVacio}</p>`
+            return
+        }
+        cuadriculaProductos.innerHTML = data.map(tarjetaProducto).join("")
+        activarBotonesAgregar(cuadriculaProductos, data)
+    }
+
+    /* ---------- Búsqueda (desde el buscador del encabezado) ---------- */
+    const btnLimpiarBusqueda = document.getElementById("btn-limpiar-busqueda")
+
+    const limpiarBusqueda = () => {
+        filtroTienda.texto = ""
+        document.getElementById("txt-buscar").value = ""
+        btnLimpiarBusqueda.classList.add("d-none")
+    }
+
+    const buscar = (texto) => {
+        listaCategorias.querySelectorAll("li").forEach(li => li.classList.remove("active"))
+        categoriasNombre.textContent = `Resultados para "${texto}"`
+        categoriasRecuento.textContent = ""
+        btnLimpiarBusqueda.classList.remove("d-none")
+        // ilike = "contiene", sin importar mayúsculas: %texto%
+        obtenerDatos(db.from("productos")
+            .select("idproducto, nombre, precio, preciorebajado, imagenchica, stock, stock_minimo")
+            .ilike("nombre", `%${texto}%`).order("nombre"))
+            .then(data => {
+                categoriasRecuento.textContent = data.length + " productos"
+                mostrarProductos(data, "No encontramos productos con ese nombre. Prueba con otra palabra o revisa las categorías.")
+            })
+            .catch(error => {
+                console.error(error)
+                cuadriculaProductos.innerHTML = mensajeError("No se pudo completar la búsqueda.")
+            })
+    }
+
+    btnLimpiarBusqueda.addEventListener("click", (event) => {
+        event.preventDefault()
+        limpiarBusqueda()
+        listaCategorias.querySelector("li").click()
+    })
+
     const leerProductos = (idcategoria) => {
         // .eq("idcategoria", x) es el WHERE idcategoria = x de SQL
         // columnas explícitas: el costo no es público (solo el admin puede leerlo)
@@ -48,13 +100,7 @@
             .select("idproducto, nombre, precio, preciorebajado, imagenchica, stock, stock_minimo")
             .eq("idcategoria", idcategoria).order("nombre"))
         .then(data => {
-            if (data.length === 0) {
-                cuadriculaProductos.innerHTML = `<p>Esta categoría todavía no tiene productos.</p>`
-                return
-            }
-            // tarjetaProducto (main.js): la misma tarjeta que en Inicio
-            cuadriculaProductos.innerHTML = data.map(tarjetaProducto).join("")
-            activarBotonesAgregar(cuadriculaProductos, data)
+            mostrarProductos(data, "Esta categoría todavía no tiene productos.")
         })
         .catch(error => {
             console.error(error)

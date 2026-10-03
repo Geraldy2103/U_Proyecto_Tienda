@@ -109,7 +109,7 @@ const mostrarNotificacion = (texto, icono = "fa-check") => {
     toast.setAttribute("role", "status")
     toast.innerHTML = `
         <div class="d-flex">
-            <div class="toast-body"><i class="fa-solid ${icono}"></i> ${texto}</div>
+            <div class="toast-body"><i class="fa-solid ${icono}"></i>&nbsp; ${texto}</div>
             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
         </div>`
     contenedor.appendChild(toast)
@@ -170,51 +170,58 @@ const cerrarSesion = () => {
 etiqueta es el nombre de la opción que quieres mostrar al usuario.
 pagina es la ruta del archivo HTML al que quieres ir cuando el usuario haga clic.
 codigo es el JavaScript de esa página (opcional).
-grupo: dónde aparece en el menú, ordenado por relevancia para vender:
-   "principal" = a la vista (Tienda primero), "mas" = dentro de "Más ▾",
-   "intranet" = dentro de "Intranet ▾" (solo admin). Sin grupo = no está en el menú
-   (Inicio se abre con el logo, Carrito con el ícono 🛒, Asesores con el botón "Mayoristas").
-rol: "admin" = solo la pueden abrir los administradores.
+grupo: dónde aparece en el panel lateral (☰): "mas" = sección "Conócenos",
+   "intranet" = sección "Intranet" (solo admin). Sin grupo = se abre desde otro lugar
+   (Inicio con el logo, Tienda con las categorías o el buscador, Carrito con 🛒, etc.).
+rol: "admin" = solo administradores; "cuenta" = hay que haber iniciado sesión.
 */
 const menuItems = [
-    {etiqueta: "Tienda",       pagina: "pages/tienda.html", codigo: "js/pages/tienda.js", grupo: "principal", icono: "fa-basket-shopping"},
-    {etiqueta: "Mayoristas",   pagina: "pages/mayoristas.html", grupo: "principal", icono: "fa-boxes-stacked"},
-    {etiqueta: "Nosotros",     pagina: "pages/nosotros.html", grupo: "mas"},
     {etiqueta: "Inicio",       pagina: "pages/inicio.html", codigo: "js/pages/inicio.js"},
+    {etiqueta: "Tienda",       pagina: "pages/tienda.html", codigo: "js/pages/tienda.js"},
     {etiqueta: "Carrito",      pagina: "pages/carrito.html", codigo: "js/pages/carrito.js"},
+    {etiqueta: "Mis pedidos",  pagina: "pages/mis-pedidos.html", codigo: "js/pages/mis-pedidos.js", rol: "cuenta"},
     {etiqueta: "Asesores comerciales", pagina: "pages/asesores.html", codigo: "js/pages/asesores.js"},
+    {etiqueta: "Mayoristas",   pagina: "pages/mayoristas.html", grupo: "mas"},
+    {etiqueta: "Nosotros",     pagina: "pages/nosotros.html", grupo: "mas"},
     // Intranet (solo admin)
-    {etiqueta: "Indicadores",  pagina: "pages/indicadores.html", codigo: "js/pages/indicadores.js", rol: "admin", grupo: "intranet", icono: "fa-chart-pie"},
-    {etiqueta: "Directores",   pagina: "pages/directores.html", codigo: "js/pages/directores.js", rol: "admin", grupo: "intranet", icono: "fa-user-tie"},
-    {etiqueta: "Asesores",     pagina: "pages/asesores-admin.html", codigo: "js/pages/asesores-admin.js", rol: "admin", grupo: "intranet", icono: "fa-users"},
-    {etiqueta: "Solicitudes",  pagina: "pages/solicitudes.html", codigo: "js/pages/solicitudes.js", rol: "admin", grupo: "intranet", icono: "fa-inbox"},
-    {etiqueta: "Proveedores",  pagina: "pages/proveedores.html", codigo: "js/pages/proveedores.js", rol: "admin", grupo: "intranet", icono: "fa-truck"}
+    {etiqueta: "Indicadores",  pagina: "pages/indicadores.html", codigo: "js/pages/indicadores.js", rol: "admin", grupo: "intranet"},
+    {etiqueta: "Directores",   pagina: "pages/directores.html", codigo: "js/pages/directores.js", rol: "admin", grupo: "intranet"},
+    {etiqueta: "Asesores",     pagina: "pages/asesores-admin.html", codigo: "js/pages/asesores-admin.js", rol: "admin", grupo: "intranet"},
+    {etiqueta: "Solicitudes",  pagina: "pages/solicitudes.html", codigo: "js/pages/solicitudes.js", rol: "admin", grupo: "intranet"},
+    {etiqueta: "Proveedores",  pagina: "pages/proveedores.html", codigo: "js/pages/proveedores.js", rol: "admin", grupo: "intranet"}
 ]
 
-/* La página de ingreso se abre con el botón "Ingresar" de la derecha */
+/* La página de ingreso se abre desde "Mi cuenta" */
 const paginaIngresar = {etiqueta: "Ingresar", pagina: "pages/login.html", codigo: "js/pages/login.js"}
 
-const mainNav = document.getElementById("main-nav")
-const navUsuario = document.getElementById("nav-usuario")
 const mainContent = document.getElementById("main-content")
-const menuColapsable = document.getElementById("navbarNav")
+const zonaCuenta = document.getElementById("zona-cuenta")
+const menuCategorias = document.getElementById("menu-categorias")
+const menuSecciones = document.getElementById("menu-secciones")
+const menuLateral = document.getElementById("menu-lateral")
+
+/* Lo que la Tienda debe mostrar al abrirse: una categoría o el resultado de una búsqueda.
+   Lo llenan el panel lateral (☰) y el buscador; lo lee tienda.js. */
+const filtroTienda = { idcategoria: null, texto: "" }
 
 /* ¿El usuario actual puede ver esta página? */
 const puedeVer = (item) => item.rol !== "admin" || esAdmin()
 
 /* Carga una página dentro de <main> */
 const cargarPagina = (item) => {
-    // marca como "active" el enlace de la página abierta (y su menú desplegable, si está dentro de uno)
-    document.querySelectorAll(".navbar [data-etiqueta]").forEach(a => a.classList.toggle("active", a.dataset.etiqueta === item.etiqueta))
-    document.querySelectorAll(".navbar .dropdown").forEach(menu =>
-        menu.querySelector(".dropdown-toggle").classList.toggle("active", !!menu.querySelector(".dropdown-item.active")))
-    // en celular, al elegir una opción se cierra el menú ☰
-    bootstrap.Collapse.getOrCreateInstance(menuColapsable, { toggle: false }).hide()
+    // marca como "active" los enlaces de la página abierta
+    document.querySelectorAll("[data-etiqueta]").forEach(a => a.classList.toggle("active", a.dataset.etiqueta === item.etiqueta))
+    bootstrap.Offcanvas.getOrCreateInstance(menuLateral).hide()   // cierra el panel ☰ si estaba abierto
     window.scrollTo(0, 0)
 
     if (!puedeVer(item)) { // protección extra: aunque alguien llame irAPagina("Directores") sin ser admin
         mainContent.innerHTML = `<section class="padded"><div class="container">
             ${mensajeError("Esta sección es solo para administradores.")}</div></section>`
+        return
+    }
+    if (item.rol === "cuenta" && usuarioActual === null) { // ej. "Mis pedidos" sin haber ingresado
+        mostrarNotificacion("Inicia sesión para ver tus pedidos", "fa-circle-info")
+        irAPagina("Ingresar")
         return
     }
 
@@ -254,60 +261,73 @@ const irAPagina = (etiqueta) => {
     cargarPagina(item)
 }
 
-/* Enlace de la barra: <li><a class="nav-link">...</a></li> */
-const crearEnlace = (item, destacado) => {
-    const menuLI = document.createElement("li")
-    menuLI.className = "nav-item"
-    menuLI.innerHTML = `<a class="nav-link ${destacado ? "enlace-destacado" : ""}" data-etiqueta="${item.etiqueta}">
-        ${item.icono ? `<i class="fa-solid ${item.icono}"></i> ` : ""}${item.etiqueta}</a>`
-    menuLI.querySelector("a").addEventListener("click", () => cargarPagina(item))
-    return menuLI
+/* Abre la Tienda en una categoría (desde el panel ☰) */
+const verCategoria = (idcategoria) => {
+    filtroTienda.idcategoria = idcategoria
+    filtroTienda.texto = ""
+    irAPagina("Tienda")
 }
 
-/* Menú desplegable de Bootstrap ("Más ▾", "Intranet ▾") con varias páginas */
-const crearDesplegable = (titulo, items) => {
-    const menuLI = document.createElement("li")
-    menuLI.className = "nav-item dropdown"
-    menuLI.innerHTML = `
-        <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">${titulo}</a>
-        <ul class="dropdown-menu">
-            ${items.map(item => `<li><a class="dropdown-item" data-etiqueta="${item.etiqueta}">
-                ${item.icono ? `<i class="fa-solid ${item.icono} fa-fw"></i> ` : ""}${item.etiqueta}</a></li>`).join("")}
-        </ul>`
-    menuLI.querySelectorAll(".dropdown-item").forEach(a =>
-        a.addEventListener("click", () => irAPagina(a.dataset.etiqueta)))
-    return menuLI
-}
+/* ---------- Buscador del encabezado ---------- */
+const txtBuscar = document.getElementById("txt-buscar")
+document.getElementById("form-buscar").addEventListener("submit", (event) => {
+    event.preventDefault()
+    const texto = txtBuscar.value.trim()
+    if (texto.length < 2) {
+        mostrarNotificacion("Escribe al menos 2 letras para buscar", "fa-circle-info")
+        return
+    }
+    filtroTienda.texto = texto
+    filtroTienda.idcategoria = null
+    irAPagina("Tienda")
+})
 
-/* Arma el menú según quién está conectado. Se vuelve a llamar al iniciar o cerrar sesión. */
+/* ---------- Panel lateral: categorías (se leen una vez de la base) ---------- */
+obtenerDatos(db.from("categorias_con_total").select("idcategoria, nombre, total").order("nombre"))
+    .then(categorias => {
+        menuCategorias.innerHTML = categorias.map(c => `
+            <li><a data-categoria="${c.idcategoria}">${escaparHTML(c.nombre)} <small>${c.total}</small></a></li>`).join("") +
+            `<li><a data-categoria=""><strong>Ver todo el catálogo</strong> <i class="fa-solid fa-arrow-right small"></i></a></li>`
+        menuCategorias.querySelectorAll("a").forEach(a =>
+            a.addEventListener("click", () => verCategoria(a.dataset.categoria ? Number(a.dataset.categoria) : null)))
+    })
+    .catch(error => {
+        console.error(error)
+        menuCategorias.innerHTML = `<li class="small text-body-secondary">No se pudieron cargar las categorías.</li>`
+    })
+
+/* Secciones del panel (☰) y "Mi cuenta". Se vuelve a llamar al iniciar o cerrar sesión. */
 const dibujarMenu = () => {
     const delGrupo = (grupo) => menuItems.filter(item => item.grupo === grupo && puedeVer(item))
+    const seccion = (titulo, items) => `
+        <p class="titulo-seccion">${titulo}</p>
+        <ul class="lista-menu">
+            ${items.map(item => `<li><a data-etiqueta="${item.etiqueta}" onclick="irAPagina('${item.etiqueta}')">${item.etiqueta}</a></li>`).join("")}
+        </ul>`
+    menuSecciones.innerHTML = seccion("Conócenos", delGrupo("mas")) +
+        (esAdmin() ? seccion(`<i class="fa-solid fa-lock"></i> Intranet`, delGrupo("intranet")) : "")
 
-    // Izquierda, por relevancia: Tienda (destacada), Mayoristas, Más ▾ y, para el admin, Intranet ▾
-    mainNav.innerHTML = ""
-    delGrupo("principal").forEach((item, posicion) => mainNav.appendChild(crearEnlace(item, posicion === 0)))
-    mainNav.appendChild(crearDesplegable("Más", delGrupo("mas")))
-    if (esAdmin()) {
-        mainNav.appendChild(crearDesplegable(`<i class="fa-solid fa-lock"></i> Intranet`, delGrupo("intranet")))
-    }
-
-    // Derecha: "Ingresar" o el menú de la cuenta
-    navUsuario.innerHTML = ""
     if (usuarioActual === null) {
-        navUsuario.appendChild(crearEnlace({ ...paginaIngresar, icono: "fa-user" }))
+        zonaCuenta.innerHTML = `
+            <a class="accion dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-regular fa-user"></i><span>Mi cuenta</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" onclick="irAPagina('Ingresar')">Iniciar sesión</a></li>
+                <li><a class="dropdown-item" onclick="irAPagina('Ingresar')">Crear cuenta</a></li>
+            </ul>`
     } else {
-        navUsuario.innerHTML = `
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fa-regular fa-user"></i> Hola, ${escaparHTML(usuarioActual.nombre.split(" ")[0])}
-                    ${esAdmin() ? `<span class="badge text-bg-dark">Admin</span>` : ""}
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li><span class="dropdown-item-text small text-body-secondary">${escaparHTML(usuarioActual.correo)}</span></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" id="btn-cerrar-sesion"><i class="fa-solid fa-right-from-bracket fa-fw"></i> Salir</a></li>
-                </ul>
-            </li>`
+        zonaCuenta.innerHTML = `
+            <a class="accion dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-regular fa-user"></i><span>${escaparHTML(usuarioActual.nombre.split(" ")[0])}</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><span class="dropdown-item-text small text-body-secondary">${escaparHTML(usuarioActual.correo)}</span></li>
+                <li><a class="dropdown-item" onclick="irAPagina('Mis pedidos')">Mis pedidos</a></li>
+                ${esAdmin() ? `<li><a class="dropdown-item" onclick="irAPagina('Indicadores')">Intranet</a></li>` : ""}
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" id="btn-cerrar-sesion">Cerrar sesión</a></li>
+            </ul>`
         document.getElementById("btn-cerrar-sesion").addEventListener("click", cerrarSesion)
     }
     actualizarContadorCarrito()
@@ -343,9 +363,9 @@ const tarjetaProducto = (item) => {
     const precioFinal = item.preciorebajado ? item.preciorebajado : item.precio
     const descuento = item.preciorebajado ? Math.round((1 - item.preciorebajado / item.precio) * 100) : 0
     const agotado = item.stock === 0
-    const estadoStock = agotado ? `<span class="text-body-secondary"><i class="fa-solid fa-ban"></i> Agotado</span>` :
-        item.stock <= item.stock_minimo ? `<span class="text-danger"><i class="fa-solid fa-fire"></i> ¡Solo quedan ${item.stock}!</span>` :
-        `<span class="text-success"><i class="fa-solid fa-check"></i> Disponible</span>`
+    const estadoStock = agotado ? `<span>Agotado</span>` :
+        item.stock <= item.stock_minimo ? `<span class="text-danger">Últimas ${item.stock} unidades</span>` :
+        `<span>Disponible</span>`
     return `
         <div class="col">
             <div class="card card-producto ${agotado ? "producto-agotado" : ""}">
@@ -359,7 +379,7 @@ const tarjetaProducto = (item) => {
                         ${descuento > 0 ? `<span class="precio-anterior">${soles(item.precio)}</span>` : ""}</div>
                     <div class="estado-stock">${estadoStock}</div>
                     <button class="btn btn-primary btn-sm w-100 btn-agregar" data-id="${item.idproducto}" ${agotado ? "disabled" : ""}>
-                        <i class="fa-solid fa-cart-plus"></i> ${agotado ? "Sin stock" : "Agregar"}
+                        ${agotado ? "Sin stock" : "Agregar al carrito"}
                     </button>
                 </div>
             </div>

@@ -7,7 +7,7 @@
        color: "verde" (ventas) o "azul" (rentabilidad). */
     const celdaDegradado = (contenido, valor, maximo, color) => {
         const intensidad = maximo > 0 ? valor / maximo : 0             // de 0 a 1
-        const rgb = color === "verde" ? "25, 135, 84" : "13, 110, 253"  // verde y azul de Bootstrap
+        const rgb = color === "verde" ? "31, 92, 69" : "37, 78, 125"    // verde bosque y azul petróleo de la marca
         const textoClaro = intensidad > 0.55                            // fondo oscuro -> letra blanca
         return `<td class="text-end text-nowrap celda-degradado ${textoClaro ? "text-white" : ""}"
                     style="background-color: rgba(${rgb}, ${(0.08 + intensidad * 0.82).toFixed(2)})">${contenido}</td>`

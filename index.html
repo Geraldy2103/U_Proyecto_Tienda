@@ -12,10 +12,10 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 
-  <!-- Tipografía Inter (Google Fonts) -->
+  <!-- Tipografía Manrope (Google Fonts) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Hoja de estilos propia -->
   <link rel="stylesheet" href="css/style.css">
@@ -23,41 +23,48 @@
 
 <body>
 
-  <!-- Barra de navegación -->
-  <nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top shadow-sm">
-    <div class="container">
+  <!-- Encabezado: logo | ☰ categorías | buscador | Mis pedidos | Mi cuenta | carrito -->
+  <header class="cabecera sticky-top">
+    <div class="container cabecera-fila">
 
-      <!-- Nombre o logo de la página -->
-      <a class="navbar-brand marca" href="#" onclick="irAPagina('Inicio'); return false">
-        <i class="fa-solid fa-warehouse"></i> El Galpón <span>del Costo</span>
-      </a>
+      <a class="marca" href="#" onclick="irAPagina('Inicio'); return false">El Galpón<span> del Costo</span></a>
 
-      <!-- Carrito y botón ☰: quedan fuera del menú plegable para verse siempre, también en celular -->
-      <div class="d-flex align-items-center gap-2 order-lg-last ms-lg-3">
+      <button class="btn-menu" type="button" data-bs-toggle="offcanvas" data-bs-target="#menu-lateral"
+        aria-controls="menu-lateral" aria-label="Ver categorías">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+
+      <form class="buscador" id="form-buscar" role="search">
+        <input type="search" id="txt-buscar" placeholder="¿Qué estás buscando?" aria-label="Buscar productos" autocomplete="off">
+        <button type="submit" aria-label="Buscar"><i class="fa-solid fa-magnifying-glass"></i></button>
+      </form>
+
+      <div class="acciones">
+        <a class="accion" data-etiqueta="Mis pedidos" onclick="irAPagina('Mis pedidos')" role="button">
+          <i class="fa-solid fa-box-open"></i><span>Mis pedidos</span>
+        </a>
+        <!-- "Mi cuenta": lo arma dibujarMenu() según haya sesión o no -->
+        <div class="dropdown" id="zona-cuenta"></div>
         <a class="btn-carrito" id="btn-carrito-nav" data-etiqueta="Carrito" onclick="irAPagina('Carrito')"
           role="button" aria-label="Ver carrito">
           <i class="fa-solid fa-cart-shopping"></i>
-          <span class="badge rounded-pill text-bg-danger" id="contador-carrito"></span>
+          <span class="badge rounded-pill" id="contador-carrito"></span>
         </a>
-        <!-- Botón para mostrar/ocultar el menú en pantallas pequeñas -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-          aria-controls="navbarNav" aria-expanded="false" aria-label="Abrir menú">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-      </div>
-
-      <!-- Menú de navegación -->
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav" id="main-nav">
-
-        </ul>
-        <!-- Zona del usuario (derecha): "Ingresar" o "Hola, nombre | Salir" -->
-        <ul class="navbar-nav ms-auto align-items-lg-center" id="nav-usuario">
-
-        </ul>
       </div>
     </div>
-  </nav>
+  </header>
+
+  <!-- Panel lateral que se abre con ☰ -->
+  <div class="offcanvas offcanvas-start menu-lateral" tabindex="-1" id="menu-lateral" aria-labelledby="titulo-menu-lateral">
+    <div class="offcanvas-header border-bottom">
+      <h5 class="offcanvas-title" id="titulo-menu-lateral">Categorías</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+    </div>
+    <div class="offcanvas-body">
+      <ul class="lista-menu" id="menu-categorias"></ul>
+      <div id="menu-secciones"></div>
+    </div>
+  </div>
 
 
   <!-- Contenido principal de la página -->
@@ -71,7 +78,7 @@
   <!-- Pie de página -->
   <footer>
     <div class="container d-flex flex-wrap justify-content-between gap-2">
-      <span><strong><i class="fa-solid fa-warehouse"></i> El Galpón del Costo</strong> · Precios de galpón en Lima</span>
+      <span><strong>El Galpón del Costo</strong> · Precios de galpón en Lima</span>
       <span>Miraflores · San Isidro · Callao · © 2026</span>
     </div>
   </footer>

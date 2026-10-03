@@ -7,35 +7,40 @@
    ===================================================================== */
 
 :root{
-    /* Colores de marca */
-    --marca:          #198754;   /* verde principal (botones, enlaces, activos) */
-    --marca-oscuro:   #0f5132;   /* verde oscuro (textos destacados, hover) */
-    --marca-claro:    #e8f3ed;   /* verde muy claro (fondos suaves) */
-    --acento:         #dc3545;   /* rojo: ofertas, alertas, contador del carrito */
-    --texto:          #212529;
-    --texto-suave:    #6c757d;
-    --borde:          #e3e6e4;
-    --fondo-suave:    #f6f8f7;
+    /* Colores de marca: verde bosque sobrio + marfil */
+    --marca:          #1f5c45;   /* verde bosque (botones, enlaces, activos) */
+    --marca-oscuro:   #163f30;   /* hover y textos destacados */
+    --marca-claro:    #eef3ef;   /* fondos suaves */
+    --acento:         #b42318;   /* rojo vino: ofertas y contador del carrito */
+    --texto:          #1d2420;
+    --texto-suave:    #69716c;
+    --borde:          #e6e3dc;
+    --fondo:          #faf9f6;   /* marfil: fondo general */
+    --fondo-suave:    #f3f1ec;
 
     /* Forma */
-    --radio:          12px;
-    --sombra:         0 2px 10px rgba(16, 24, 20, .06);
-    --sombra-hover:   0 8px 24px rgba(16, 24, 20, .12);
+    --radio:          10px;
+    --sombra:         0 1px 2px rgba(29, 36, 32, .05);
+    --sombra-hover:   0 10px 30px rgba(29, 36, 32, .10);
 
-    /* Bootstrap usa estas variables: así su "primary" (azul) pasa a ser nuestro verde */
+    /* Bootstrap usa estas variables: su "primary" pasa a ser nuestro verde */
     --bs-primary:            var(--marca);
-    --bs-primary-rgb:        25, 135, 84;
+    --bs-primary-rgb:        31, 92, 69;
+    --bs-success:            var(--marca);
+    --bs-success-rgb:        31, 92, 69;
+    --bs-danger-rgb:         180, 35, 24;
     --bs-link-color:         var(--marca);
-    --bs-link-color-rgb:     25, 135, 84;
+    --bs-link-color-rgb:     31, 92, 69;
     --bs-link-hover-color:   var(--marca-oscuro);
-    --bs-link-hover-color-rgb: 15, 81, 50;
-    --bs-body-font-family:   "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --bs-link-hover-color-rgb: 22, 63, 48;
+    --bs-body-font-family:   "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --bs-body-color:         var(--texto);
+    --bs-border-color:       var(--borde);
     --bs-border-radius:      .5rem;
 }
 
 body{
-    color: var(--texto);
-    background-color: #fff;
+    background-color: var(--fondo);
     display: flex;                 /* el pie de página se queda abajo aunque haya poco contenido */
     flex-direction: column;
     min-height: 100vh;
@@ -47,19 +52,22 @@ main{
 
 h1, h2, h3, h4, h5, h6{
     font-weight: 700;
-    letter-spacing: -.01em;
+    letter-spacing: -.015em;
 }
 
+.text-success{ color: var(--marca) !important; }
+.text-danger{ color: var(--acento) !important; }
+
 /* ---------- Bootstrap con los colores de la marca ---------- */
-.btn-primary{
+.btn-primary, .btn-success{
     --bs-btn-bg: var(--marca);
     --bs-btn-border-color: var(--marca);
     --bs-btn-hover-bg: var(--marca-oscuro);
     --bs-btn-hover-border-color: var(--marca-oscuro);
     --bs-btn-active-bg: var(--marca-oscuro);
     --bs-btn-active-border-color: var(--marca-oscuro);
-    --bs-btn-disabled-bg: var(--marca);
-    --bs-btn-disabled-border-color: var(--marca);
+    --bs-btn-disabled-bg: #9aa8a1;
+    --bs-btn-disabled-border-color: #9aa8a1;
 }
 
 .btn-outline-primary{
@@ -72,7 +80,8 @@ h1, h2, h3, h4, h5, h6{
 }
 
 .btn{
-    font-weight: 500;
+    font-weight: 600;
+    border-radius: 8px;
 }
 
 .list-group{
@@ -80,52 +89,54 @@ h1, h2, h3, h4, h5, h6{
     --bs-list-group-active-border-color: var(--marca);
 }
 
-.nav-tabs .nav-link.active{
-    color: var(--marca);
-    font-weight: 600;
-}
-
-.nav-tabs .nav-link{
-    color: var(--texto-suave);
-}
+.nav-tabs .nav-link{ color: var(--texto-suave); }
+.nav-tabs .nav-link.active{ color: var(--marca); font-weight: 700; }
 
 .form-control:focus, .form-select:focus{
     border-color: var(--marca);
-    box-shadow: 0 0 0 .2rem rgba(25, 135, 84, .2);
+    box-shadow: 0 0 0 .2rem rgba(31, 92, 69, .15);
 }
 
 .dropdown-menu{
     --bs-dropdown-link-active-bg: var(--marca);
     border-color: var(--borde);
+    border-radius: var(--radio);
     box-shadow: var(--sombra-hover);
+    padding: 6px;
 }
 
 .dropdown-item{
     cursor: pointer;
+    border-radius: 6px;
+    padding: 7px 12px;
 }
 
 .card{
     border-color: var(--borde);
     border-radius: var(--radio);
+    background-color: #fff;
 }
 
-.progress-bar.bg-primary{
-    background-color: var(--marca) !important;
-}
+.alert{ border-radius: var(--radio); }
+.progress-bar.bg-primary{ background-color: var(--marca) !important; }
+.badge.text-bg-danger{ background-color: var(--acento) !important; }
 
 /* ---------- Tablas (todas iguales) ---------- */
+.table{
+    --bs-table-bg: transparent;
+}
+
 .table > thead th{
-    font-size: .78rem;
+    font-size: .74rem;
     text-transform: uppercase;
-    letter-spacing: .03em;
+    letter-spacing: .05em;
     color: var(--texto-suave);
-    font-weight: 600;
-    border-bottom-width: 2px;
+    font-weight: 700;
+    border-bottom-width: 1px;
     white-space: nowrap;
 }
 
-/* Iconos de acción (editar / eliminar) en tablas de la intranet:
-   siempre visibles (en celular no hay "pasar el mouse"), más fuertes al pasar el mouse */
+/* Iconos de acción (editar / eliminar): siempre visibles, se marcan al pasar el mouse */
 .icono-actualizar, .icono-eliminar{
     cursor: pointer;
     padding: 6px;
@@ -134,110 +145,222 @@ h1, h2, h3, h4, h5, h6{
     transition: background-color .15s, color .15s;
 }
 
-.icono-actualizar:hover{
-    color: var(--marca);
-    background-color: var(--marca-claro);
-}
-
-.icono-eliminar:hover{
-    color: var(--acento);
-    background-color: #fbe9eb;
-}
+.icono-actualizar:hover{ color: var(--marca); background-color: var(--marca-claro); }
+.icono-eliminar:hover{ color: var(--acento); background-color: #f8eceb; }
 
 /* =====================================================================
-   Estructura: barra, encabezado de página, secciones y pie
+   Encabezado de la tienda (logo, ☰, buscador, Mis pedidos, Mi cuenta, carrito)
    ===================================================================== */
 
-.navbar{
-    background-color: #fff !important;
+.cabecera{
+    background-color: #fff;
     border-bottom: 1px solid var(--borde);
+    z-index: 1030;
+}
+
+.cabecera-fila{
+    display: grid;
+    grid-template-columns: auto auto 1fr auto;     /* logo | ☰ | buscador | acciones */
+    grid-template-areas: "logo menu buscador acciones";
+    align-items: center;
+    gap: 14px 22px;
+    padding-top: 12px;
+    padding-bottom: 12px;
 }
 
 .marca{
+    grid-area: logo;
+    font-size: 1.35rem;
     font-weight: 800;
-    letter-spacing: -.02em;
-    color: var(--marca-oscuro) !important;
+    letter-spacing: -.03em;
+    color: var(--marca-oscuro);
+    text-decoration: none;
+    white-space: nowrap;
 }
 
+.marca:hover{ color: var(--marca); }
+
 .marca span{
-    font-weight: 400;
+    font-weight: 500;
     color: var(--texto-suave);
 }
 
-.nav-link{
-    cursor: pointer;
-    font-weight: 500;
+.btn-menu{                                          /* las tres rayitas */
+    grid-area: menu;
+    border: 0;
+    background: none;
+    font-size: 1.4rem;
+    color: var(--texto);
+    padding: 4px 6px;
+    line-height: 1;
 }
 
-.navbar .nav-link.active{
-    color: var(--marca) !important;
-}
-
-.enlace-destacado{                                  /* "Tienda": la opción más importante */
-    font-weight: 700;
-    color: var(--marca) !important;
-}
-
-.btn-carrito{                                       /* ícono del carrito, siempre visible */
+.buscador{
+    grid-area: buscador;
     position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 42px;
-    height: 42px;
+    max-width: 640px;
+    width: 100%;
+}
+
+.buscador input{
+    width: 100%;
+    height: 44px;
+    padding: 0 52px 0 20px;
+    border: 1px solid var(--borde);
+    border-radius: 999px;
+    background-color: var(--fondo);
+    font-size: .95rem;
+    outline: none;
+    transition: border-color .15s, background-color .15s;
+}
+
+.buscador input:focus{
+    border-color: var(--marca);
+    background-color: #fff;
+}
+
+.buscador button{
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 34px;
+    height: 34px;
+    border: 0;
     border-radius: 50%;
     background-color: var(--marca);
     color: #fff;
+}
+
+.acciones{
+    grid-area: acciones;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+.accion{                                            /* "Mis pedidos", "Mi cuenta" */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--texto);
+    font-weight: 600;
+    font-size: .92rem;
+    text-decoration: none;
     cursor: pointer;
-    font-size: 1.1rem;
+    white-space: nowrap;
+    background: none;
+    border: 0;
+    padding: 0;
+}
+
+.accion i{ font-size: 1.15rem; }
+.accion:hover, .accion.active{ color: var(--marca); }
+
+.btn-carrito{
+    position: relative;
+    color: var(--texto);
+    font-size: 1.35rem;
+    cursor: pointer;
     text-decoration: none;
 }
 
-.btn-carrito:hover, .btn-carrito.active{
-    background-color: var(--marca-oscuro);
-    color: #fff;
-}
+.btn-carrito:hover, .btn-carrito.active{ color: var(--marca); }
 
-.btn-carrito .badge{                                /* número de unidades sobre el ícono */
+.btn-carrito .badge{                                /* número de unidades sobre el carrito */
     position: absolute;
-    top: -4px;
-    right: -6px;
-    font-size: .7rem;
+    top: -8px;
+    right: -11px;
+    font-size: .68rem;
     background-color: var(--acento) !important;
 }
 
-/* Encabezado de cada página (<header-component>) */
+/* Celular: el buscador baja a una segunda fila y se ocultan los textos de las acciones */
+@media (max-width: 767.98px){
+    .cabecera-fila{
+        grid-template-columns: auto 1fr auto;
+        grid-template-areas: "menu logo acciones"
+                             "buscador buscador buscador";
+        gap: 10px 12px;
+    }
+    .marca{ font-size: 1.15rem; }
+    .marca span{ display: none; }
+    .accion span{ display: none; }
+    .acciones{ gap: 16px; }
+    .buscador{ max-width: none; }
+}
+
+/* ---------- Panel lateral (☰) ---------- */
+.menu-lateral{
+    --bs-offcanvas-width: 300px;
+}
+
+.menu-lateral .offcanvas-title{
+    font-size: 1.15rem;
+}
+
+.menu-lateral .titulo-seccion{
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--texto-suave);
+    font-weight: 700;
+    margin: 18px 0 6px;
+}
+
+.lista-menu{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.lista-menu a{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 10px;
+    margin: 0 -10px;
+    border-radius: 8px;
+    color: var(--texto);
+    text-decoration: none;
+    cursor: pointer;
+    font-size: .98rem;
+}
+
+.lista-menu a:hover{ background-color: var(--fondo-suave); }
+.lista-menu a.active{ color: var(--marca); font-weight: 700; }
+
+.lista-menu small{ color: var(--texto-suave); }
+
+/* ---------- Título de cada página (<header-component>) ---------- */
 #main-header{
-    background: linear-gradient(120deg, var(--marca-oscuro), var(--marca));
-    color: #fff;
-    padding: 28px 0 26px;
+    background-color: #fff;
+    border-bottom: 1px solid var(--borde);
+    padding: 30px 0 26px;
 }
 
 #main-header h1{
-    font-size: clamp(1.6rem, 3vw, 2.1rem);
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
     margin: 0;
 }
 
 #main-header p{
-    margin: 4px 0 0;
-    opacity: .85;
+    margin: 6px 0 0;
+    color: var(--texto-suave);
 }
 
 /* Todas las secciones con el mismo espacio */
 .padded, .padded-sm{
-    margin: 40px 0 56px;
+    margin: 36px 0 56px;
 }
 
 footer{
-    background-color: #102a1e;
-    color: rgba(255, 255, 255, .75);
-    font-size: .9rem;
+    background-color: var(--texto);
+    color: rgba(255, 255, 255, .7);
+    font-size: .88rem;
     padding: 22px 0;
 }
 
-footer strong{
-    color: #fff;
-}
+footer strong{ color: #fff; }
 
 /* =====================================================================
    Tarjeta de producto (una sola para Tienda e Inicio)
@@ -247,18 +370,17 @@ footer strong{
     position: relative;
     height: 100%;
     overflow: hidden;
-    box-shadow: var(--sombra);
-    transition: transform .2s, box-shadow .2s;
+    transition: box-shadow .2s, border-color .2s;
 }
 
 .card-producto:hover{
-    transform: translateY(-3px);
+    border-color: #d8d4ca;
     box-shadow: var(--sombra-hover);
 }
 
 .card-producto .foto{                               /* todas las fotos del mismo tamaño */
     aspect-ratio: 1 / 1;
-    padding: 16px;
+    padding: 18px;
     background-color: #fff;
     display: flex;
     align-items: center;
@@ -269,21 +391,23 @@ footer strong{
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;                            /* la foto entra completa, sin deformarse */
+    transition: transform .3s;
 }
+
+.card-producto:hover .foto img{ transform: scale(1.04); }
 
 .card-producto .card-body{
     display: flex;
     flex-direction: column;
     gap: 6px;
     padding: 12px 14px 14px;
-    border-top: 1px solid var(--borde);
 }
 
 .card-producto .nombre{
-    font-size: .95rem;
+    font-size: .93rem;
     font-weight: 600;
-    line-height: 1.3;
-    min-height: 2.6em;                              /* siempre el espacio de 2 líneas: precios alineados */
+    line-height: 1.35;
+    min-height: 2.7em;                              /* siempre el espacio de 2 líneas: precios alineados */
     display: -webkit-box;
     -webkit-line-clamp: 2;                          /* nombres largos: máximo 2 líneas con "..." */
     -webkit-box-orient: vertical;
@@ -292,22 +416,23 @@ footer strong{
 }
 
 .card-producto .precio{
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: var(--marca-oscuro);
+    font-size: 1.12rem;
+    font-weight: 800;
+    color: var(--texto);
 }
 
 .precio-anterior{
     text-decoration: line-through;
-    color: #9aa19d;
-    font-size: .85rem;
-    font-weight: 400;
+    color: #a3a8a4;
+    font-size: .84rem;
+    font-weight: 500;
     margin-left: .4em;
 }
 
 .card-producto .estado-stock{
-    font-size: .8rem;
+    font-size: .78rem;
     min-height: 1.2em;
+    color: var(--texto-suave);
 }
 
 .etiqueta-descuento{                                /* "-50%" arriba a la izquierda */
@@ -318,13 +443,13 @@ footer strong{
     background-color: var(--acento);
     color: #fff;
     font-weight: 700;
-    font-size: .8rem;
-    padding: 3px 9px;
-    border-radius: 999px;
+    font-size: .75rem;
+    padding: 3px 8px;
+    border-radius: 6px;
 }
 
 .producto-agotado .foto img{                        /* producto sin stock: imagen apagada */
-    opacity: .45;
+    opacity: .4;
     filter: grayscale(1);
 }
 
@@ -334,21 +459,32 @@ footer strong{
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border-color: var(--borde);
+    font-size: .95rem;
 }
 
-.lista-categorias .list-group-item:not(.active):hover{
-    background-color: var(--fondo-suave);
+.lista-categorias .list-group-item .badge{
+    background-color: var(--fondo-suave) !important;
+    color: var(--texto-suave) !important;
+    font-weight: 600;
 }
+
+.lista-categorias .list-group-item.active .badge{
+    background-color: rgba(255, 255, 255, .2) !important;
+    color: #fff !important;
+}
+
+.lista-categorias .list-group-item:not(.active):hover{ background-color: var(--fondo-suave); }
 
 @media (min-width: 768px){
     .columna-categorias{                            /* en escritorio las categorías acompañan al bajar */
         position: sticky;
-        top: 80px;
+        top: 90px;
         align-self: flex-start;
     }
 }
 
-/* Avisos tipo franja (mayoristas en Tienda, carrito, etc.) */
+/* Avisos tipo franja (mayoristas en Tienda, etc.) */
 .franja{
     display: flex;
     flex-wrap: wrap;
@@ -356,12 +492,12 @@ footer strong{
     gap: 12px 16px;
     padding: 14px 18px;
     border-radius: var(--radio);
-    background-color: var(--marca-claro);
-    border: 1px solid #cfe6d9;
+    background-color: #fff;
+    border: 1px solid var(--borde);
 }
 
 .franja > i{
-    font-size: 1.6rem;
+    font-size: 1.4rem;
     color: var(--marca);
 }
 
@@ -370,7 +506,8 @@ footer strong{
    ===================================================================== */
 
 .cifra{                                             /* número grande con su texto */
-    background-color: var(--marca-claro);
+    background-color: #fff;
+    border: 1px solid var(--borde);
     border-radius: var(--radio);
     padding: 18px 12px;
     height: 100%;
@@ -378,38 +515,32 @@ footer strong{
 
 .cifra strong{
     display: block;
-    font-size: 2.2rem;
+    font-size: 2.1rem;
     line-height: 1;
     color: var(--marca-oscuro);
 }
 
 .cifra span{
-    font-size: .9rem;
+    font-size: .88rem;
     color: var(--texto-suave);
 }
 
 .tarjeta-beneficio{
-    border: 0;
-    border-top: 4px solid var(--marca);
-    box-shadow: var(--sombra);
+    border: 1px solid var(--borde);
 }
 
-.sede, .paso{
+.tarjeta-beneficio i{ color: var(--marca); }
+
+.sede, .paso, .valor{
     height: 100%;
     padding: 16px;
+    background-color: #fff;
     border: 1px solid var(--borde);
     border-radius: var(--radio);
 }
 
-.valor{
-    height: 100%;
-    padding: 16px;
-    border-radius: var(--radio);
-    background-color: var(--fondo-suave);
-}
-
 .valor i{
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     color: var(--marca);
     margin-bottom: 8px;
 }
@@ -424,17 +555,17 @@ footer strong{
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     margin-bottom: 8px;
     border-radius: 50%;
-    background-color: var(--marca);
-    color: #fff;
+    border: 1.5px solid var(--marca);
+    color: var(--marca);
     font-weight: 700;
 }
 
 /* =====================================================================
-   Carrito
+   Carrito y Mis pedidos
    ===================================================================== */
 
 .cantidad-carrito{                                  /* caja de cantidad entre los botones - y + */
@@ -442,8 +573,13 @@ footer strong{
     text-align: center;
 }
 
-#tbody-carrito .icono-eliminar{
-    color: var(--acento);
+#tbody-carrito .icono-eliminar{ color: var(--acento); }
+
+.pedido .estado{
+    font-size: .75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
 }
 
 /* =====================================================================
@@ -451,8 +587,7 @@ footer strong{
    ===================================================================== */
 
 .kpi{
-    border-left: 4px solid var(--marca);
-    box-shadow: var(--sombra);
+    border-left: 3px solid var(--marca);
 }
 
 .foto-destacado{                                    /* foto redonda del asesor destacado (Indicadores) */
@@ -464,7 +599,7 @@ footer strong{
 
 .celda-degradado{                                   /* celdas con color según el valor (Proveedores) */
     font-variant-numeric: tabular-nums;             /* números alineados */
-    border-left: 2px solid #fff;
+    border-left: 2px solid var(--fondo);
 }
 
 .muestra-degradado{                                 /* mini leyenda del degradado */
@@ -473,18 +608,15 @@ footer strong{
     height: 10px;
     border-radius: 3px;
     vertical-align: middle;
-    background: linear-gradient(to right, rgba(25, 135, 84, .08), rgba(25, 135, 84, .9));
+    background: linear-gradient(to right, rgba(31, 92, 69, .08), rgba(31, 92, 69, .9));
 }
 
 .tabla-proveedores thead .grupos th{                /* fila de grupos: más pequeña y con línea inferior */
-    font-size: .72rem;
+    font-size: .7rem;
     color: var(--texto-suave);
-    border-bottom: 2px solid var(--borde);
 }
 
-.tabla-proveedores thead th[title]{                 /* los encabezados con explicación muestran el cursor de ayuda */
-    cursor: help;
-}
+.tabla-proveedores thead th[title]{ cursor: help; }
 
 /* =====================================================================
    Animación de carga

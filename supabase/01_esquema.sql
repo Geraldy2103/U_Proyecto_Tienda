@@ -296,7 +296,9 @@ create view resumen_asesores with (security_invoker = on) as
     join directores d on d.iddirector = a.iddirector
     join sedes s on s.idsede = d.idsede;
 
-create view ventas_por_sede with (security_invoker = on) as
+-- ventas_por_sede y resumen_proveedores usan el COSTO (margen), que los clientes no pueden leer.
+-- Por eso se ejecutan con permisos del dueño de la vista y solo devuelven filas al admin.
+create view ventas_por_sede as
     select s.idsede, s.nombre as sede,
            count(p.idpedido)::int as pedidos,
            coalesce(sum(p.total), 0) as ventas,
@@ -305,6 +307,7 @@ create view ventas_por_sede with (security_invoker = on) as
            coalesce(sum((select sum(d.margen) from pedido_detalle d where d.idpedido = p.idpedido)), 0) as margen
     from sedes s
     left join pedidos p on p.idsede = s.idsede and p.estado <> 'anulado'
+    where es_admin()
     group by s.idsede, s.nombre;
 
 
@@ -323,7 +326,7 @@ create trigger al_anular_pedido after update of estado on pedidos
     for each row execute function devolver_stock_al_anular();
 
 -- Proveedores: cuántos productos aportan, cuánto se vendió de ellos y qué margen dejan
-create view resumen_proveedores with (security_invoker = on) as
+create view resumen_proveedores as
     select v.idproveedor, v.nombreempresa, v.nombrecontacto, v.cargocontacto, v.telefono, v.ciudad, v.pais,
            (select count(*) from productos p where p.idproveedor = v.idproveedor)::int as productos,
            (select count(*) from productos p where p.idproveedor = v.idproveedor and p.stock <= p.stock_minimo)::int as por_reponer,
@@ -334,6 +337,7 @@ create view resumen_proveedores with (security_invoker = on) as
     left join productos p on p.idproveedor = v.idproveedor
     left join pedido_detalle d on d.idproducto = p.idproducto
          and exists (select 1 from pedidos x where x.idpedido = d.idpedido and x.estado <> 'anulado')
+    where es_admin()
     group by v.idproveedor;
 
 -- Catálogo completo CON costo y ganancia unitaria, solo para el admin.
@@ -416,7 +420,9 @@ grant select (idproducto, nombre, precio, preciorebajado, imagenchica, idcategor
 grant insert, update, delete on productos to authenticated;
 grant select, insert, update, delete on categorias, proveedores, sedes, directores, asesores to authenticated;
 grant select on productos_admin to authenticated;
-grant select on perfiles, pedidos, pedido_detalle, resumen_asesores, ventas_por_sede,
+-- pedido_detalle: el cliente ve sus productos, precios y cantidades, pero NO costo ni margen
+grant select (idpedido, idproducto, nombre, precio, cantidad, subtotal) on pedido_detalle to authenticated;
+grant select on perfiles, pedidos, resumen_asesores, ventas_por_sede,
                 resumen_proveedores, productos_por_reponer to authenticated;
 grant update (estado) on pedidos to authenticated;
 grant select, insert, update on solicitudes_mayoristas to authenticated;
