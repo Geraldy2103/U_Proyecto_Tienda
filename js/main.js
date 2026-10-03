@@ -22,6 +22,14 @@ const mensajeError = (texto) => `
         <i class="fa-solid fa-triangle-exclamation"></i> ${texto}
     </div>`
 
+/* Convierte un texto en algo seguro para meterlo con innerHTML.
+   Si alguien escribe "<script>" como nombre, se verá como texto y no se ejecutará. */
+const escaparHTML = (texto) => {
+    const div = document.createElement("div")
+    div.textContent = texto
+    return div.innerHTML
+}
+
 /* Lee el carrito guardado en sessionStorage.
    Si no hay nada devuelve [] y si el texto guardado está dañado (JSON inválido)
    lo borra y también devuelve [], así la página no se rompe. */
