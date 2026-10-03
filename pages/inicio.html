@@ -1,12 +1,96 @@
-<header-component titulo="Ideas Digitales"
-  frase="Tecnología e ideas para tu día a día">
+<header-component titulo="El Galpón del Costo"
+  frase="Precios de galpón para tu casa y para tu negocio">
 </header-component>
 
-<section class="padded">
+<section class="padded-sm">
     <div class="container">
-        <h1>Inicio</h1>
-        <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Commodi mollitia architecto sapiente expedita laboriosam libero esse natus non velit provident, voluptates quas sint nostrum harum, deleniti quaerat maiores ullam quia autem ipsam, distinctio itaque repudiandae? Doloremque animi quaerat sequi aperiam doloribus, excepturi asperiores, sint odit deleniti possimus soluta distinctio temporibus. Ipsa velit quos enim delectus quas dicta sunt maxime neque amet facere quis harum inventore aspernatur vero earum, facilis blanditiis dolores quibusdam doloribus tempora hic beatae non molestias. Possimus suscipit porro totam, ipsa, unde maxime, esse cum ducimus velit explicabo dolorum neque distinctio eos eligendi fugiat aperiam accusantium iste saepe?</p>
-        <p>Nulla necessitatibus nobis impedit esse quas maxime voluptates distinctio libero dolorum inventore ad, eveniet voluptas, veniam quisquam perferendis ratione eius non nostrum earum? Est corporis quas reiciendis, autem fugit, animi aliquid iure deserunt quod minus soluta aliquam cum. Aliquam et adipisci iste asperiores soluta necessitatibus accusantium deserunt consequatur assumenda, aut facilis veniam, modi beatae eius magni nihil quas nulla libero, maiores doloremque ipsam harum ut excepturi? Aliquid hic voluptate deleniti necessitatibus architecto! Dolore laudantium sit animi et sed minima, totam ipsa, vitae provident ex non unde voluptatibus ad architecto earum in optio fugit eveniet quas facilis voluptas facere cumque? Officia?</p>
-        <p>Ratione, ad consectetur, nihil saepe fuga assumenda cupiditate similique quidem perferendis quis necessitatibus neque expedita. Explicabo dolorem, necessitatibus temporibus illum quas dolorum, cum fugiat perspiciatis deserunt itaque doloremque voluptates nisi ex, quis laudantium libero quod officiis eum. Sed quis magnam itaque harum libero quisquam, non, corrupti consequuntur aliquam, reiciendis debitis dolorem maxime. Totam, soluta eaque id eum necessitatibus natus ab similique autem voluptatem quam aspernatur quae doloribus qui neque enim? Ducimus inventore exercitationem obcaecati minus error, ipsum vero ut alias voluptatem repellat facere earum illum animi voluptatum culpa temporibus minima, quas numquam provident excepturi! Praesentium fugiat enim laborum similique doloribus?</p>
+
+        <!-- Presentación -->
+        <div class="row align-items-center g-4 mb-5">
+            <div class="col-lg-7">
+                <p class="text-uppercase text-success fw-bold small mb-1">Minorista y mayorista · Lima</p>
+                <h2 class="display-6 fw-bold">Compra como en almacén, aunque lleves una sola unidad</h2>
+                <p class="lead">
+                    Somos un galpón de abarrotes con productos de 16 países y marcas peruanas.
+                    Compramos en volumen directamente a nuestros proveedores para que tú pagues
+                    lo más cerca posible del costo.
+                </p>
+                <div class="d-flex flex-wrap gap-2">
+                    <button class="btn btn-success btn-lg" onclick="irAPagina('Tienda')">
+                        <i class="fa-solid fa-basket-shopping"></i> Ver la tienda
+                    </button>
+                    <button class="btn btn-outline-dark btn-lg" onclick="irAPagina('Mayoristas')">
+                        <i class="fa-solid fa-boxes-stacked"></i> Soy negocio
+                    </button>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="row row-cols-2 g-3 text-center">
+                    <div class="col"><div class="cifra"><strong>81</strong><span>productos</span></div></div>
+                    <div class="col"><div class="cifra"><strong>16</strong><span>países de origen</span></div></div>
+                    <div class="col"><div class="cifra"><strong>3</strong><span>sedes en Lima</span></div></div>
+                    <div class="col"><div class="cifra"><strong>21</strong><span>productos en oferta</span></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Por qué comprar aquí -->
+        <h3 class="mb-3">¿Por qué El Galpón?</h3>
+        <div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
+            <div class="col">
+                <div class="card h-100 tarjeta-beneficio">
+                    <div class="card-body">
+                        <i class="fa-solid fa-tags fa-2x text-success mb-3"></i>
+                        <h5 class="card-title">Precios de galpón</h5>
+                        <p class="card-text">Sin intermediarios: compramos por contenedor a 29 proveedores y
+                            trasladamos ese ahorro a cada producto.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100 tarjeta-beneficio">
+                    <div class="card-body">
+                        <i class="fa-solid fa-box-open fa-2x text-success mb-3"></i>
+                        <h5 class="card-title">Por unidad o por caja</h5>
+                        <p class="card-text">Lleva lo que necesites para tu casa. Y si llevas 12 unidades o más de
+                            un producto, un asesor comercial te atiende personalmente.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100 tarjeta-beneficio">
+                    <div class="card-body">
+                        <i class="fa-solid fa-earth-americas fa-2x text-success mb-3"></i>
+                        <h5 class="card-title">Del mundo a tu mesa</h5>
+                        <p class="card-text">Tés, quesos europeos, conservas y repostería importada junto a las marcas
+                            peruanas de siempre, en 8 categorías.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sedes -->
+        <h3 class="mb-3">Encuéntranos</h3>
+        <div class="row row-cols-1 row-cols-md-3 g-3 mb-5">
+            <div class="col">
+                <div class="sede">
+                    <h6><i class="fa-solid fa-location-dot text-danger"></i> Miraflores</h6>
+                    <p class="mb-0 small">Av. José Larco 1150</p>
+                </div>
+            </div>
+            <div class="col">
+                <div class="sede">
+                    <h6><i class="fa-solid fa-location-dot text-danger"></i> San Isidro</h6>
+                    <p class="mb-0 small">Av. Camino Real 1050</p>
+                </div>
+            </div>
+            <div class="col">
+                <div class="sede">
+                    <h6><i class="fa-solid fa-location-dot text-danger"></i> Callao</h6>
+                    <p class="mb-0 small">Av. Sáenz Peña 600</p>
+                </div>
+            </div>
+        </div>
+        <p class="small text-body-secondary mb-0">Lunes a sábado de 8:00 a.m. a 9:00 p.m. · Domingos de 9:00 a.m. a 6:00 p.m.</p>
     </div>
 </section>

@@ -1,5 +1,5 @@
 -- =====================================================================
--- Ideas Digitales | Tienda — Datos de DEMOSTRACIÓN (opcional)
+-- El Galpón del Costo — Datos de DEMOSTRACIÓN (opcional)
 -- Crea pedidos y solicitudes de ejemplo de los últimos 90 días para que la página
 -- de Indicadores tenga información que mostrar.
 -- Requisitos: haber ejecutado 01 y 02, y tener al menos UNA cuenta creada en la página

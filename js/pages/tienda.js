@@ -5,8 +5,7 @@
     const categoriasRecuento = document.getElementById("categorias-recuento")
     const cuadriculaProductos = document.getElementById("cuadricula-productos")
 
-    // la página de asesores revisa sola si se cumplen los requisitos (sesión y 12+ unidades)
-    document.getElementById("btn-ir-mayoristas").addEventListener("click", () => irAPagina("Asesores comerciales"))
+    document.getElementById("btn-ir-mayoristas").addEventListener("click", () => irAPagina("Mayoristas"))
 
 
     // categorias_con_total es una vista: cada categoría con su cantidad de productos

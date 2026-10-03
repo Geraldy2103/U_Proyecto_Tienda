@@ -176,7 +176,7 @@ oculto: true = no aparece en el menú; se abre con un botón (por ejemplo "Mayor
 const menuItems = [
     {etiqueta: "Inicio",       pagina: "pages/inicio.html"},
     {etiqueta: "Nosotros",     pagina: "pages/nosotros.html"},
-    {etiqueta: "Inversiones",  pagina: "pages/inversiones.html"},
+    {etiqueta: "Mayoristas",   pagina: "pages/mayoristas.html"},
     {etiqueta: "Tienda",       pagina: "pages/tienda.html", codigo: "js/pages/tienda.js"},
     {etiqueta: "Carrito",      pagina: "pages/carrito.html", codigo: "js/pages/carrito.js"},
     {etiqueta: "Asesores comerciales", pagina: "pages/asesores.html", codigo: "js/pages/asesores.js", oculto: true},

@@ -1,5 +1,5 @@
 -- =====================================================================
--- Ideas Digitales | Tienda — Datos iniciales
+-- El Galpón del Costo — Datos iniciales
 -- Catálogo copiado (solo lectura) de servicios.campus.pe. El equipo comercial usa
 -- nombres y fotos de los empleados del curso (sin sueldos ni claves); correos ficticios.
 -- Proveedor de cada producto: el de la base Northwind. Stock y costos: SIMULADOS.
@@ -149,28 +149,28 @@ insert into sedes (idsede, nombre, direccion, distrito) overriding system value 
 
 -- directores: 9 registros
 insert into directores (iddirector, nombres, apellidos, correo, foto, idsede) overriding system value values
-    (1, 'Gigi', 'Hadid', 'gigi.hadid@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/gigi_hadid.jpg', 1),
-    (2, 'Joan', 'Smalls', 'joan.smalls@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/joan_smalls.jpg', 1),
-    (3, 'Kendall', 'Jenner', 'kendall.jenner@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/kendall_jenner.jpg', 1),
-    (4, 'Alexander', 'Skarsgård', 'alexander.skarsgard@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/alexander_skarsgard.jpg', 2),
-    (5, 'Rosie', 'Huntington', 'rosie.huntington@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/rosie_huntington.jpg', 2),
-    (6, 'Brooklyn', 'Decker', 'brooklyn.decker@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/brooklyn_decker.jpg', 2),
-    (7, 'Taylor', 'Swift', 'taylor.swift@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/taylor_swift.jpg', 3),
-    (8, 'Liu', 'Wen', 'liu.wen@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/liu_wen.jpg', 3),
-    (9, 'Ryan', 'Reynolds', 'ryan.reynolds@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/ryan_reynolds.jpg', 3);
+    (1, 'Gigi', 'Hadid', 'gigi.hadid@galpondelcosto.pe', 'https://servicios.campus.pe/imagenes/empleados/gigi_hadid.jpg', 1),
+    (2, 'Joan', 'Smalls', 'joan.smalls@galpondelcosto.pe', 'https://servicios.campus.pe/imagenes/empleados/joan_smalls.jpg', 1),
+    (3, 'Kendall', 'Jenner', 'kendall.jenner@galpondelcosto.pe', 'https://servicios.campus.pe/imagenes/empleados/kendall_jenner.jpg', 1),
+    (4, 'Alexander', 'Skarsgård', 'alexander.skarsgard@galpondelcosto.pe', 'https://servicios.campus.pe/imagenes/empleados/alexander_skarsgard.jpg', 2),
+    (5, 'Rosie', 'Huntington', 'rosie.huntington@galpondelcosto.pe', 'https://servicios.campus.pe/imagenes/empleados/rosie_huntington.jpg', 2),
+    (6, 'Brooklyn', 'Decker', 'brooklyn.decker@galpondelcosto.pe', 'https://servicios.campus.pe/imagenes/empleados/brooklyn_decker.jpg', 2),
+    (7, 'Taylor', 'Swift', 'taylor.swift@galpondelcosto.pe', 'https://servicios.campus.pe/imagenes/empleados/taylor_swift.jpg', 3),
+    (8, 'Liu', 'Wen', 'liu.wen@galpondelcosto.pe', 'https://servicios.campus.pe/imagenes/empleados/liu_wen.jpg', 3),
+    (9, 'Ryan', 'Reynolds', 'ryan.reynolds@galpondelcosto.pe', 'https://servicios.campus.pe/imagenes/empleados/ryan_reynolds.jpg', 3);
 
 -- asesores: 10 registros
 insert into asesores (idasesor, nombres, apellidos, correo, foto, iddirector) overriding system value values
-    (1, 'Nicholas', 'Galitzine', 'nicholas.galitzine@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/nicholas_galitzine.jpg', 1),
-    (2, 'Regé-Jean', 'Page', 'rege-jean.page@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/rege-jean_page.jpg', 1),
-    (3, 'Kaia', 'Gerber', 'kaia.gerber@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/kaia_garber.jpg', 2),
-    (4, 'Kate', 'Upton', 'kate.upton@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/kate_upton.jpg', 3),
-    (5, 'Ryan', 'Gosling', 'ryan.gosling@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/ryan_gosling.jpg', 4),
-    (6, 'Dua', 'Lipa', 'dua.lipa@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/dua_lipa.jpg', 5),
-    (7, 'Jennie', 'Kim', 'jennie.kim@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/jennie_kim.jpg', 6),
-    (8, 'Romee', 'Strijd', 'romee.strijd@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/romee_strijd.jpg', 7),
-    (9, 'Sana', 'Minatozaki', 'sana.minatozaki@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/sana_minatozaki.jpg', 8),
-    (10, 'Glen', 'Powell', 'glen.powell@ideasdigitales.pe', 'https://servicios.campus.pe/imagenes/empleados/glen_powell.jpg', 9);
+    (1, 'Nicholas', 'Galitzine', 'nicholas.galitzine@galpondelcosto.pe', 'https://servicios.campus.pe/imagenes/empleados/nicholas_galitzine.jpg', 1),
+    (2, 'Regé-Jean', 'Page', 'rege-jean.page@galpondelcosto.pe', 'https://servicios.campus.pe/imagenes/empleados/rege-jean_page.jpg', 1),
+    (3, 'Kaia', 'Gerber', 'kaia.gerber@galpondelcosto.pe', 'https://servicios.campus.pe/imagenes/empleados/kaia_garber.jpg', 2),
+    (4, 'Kate', 'Upton', 'kate.upton@galpondelcosto.pe', 'https://servicios.campus.pe/imagenes/empleados/kate_upton.jpg', 3),
+    (5, 'Ryan', 'Gosling', 'ryan.gosling@galpondelcosto.pe', 'https://servicios.campus.pe/imagenes/empleados/ryan_gosling.jpg', 4),
+    (6, 'Dua', 'Lipa', 'dua.lipa@galpondelcosto.pe', 'https://servicios.campus.pe/imagenes/empleados/dua_lipa.jpg', 5),
+    (7, 'Jennie', 'Kim', 'jennie.kim@galpondelcosto.pe', 'https://servicios.campus.pe/imagenes/empleados/jennie_kim.jpg', 6),
+    (8, 'Romee', 'Strijd', 'romee.strijd@galpondelcosto.pe', 'https://servicios.campus.pe/imagenes/empleados/romee_strijd.jpg', 7),
+    (9, 'Sana', 'Minatozaki', 'sana.minatozaki@galpondelcosto.pe', 'https://servicios.campus.pe/imagenes/empleados/sana_minatozaki.jpg', 8),
+    (10, 'Glen', 'Powell', 'glen.powell@galpondelcosto.pe', 'https://servicios.campus.pe/imagenes/empleados/glen_powell.jpg', 9);
 
 -- Los autonuméricos siguen después del último código cargado
 select setval(pg_get_serial_sequence('categorias', 'idcategoria'), (select max(idcategoria) from categorias));

@@ -1,5 +1,5 @@
 -- =====================================================================
--- Ideas Digitales | Tienda minorista y mayorista — Esquema (Supabase / PostgreSQL)
+-- El Galpón del Costo (minorista y mayorista) — Esquema (Supabase / PostgreSQL)
 -- Cómo usarlo: Supabase > SQL Editor > New query, pegar TODO este archivo y pulsar Run.
 -- Se puede volver a ejecutar: borra lo que exista y lo crea de nuevo
 -- (las cuentas de usuario se conservan; el rol admin hay que volver a asignarlo).
