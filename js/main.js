@@ -37,11 +37,9 @@ menuItems.forEach(item => {
     menuA.addEventListener("click", () => {
         mainNav.querySelectorAll("a").forEach(mli => mli.classList.remove("active"))
         menuA.classList.add("active")
-        console.log(item.pagina)
         fetch(item.pagina) /*fetch() significa básicamente:"Ve a buscar este recurso."*/
         .then(response => response.text())/*response representa la respuesta que recibió el navegador, response.text() convierte el contenido en texto.*/
         .then(data => {  /*"Cuando termine lo anterior, recibe el resultado y llámalo data."*/ 
-            console.log(data)
             mainContent.innerHTML = data  /*"Mete el contenido de data dentro de mainContent como HTML."*/ 
 
 
@@ -78,7 +76,6 @@ customElements.define("header-component", HeaderComponent) /*Cuando veas <header
 
 
 const agregarItemCarrito = (nuevoItem, cantidad) => {
-    console.log(nuevoItem)
     const precioFinal = nuevoItem.preciorebajado ? nuevoItem.preciorebajado : nuevoItem.precio
     
     const itemCarrito = {                   //esto es un objeto json

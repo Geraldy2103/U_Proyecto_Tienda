@@ -9,7 +9,6 @@
     fetch(rutaServicio)
         .then(response => response.json())
         .then(data => {
-            console.log(data)
             data.forEach(item => {
                 const fila = `<tr>
                         <td>${item.iddirector}</td>
@@ -23,7 +22,7 @@
         })
 
     formInsertar.addEventListener("submit", (event) => { // es un "escucha": cuando el formulario se envía (al pulsar el botón Guardar), ejecuta el código de la función.//(event) → tengo el objeto y puedo, por ejemplo, frenar la recarga // () → no puedo frenar la recarga, no tengo el objeto
-        console.log("Hola")                             // sin esto la página se recarga al enviar 
-        console.log(txtNombres.value, txtPeliculas.value)                         
+        event.preventDefault()                          // evita que el formulario recargue la página
+        console.log(txtNombres.value, txtPeliculas.value) // (fase 3: aquí se enviará a la API)                         
     })
 })()

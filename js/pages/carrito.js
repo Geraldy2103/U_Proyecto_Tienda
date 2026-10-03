@@ -5,6 +5,12 @@
 
     let carrito = []
 
+    // Mensaje dentro de una fila de la tabla para no romper el HTML
+    const mostrarVacio = () => {
+        tbodyCarrito.innerHTML = `<tr><td colspan="6" class="text-center">El carrito está vacío</td></tr>`
+        cajaTotal.innerText = "S/ 0.00"
+    }
+
     const calcularTotal = () => {
         const total = carrito.reduce((acumulador, item) => acumulador + (item.precio * item.cantidad), 0) // reduce es un método de los arrays que permite reducir un array a un único valor, en este caso el total de la compra
         cajaTotal.innerText = "S/ " + total.toFixed(2)
@@ -12,7 +18,6 @@
 
     const dibujarCarrito = () => {
         carrito = JSON.parse(sessionStorage.getItem("carritocompras"))
-        console.log(carrito)
         carrito.forEach(item => {
             const fila = `<tr>
                 <td>${item.idproducto}</td>
@@ -30,15 +35,14 @@
         
         iconosEliminar.forEach((iEliminar, index) => {
             iEliminar.addEventListener("click", () => {
-                console.log(carrito[index])
                 carrito.splice(index, 1)
                 sessionStorage.setItem("carritocompras", JSON.stringify(carrito))
                 tbodyCarrito.innerHTML = ""
                 if(carrito.length>0){
                     dibujarCarrito()
                 } else {
-                    tbodyCarrito.textContent = "El carrito esta vacío"
-                    cajaTotal.textContent = "S/ 0.00"
+                    sessionStorage.removeItem("carritocompras")
+                    mostrarVacio()
                 }
             })
         })
@@ -47,8 +51,7 @@
     if(sessionStorage.getItem("carritocompras")) {
         dibujarCarrito()
     } else{
-        tbodyCarrito.textContent = "El carrito esta vacío"
-        cajaTotal.innerText = "S/ 0.00"
+        mostrarVacio()
     } 
 
 
@@ -56,7 +59,6 @@
     btnVaciarCarrito.addEventListener("click", () => {
         
         sessionStorage.removeItem("carritocompras")
-        tbodyCarrito.innerHTML = "El carrito esta vacío"
-        cajaTotal.innerText = "S/ 0.00"
+        mostrarVacio()
     })
 })()
