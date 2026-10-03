@@ -60,26 +60,31 @@
                 ((item.preciorebajado/item.precio-1) * 100).toFixed(0) : 0
                 const verPorcentajeDescuento = item.preciorebajado ?
                 `<div class="porcentaje-descuento">${porcentajeDescuento}%</div>` : ""
+                // Stock: agotado (sin botón de carrito) o pocas unidades
+                const agotado = item.stock === 0
+                const avisoStock = agotado ? `<span class="badge text-bg-dark">Agotado</span>` :
+                    item.stock <= item.stock_minimo ? `<small class="text-danger">¡Solo quedan ${item.stock}!</small>` : ""
 
                 cards += `
                 <div class="col">
-                    <div class="card">
-                        <img src="${rutaImagen}" class="card-img-top" alt="${item.nombre}">
+                    <div class="card ${agotado ? "producto-agotado" : ""}">
+                        <img src="${rutaImagen}" class="card-img-top" alt="${escaparHTML(item.nombre)}">
                         ${verPorcentajeDescuento}
                         <div class="card-body">
-                             <h5 class="card-title">${item.nombre}</h5>
-                             <p class="card-text">S/ ${precioFinal.toFixed(2)} ${precioAnterior}</p>
-                        <i class="fa-solid fa-cart-shopping icono-carrito" title="Agregar al carrito"></i>
+                             <h5 class="card-title">${escaparHTML(item.nombre)}</h5>
+                             <p class="card-text mb-1">S/ ${precioFinal.toFixed(2)} ${precioAnterior}</p>
+                             ${avisoStock}
+                        ${agotado ? "" : `<i class="fa-solid fa-cart-shopping icono-carrito" data-id="${item.idproducto}" title="Agregar al carrito"></i>`}
                         </div>
                     </div>
                 </div>`
             })
             cuadriculaProductos.innerHTML = cards
+            // data-id dice qué producto es (no la posición: los agotados no tienen ícono)
             const iconosCarrito = cuadriculaProductos.querySelectorAll(".icono-carrito")
-            iconosCarrito.forEach((iCarrito, index) => {
+            iconosCarrito.forEach(iCarrito => {
                 iCarrito.addEventListener("click", () =>
-                    agregarItemCarrito(data[index], 1))
-
+                    agregarItemCarrito(data.find(p => p.idproducto == iCarrito.dataset.id), 1))
             })
         })
         .catch(error => {

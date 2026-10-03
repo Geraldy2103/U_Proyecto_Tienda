@@ -43,6 +43,9 @@
         document.getElementById("btn-mayoristas").addEventListener("click", () => irAPagina("Asesores comerciales"))
     }
 
+    /* Tope de unidades de un producto: su stock (los productos agregados antes de esta versión no lo guardan) */
+    const stockDe = (item) => item.stock === undefined ? 9999 : item.stock
+
     /* Dibuja la tabla completa a partir del array carrito.
        Se llama al inicio y después de cada cambio (sumar, restar, quitar, vaciar). */
     const dibujarCarrito = () => {
@@ -71,9 +74,9 @@
                         <i class="fa-solid fa-minus"></i>
                     </button>
                     <input type="number" class="form-control form-control-sm d-inline-block cantidad-carrito"
-                        data-index="${index}" value="${item.cantidad}" min="1" max="9999" aria-label="Cantidad">
+                        data-index="${index}" value="${item.cantidad}" min="1" max="${stockDe(item)}" aria-label="Cantidad">
                     <button class="btn btn-sm btn-outline-secondary btn-cantidad" data-index="${index}" data-cambio="1"
-                        title="Agregar uno">
+                        title="Agregar uno" ${item.cantidad >= stockDe(item) ? "disabled" : ""}>
                         <i class="fa-solid fa-plus"></i>
                     </button>
                 </td>
@@ -104,6 +107,7 @@
             const item = carrito[botonCantidad.dataset.index]
             item.cantidad += Number(botonCantidad.dataset.cambio) // +1 o -1
             if (item.cantidad < 1) item.cantidad = 1             // nunca menos de 1; para quitarlo está la papelera
+            if (item.cantidad > stockDe(item)) item.cantidad = stockDe(item)
             guardarYDibujar()
         }
 
@@ -118,7 +122,11 @@
         const caja = event.target.closest(".cantidad-carrito")
         if (!caja) return
         const cantidad = Math.floor(Number(caja.value))
-        carrito[caja.dataset.index].cantidad = cantidad >= 1 ? Math.min(cantidad, 9999) : 1 // solo números enteros desde 1
+        const item = carrito[caja.dataset.index]
+        item.cantidad = cantidad >= 1 ? Math.min(cantidad, stockDe(item)) : 1 // enteros desde 1 hasta el stock
+        if (cantidad > stockDe(item)) {
+            mostrarNotificacion(`Solo hay ${stockDe(item)} unidades de ${escaparHTML(item.nombre)}`, "fa-circle-info")
+        }
         guardarYDibujar()
     })
 

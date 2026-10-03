@@ -11,13 +11,18 @@ perfiles ──< pedidos ──< pedido_detalle            │
    │            └── idasesor (solo pedidos mayoristas) ┘
    └──< solicitudes_mayoristas ── idasesor
 
-categorias ──< productos          proveedores (solo admin)
+categorias ──< productos >── proveedores (solo admin)
+                  │  (stock, stock mínimo)
+                  └── costos_productos (solo admin)
 ```
 
 | Tabla / vista | Para qué sirve |
 |---|---|
-| `categorias`, `productos` | Catálogo de la tienda |
-| `proveedores` | Proveedores (solo los ve el admin) |
+| `categorias`, `productos` | Catálogo de la tienda, con proveedor, stock y stock mínimo |
+| `proveedores` | Proveedores (solo los ve el admin). La relación producto-proveedor es la de la base Northwind |
+| `costos_productos` | Costo de compra de cada producto (solo admin). **Valores simulados** |
+| `resumen_proveedores` (vista) | Por proveedor: productos, productos por reponer, unidades vendidas, ventas y margen |
+| `productos_por_reponer` (vista) | Productos en su stock mínimo o por debajo, con el contacto del proveedor |
 | `sedes` | Miraflores, San Isidro y Callao |
 | `directores` | Directores de venta: máximo 3 por sede |
 | `asesores` | Asesores comerciales: máximo 10; cada uno pertenece a un director (y a su sede) |
@@ -35,6 +40,8 @@ categorias ──< productos          proveedores (solo admin)
 - `confirmar_pedido` calcula precios y total con los precios del catálogo (el navegador no los puede
   cambiar) y solo permite asignar un asesor si el pedido es mayorista; en ese caso la venta queda en
   la sede del asesor.
+- `confirmar_pedido` también **descuenta el stock** y rechaza el pedido si no alcanza. Guarda el
+  costo de cada producto para calcular el margen. Si el admin anula un pedido, el stock se devuelve.
 - Visitantes: solo leen el catálogo y el equipo comercial. Clientes: ven sus propios pedidos y
   solicitudes. Admin: ve y modifica todo.
 

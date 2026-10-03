@@ -8,7 +8,7 @@
         <div id="aviso-indicadores"></div>
 
         <!-- Totales -->
-        <div class="row row-cols-2 row-cols-lg-4 g-3 mb-4" id="tarjetas-totales"></div>
+        <div class="row row-cols-2 row-cols-md-3 row-cols-xl-5 g-3 mb-4" id="tarjetas-totales"></div>
 
         <!-- Asesores destacados -->
         <div class="row g-3 mb-4" id="asesores-destacados"></div>
@@ -39,6 +39,23 @@
                     </table>
                 </div>
             </div>
+        </div>
+
+        <!-- Productos por reponer -->
+        <h4 class="mt-4">Productos por reponer <span class="badge text-bg-danger" id="cantidad-reponer"></span></h4>
+        <div class="table-responsive">
+            <table class="table table-sm align-middle">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th class="text-center">Stock</th>
+                        <th class="text-center">Mínimo</th>
+                        <th>Proveedor</th>
+                        <th>Contacto</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-reponer"></tbody>
+            </table>
         </div>
     </div>
 </section>

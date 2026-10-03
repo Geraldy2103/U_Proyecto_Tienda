@@ -42,10 +42,13 @@ begin
             returning idpedido into v_pedido;
 
         -- 1 a 4 productos distintos; mayorista: 12 a 60 unidades, minorista: 1 a 5
-        insert into pedido_detalle (idpedido, idproducto, nombre, precio, cantidad)
+        -- (los pedidos de demostración no descuentan stock: es un historial ya repuesto)
+        insert into pedido_detalle (idpedido, idproducto, nombre, precio, costo, cantidad)
             select v_pedido, p.idproducto, p.nombre, coalesce(nullif(p.preciorebajado, 0), p.precio),
+                   coalesce(c.costo, 0),
                    case when v_mayorista then 12 + floor(random() * 49)::int else 1 + floor(random() * 5)::int end
-            from (select * from productos order by random() limit 1 + floor(random() * 4)::int) p;
+            from (select * from productos order by random() limit 1 + floor(random() * 4)::int) p
+            left join costos_productos c on c.idproducto = p.idproducto;
 
         update pedidos set total = (select sum(subtotal) from pedido_detalle where idpedido = v_pedido)
             where idpedido = v_pedido;

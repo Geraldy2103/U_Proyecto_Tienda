@@ -316,11 +316,17 @@ const agregarItemCarrito = (nuevoItem, cantidad) => {
         return
     }
     const precioFinal = nuevoItem.preciorebajado ? nuevoItem.preciorebajado : nuevoItem.precio
+    const enCarrito = (leerCarrito().find(item => item.idproducto === nuevoItem.idproducto) || { cantidad: 0 }).cantidad
+    if (enCarrito + cantidad > nuevoItem.stock) { /*no se puede pedir más de lo que hay*/
+        mostrarNotificacion(`Solo hay ${nuevoItem.stock} unidades de ${escaparHTML(nuevoItem.nombre)}`, "fa-circle-info")
+        return
+    }
     
     const itemCarrito = {                   //esto es un objeto json
         idproducto: nuevoItem.idproducto,
         nombre: nuevoItem.nombre,
         precio: precioFinal,
+        stock: nuevoItem.stock,             // para no pasar del stock en el carrito (la base también lo revisa)
         cantidad: cantidad
     }
     const carrito = leerCarrito()  //productos guardados en sessionStorage; si todavía no hay ninguno, un array vacío

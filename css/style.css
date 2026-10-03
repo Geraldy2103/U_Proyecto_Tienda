@@ -83,6 +83,11 @@
 }
 
 
+.producto-agotado img{                              /* producto sin stock: imagen apagada */
+    opacity: .45;
+    filter: grayscale(1);
+}
+
 .precio-anterior {
     text-decoration: line-through;
     color: #999999;
