@@ -19,7 +19,7 @@
 <body>
 
   <!-- Barra de navegación -->
-  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top shadow-sm">
     <div class="container">
 
       <!-- Nombre o logo de la página -->
@@ -27,11 +27,19 @@
         <i class="fa-solid fa-warehouse"></i> El Galpón <span>del Costo</span>
       </a>
 
-      <!-- Botón para mostrar/ocultar el menú en pantallas pequeñas -->
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+      <!-- Carrito y botón ☰: quedan fuera del menú plegable para verse siempre, también en celular -->
+      <div class="d-flex align-items-center gap-2 order-lg-last ms-lg-3">
+        <a class="btn-carrito" id="btn-carrito-nav" data-etiqueta="Carrito" onclick="irAPagina('Carrito')"
+          role="button" aria-label="Ver carrito">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span class="badge rounded-pill text-bg-danger" id="contador-carrito"></span>
+        </a>
+        <!-- Botón para mostrar/ocultar el menú en pantallas pequeñas -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+          aria-controls="navbarNav" aria-expanded="false" aria-label="Abrir menú">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      </div>
 
       <!-- Menú de navegación -->
       <div class="collapse navbar-collapse" id="navbarNav">

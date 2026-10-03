@@ -95,10 +95,10 @@ const guardarCarrito = (carrito) => {
 /* Suma las cantidades de todos los productos (2 tés + 1 café = 3) y lo muestra en el menú */
 const actualizarContadorCarrito = () => {
     const contador = document.getElementById("contador-carrito")
-    if (!contador) return // el menú todavía no se ha dibujado
     const unidades = leerCarrito().reduce((suma, item) => suma + item.cantidad, 0)
     contador.textContent = unidades
     contador.style.display = unidades > 0 ? "inline-block" : "none" // si está vacío no se muestra
+    document.getElementById("btn-carrito-nav").title = unidades > 0 ? `Carrito: ${unidades} unidad(es)` : "Carrito vacío"
 }
 
 /* Muestra un aviso pequeño abajo a la derecha que desaparece solo (Toast de Bootstrap) */
@@ -170,38 +170,47 @@ const cerrarSesion = () => {
 etiqueta es el nombre de la opción que quieres mostrar al usuario.
 pagina es la ruta del archivo HTML al que quieres ir cuando el usuario haga clic.
 codigo es el JavaScript de esa página (opcional).
-rol: "admin" = solo la ven los administradores (intranet). Sin rol = la ve todo el mundo.
-oculto: true = no aparece en el menú; se abre con un botón (por ejemplo "Mayoristas").
+grupo: dónde aparece en el menú, ordenado por relevancia para vender:
+   "principal" = a la vista (Tienda primero), "mas" = dentro de "Más ▾",
+   "intranet" = dentro de "Intranet ▾" (solo admin). Sin grupo = no está en el menú
+   (Inicio se abre con el logo, Carrito con el ícono 🛒, Asesores con el botón "Mayoristas").
+rol: "admin" = solo la pueden abrir los administradores.
 */
 const menuItems = [
-    {etiqueta: "Inicio",       pagina: "pages/inicio.html"},
-    {etiqueta: "Nosotros",     pagina: "pages/nosotros.html"},
-    {etiqueta: "Mayoristas",   pagina: "pages/mayoristas.html"},
-    {etiqueta: "Tienda",       pagina: "pages/tienda.html", codigo: "js/pages/tienda.js"},
+    {etiqueta: "Tienda",       pagina: "pages/tienda.html", codigo: "js/pages/tienda.js", grupo: "principal", icono: "fa-basket-shopping"},
+    {etiqueta: "Mayoristas",   pagina: "pages/mayoristas.html", grupo: "principal", icono: "fa-boxes-stacked"},
+    {etiqueta: "Nosotros",     pagina: "pages/nosotros.html", grupo: "mas"},
+    {etiqueta: "Inicio",       pagina: "pages/inicio.html", codigo: "js/pages/inicio.js"},
     {etiqueta: "Carrito",      pagina: "pages/carrito.html", codigo: "js/pages/carrito.js"},
-    {etiqueta: "Asesores comerciales", pagina: "pages/asesores.html", codigo: "js/pages/asesores.js", oculto: true},
+    {etiqueta: "Asesores comerciales", pagina: "pages/asesores.html", codigo: "js/pages/asesores.js"},
     // Intranet (solo admin)
-    {etiqueta: "Indicadores",  pagina: "pages/indicadores.html", codigo: "js/pages/indicadores.js", rol: "admin"},
-    {etiqueta: "Directores",   pagina: "pages/directores.html", codigo: "js/pages/directores.js", rol: "admin"},
-    {etiqueta: "Asesores",     pagina: "pages/asesores-admin.html", codigo: "js/pages/asesores-admin.js", rol: "admin"},
-    {etiqueta: "Solicitudes",  pagina: "pages/solicitudes.html", codigo: "js/pages/solicitudes.js", rol: "admin"},
-    {etiqueta: "Proveedores",  pagina: "pages/proveedores.html", codigo: "js/pages/proveedores.js", rol: "admin"}
+    {etiqueta: "Indicadores",  pagina: "pages/indicadores.html", codigo: "js/pages/indicadores.js", rol: "admin", grupo: "intranet", icono: "fa-chart-pie"},
+    {etiqueta: "Directores",   pagina: "pages/directores.html", codigo: "js/pages/directores.js", rol: "admin", grupo: "intranet", icono: "fa-user-tie"},
+    {etiqueta: "Asesores",     pagina: "pages/asesores-admin.html", codigo: "js/pages/asesores-admin.js", rol: "admin", grupo: "intranet", icono: "fa-users"},
+    {etiqueta: "Solicitudes",  pagina: "pages/solicitudes.html", codigo: "js/pages/solicitudes.js", rol: "admin", grupo: "intranet", icono: "fa-inbox"},
+    {etiqueta: "Proveedores",  pagina: "pages/proveedores.html", codigo: "js/pages/proveedores.js", rol: "admin", grupo: "intranet", icono: "fa-truck"}
 ]
 
-/* La página de ingreso no va en el menú principal: se abre con el botón "Ingresar" de la derecha */
+/* La página de ingreso se abre con el botón "Ingresar" de la derecha */
 const paginaIngresar = {etiqueta: "Ingresar", pagina: "pages/login.html", codigo: "js/pages/login.js"}
 
 const mainNav = document.getElementById("main-nav")
 const navUsuario = document.getElementById("nav-usuario")
 const mainContent = document.getElementById("main-content")
+const menuColapsable = document.getElementById("navbarNav")
 
 /* ¿El usuario actual puede ver esta página? */
 const puedeVer = (item) => item.rol !== "admin" || esAdmin()
 
 /* Carga una página dentro de <main> */
 const cargarPagina = (item) => {
-    // marca como "active" el enlace de la página abierta
-    document.querySelectorAll("#navbarNav a").forEach(a => a.classList.toggle("active", a.dataset.etiqueta === item.etiqueta))
+    // marca como "active" el enlace de la página abierta (y su menú desplegable, si está dentro de uno)
+    document.querySelectorAll(".navbar [data-etiqueta]").forEach(a => a.classList.toggle("active", a.dataset.etiqueta === item.etiqueta))
+    document.querySelectorAll(".navbar .dropdown").forEach(menu =>
+        menu.querySelector(".dropdown-toggle").classList.toggle("active", !!menu.querySelector(".dropdown-item.active")))
+    // en celular, al elegir una opción se cierra el menú ☰
+    bootstrap.Collapse.getOrCreateInstance(menuColapsable, { toggle: false }).hide()
+    window.scrollTo(0, 0)
 
     if (!puedeVer(item)) { // protección extra: aunque alguien llame irAPagina("Directores") sin ser admin
         mainContent.innerHTML = `<section class="padded"><div class="container">
@@ -245,43 +254,59 @@ const irAPagina = (etiqueta) => {
     cargarPagina(item)
 }
 
-/* Crea un enlace del menú. Se usa para las opciones de la izquierda y para "Ingresar" */
-const crearEnlace = (item) => {
+/* Enlace de la barra: <li><a class="nav-link">...</a></li> */
+const crearEnlace = (item, destacado) => {
     const menuLI = document.createElement("li")
     menuLI.className = "nav-item"
-    const menuA = document.createElement("a")
-    menuA.className = "nav-link"
-    menuA.textContent = item.etiqueta
-    menuA.dataset.etiqueta = item.etiqueta /*data-etiqueta="Tienda": sirve para marcar el enlace activo*/
-    if (item.etiqueta === "Carrito") { /*al enlace del carrito le agregamos el contador de productos*/
-        menuA.innerHTML += ` <span class="badge rounded-pill text-bg-danger" id="contador-carrito"></span>`
-    }
-    if (item.rol === "admin") { /*las opciones de la intranet llevan un candado*/
-        menuA.innerHTML = `<i class="fa-solid fa-lock"></i> ` + menuA.innerHTML
-    }
-    menuA.addEventListener("click", () => cargarPagina(item))
-    menuLI.appendChild(menuA)
+    menuLI.innerHTML = `<a class="nav-link ${destacado ? "enlace-destacado" : ""}" data-etiqueta="${item.etiqueta}">
+        ${item.icono ? `<i class="fa-solid ${item.icono}"></i> ` : ""}${item.etiqueta}</a>`
+    menuLI.querySelector("a").addEventListener("click", () => cargarPagina(item))
+    return menuLI
+}
+
+/* Menú desplegable de Bootstrap ("Más ▾", "Intranet ▾") con varias páginas */
+const crearDesplegable = (titulo, items) => {
+    const menuLI = document.createElement("li")
+    menuLI.className = "nav-item dropdown"
+    menuLI.innerHTML = `
+        <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">${titulo}</a>
+        <ul class="dropdown-menu">
+            ${items.map(item => `<li><a class="dropdown-item" data-etiqueta="${item.etiqueta}">
+                ${item.icono ? `<i class="fa-solid ${item.icono} fa-fw"></i> ` : ""}${item.etiqueta}</a></li>`).join("")}
+        </ul>`
+    menuLI.querySelectorAll(".dropdown-item").forEach(a =>
+        a.addEventListener("click", () => irAPagina(a.dataset.etiqueta)))
     return menuLI
 }
 
 /* Arma el menú según quién está conectado. Se vuelve a llamar al iniciar o cerrar sesión. */
 const dibujarMenu = () => {
-    mainNav.innerHTML = ""
-    menuItems.filter(item => puedeVer(item) && !item.oculto).forEach(item => mainNav.appendChild(crearEnlace(item)))
+    const delGrupo = (grupo) => menuItems.filter(item => item.grupo === grupo && puedeVer(item))
 
+    // Izquierda, por relevancia: Tienda (destacada), Mayoristas, Más ▾ y, para el admin, Intranet ▾
+    mainNav.innerHTML = ""
+    delGrupo("principal").forEach((item, posicion) => mainNav.appendChild(crearEnlace(item, posicion === 0)))
+    mainNav.appendChild(crearDesplegable("Más", delGrupo("mas")))
+    if (esAdmin()) {
+        mainNav.appendChild(crearDesplegable(`<i class="fa-solid fa-lock"></i> Intranet`, delGrupo("intranet")))
+    }
+
+    // Derecha: "Ingresar" o el menú de la cuenta
     navUsuario.innerHTML = ""
     if (usuarioActual === null) {
-        navUsuario.appendChild(crearEnlace(paginaIngresar))
+        navUsuario.appendChild(crearEnlace({ ...paginaIngresar, icono: "fa-user" }))
     } else {
         navUsuario.innerHTML = `
-            <li class="nav-item">
-                <span class="navbar-text me-2">
-                    <i class="fa-regular fa-user"></i> ${escaparHTML(usuarioActual.nombre)}
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fa-regular fa-user"></i> Hola, ${escaparHTML(usuarioActual.nombre.split(" ")[0])}
                     ${esAdmin() ? `<span class="badge text-bg-dark">Admin</span>` : ""}
-                </span>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="btn-cerrar-sesion"><i class="fa-solid fa-right-from-bracket"></i> Salir</a>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><span class="dropdown-item-text small text-body-secondary">${escaparHTML(usuarioActual.correo)}</span></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" id="btn-cerrar-sesion"><i class="fa-solid fa-right-from-bracket fa-fw"></i> Salir</a></li>
+                </ul>
             </li>`
         document.getElementById("btn-cerrar-sesion").addEventListener("click", cerrarSesion)
     }

@@ -95,6 +95,55 @@
     color: #495057;
 }
 
+/* ---------- Barra de navegación ---------- */
+.enlace-destacado{                                  /* "Tienda": la opción más importante */
+    font-weight: 600;
+    color: #146c43 !important;
+}
+
+.btn-carrito{                                       /* ícono del carrito, siempre visible */
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background-color: #198754;
+    color: white;
+    cursor: pointer;
+    font-size: 1.1rem;
+    text-decoration: none;
+}
+
+.btn-carrito:hover, .btn-carrito.active{
+    background-color: #146c43;
+    color: white;
+}
+
+.btn-carrito .badge{                                /* número de unidades sobre el ícono */
+    position: absolute;
+    top: -4px;
+    right: -6px;
+    font-size: .7rem;
+}
+
+.dropdown-item{
+    cursor: pointer;
+}
+
+/* ---------- Ofertas de Inicio ---------- */
+.oferta{
+    position: relative;
+}
+
+.oferta-descuento{
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    font-size: .85rem;
+}
+
 /* ---------- Páginas de contenido (Inicio, Nosotros, Mayoristas) ---------- */
 .cifra{                                             /* número grande con su texto */
     background-color: #f1f8f4;
