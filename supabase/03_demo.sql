@@ -45,10 +45,9 @@ begin
         -- (los pedidos de demostración no descuentan stock: es un historial ya repuesto)
         insert into pedido_detalle (idpedido, idproducto, nombre, precio, costo, cantidad)
             select v_pedido, p.idproducto, p.nombre, coalesce(nullif(p.preciorebajado, 0), p.precio),
-                   coalesce(c.costo, 0),
+                   p.costo,
                    case when v_mayorista then 12 + floor(random() * 49)::int else 1 + floor(random() * 5)::int end
-            from (select * from productos order by random() limit 1 + floor(random() * 4)::int) p
-            left join costos_productos c on c.idproducto = p.idproducto;
+            from (select * from productos order by random() limit 1 + floor(random() * 4)::int) p;
 
         update pedidos set total = (select sum(subtotal) from pedido_detalle where idpedido = v_pedido)
             where idpedido = v_pedido;

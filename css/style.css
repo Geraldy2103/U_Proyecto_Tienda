@@ -83,6 +83,28 @@
 }
 
 
+.padded-sm{                                         /* sección con menos espacio arriba y abajo */
+    margin: 40px 0;
+}
+
+.celda-degradado{                                   /* celdas con color según el valor (Proveedores) */
+    font-variant-numeric: tabular-nums;             /* números alineados */
+    border-left: 2px solid #fff;
+}
+
+.muestra-degradado{                                 /* mini leyenda del degradado */
+    display: inline-block;
+    width: 60px;
+    height: 10px;
+    border-radius: 3px;
+    vertical-align: middle;
+    background: linear-gradient(to right, rgba(25, 135, 84, .08), rgba(25, 135, 84, .9));
+}
+
+.kpi{
+    border-left: 4px solid #198754;
+}
+
 .tabla-proveedores thead .grupos th{                /* fila de grupos: más pequeña y con línea inferior */
     font-size: .8em;
     text-transform: uppercase;
@@ -92,10 +114,6 @@
 
 .tabla-proveedores thead th[title]{                 /* los encabezados con explicación muestran el cursor de ayuda */
     cursor: help;
-}
-
-.leyenda-proveedores{
-    padding-left: 1.2em;
 }
 
 .producto-agotado img{                              /* producto sin stock: imagen apagada */

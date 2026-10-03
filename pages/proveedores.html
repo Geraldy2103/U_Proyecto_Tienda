@@ -1,42 +1,50 @@
 <header-component titulo="Proveedores"
-  frase="Las mejores marcas del mundo a su alcance">
-  
+  frase="Abastecimiento, stock y rentabilidad de cada proveedor">
 </header-component>
 
 
-<section class="padded">
+<section class="padded-sm">
     <div class="container">
-        <h1>Proveedores</h1>
-        <p class="text-body-secondary mb-2">Empresas que nos abastecen, ordenadas de la que más vende a la que menos.</p>
+        <!-- Indicadores clave (los llena proveedores.js) -->
+        <div class="row row-cols-2 row-cols-lg-4 g-3 mb-4" id="kpis-proveedores"></div>
 
-        <!-- Qué significa cada columna -->
-        <ul class="leyenda-proveedores small text-body-secondary mb-4">
-            <li><strong>Productos:</strong> cuántos productos de nuestro catálogo compramos a ese proveedor.</li>
-            <li><strong>Por reponer:</strong> de esos productos, cuántos están en su stock mínimo o por debajo
-                (en rojo = hay que hacerle un pedido).</li>
-            <li><strong>Unidades vendidas:</strong> unidades de sus productos que vendimos a nuestros clientes.</li>
-            <li><strong>Ventas:</strong> lo que cobramos a los clientes por esas unidades.</li>
-            <li><strong>Ganancia:</strong> ventas menos lo que nos costaron esos productos; el % es la ganancia
-                sobre las ventas.</li>
-        </ul>
+        <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-2">
+            <div class="small text-body-secondary">
+                <span class="muestra-degradado"></span> Color más intenso = valor más alto ·
+                Costos simulados
+            </div>
+            <a class="small" data-bs-toggle="collapse" href="#ayuda-proveedores" role="button" aria-expanded="false">
+                <i class="fa-regular fa-circle-question"></i> ¿Cómo leer esta tabla?
+            </a>
+        </div>
+        <div class="collapse" id="ayuda-proveedores">
+            <div class="card card-body small mb-3">
+                <dl class="row mb-0">
+                    <dt class="col-sm-3">Productos</dt><dd class="col-sm-9">Productos del catálogo que le compramos.</dd>
+                    <dt class="col-sm-3">Por reponer</dt><dd class="col-sm-9">De esos, cuántos están en su stock mínimo o por debajo.</dd>
+                    <dt class="col-sm-3">Ventas</dt><dd class="col-sm-9">Lo cobrado a clientes por sus productos.</dd>
+                    <dt class="col-sm-3">Participación</dt><dd class="col-sm-9">Qué parte de las ventas totales viene de este proveedor.</dd>
+                    <dt class="col-sm-3">Ganancia</dt><dd class="col-sm-9">Ventas menos costo de compra, y su % sobre las ventas.</dd>
+                </dl>
+            </div>
+        </div>
 
         <div class="table-responsive">
             <table class="table align-middle tabla-proveedores">
                 <thead>
-                    <!-- Primera fila: grupos de columnas -->
                     <tr class="grupos">
-                        <th colspan="3">Proveedor</th>
-                        <th colspan="2" class="text-center">Su catálogo con nosotros</th>
-                        <th colspan="3" class="text-center">Nuestras ventas de sus productos</th>
+                        <th colspan="2">Proveedor</th>
+                        <th colspan="2" class="text-center">Abastecimiento</th>
+                        <th colspan="4" class="text-center">Desempeño en ventas</th>
                     </tr>
                     <tr>
                         <th>Empresa</th>
                         <th>Contacto</th>
-                        <th>Teléfono</th>
                         <th class="text-center" title="Productos del catálogo que vienen de este proveedor">Productos</th>
                         <th class="text-center" title="Productos en su stock mínimo o por debajo">Por reponer</th>
                         <th class="text-end" title="Unidades vendidas a clientes">Unidades</th>
                         <th class="text-end" title="Total cobrado a clientes">Ventas</th>
+                        <th class="text-end" title="Porcentaje de las ventas totales">Participación</th>
                         <th class="text-end" title="Ventas menos costo de compra">Ganancia</th>
                     </tr>
                 </thead>

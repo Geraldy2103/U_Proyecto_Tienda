@@ -7,7 +7,7 @@
 
 -- ---------- 0. Limpieza (incluye tablas de versiones anteriores) ----------
 drop view     if exists categorias_con_total, resumen_asesores, ventas_por_sede,
-                        resumen_proveedores, productos_por_reponer cascade;
+                        resumen_proveedores, productos_por_reponer, productos_admin cascade;
 drop table    if exists pedido_detalle, pedidos, solicitudes_mayoristas cascade;
 drop table    if exists asesores, directores, sedes cascade;
 drop table    if exists costos_productos, productos, categorias, proveedores, empleados cascade;
@@ -53,15 +53,9 @@ create table productos (
     imagenchica     text,                                        -- URL completa de la imagen
     idcategoria     integer not null references categorias(idcategoria),
     idproveedor     integer references proveedores(idproveedor) on delete set null,  -- null = sin proveedor
+    costo           numeric(10,2) not null default 0 check (costo >= 0),  -- costo de compra (SIMULADO); solo lo ve el admin
     stock           integer not null default 0 check (stock >= 0),   -- unidades disponibles
     stock_minimo    integer not null default 20 check (stock_minimo >= 0)  -- por debajo: hay que reponer
-);
-
--- Costo de compra al proveedor. Va en una tabla aparte porque es información interna:
--- el catálogo lo lee cualquiera, pero el costo solo el admin.
-create table costos_productos (
-    idproducto  integer primary key references productos(idproducto) on delete cascade,
-    costo       numeric(10,2) not null check (costo >= 0)
 );
 
 -- Cantidad de productos por categoría
@@ -270,11 +264,10 @@ begin
     -- precio actual del catálogo (el rebajado si existe)
     insert into pedido_detalle (idpedido, idproducto, nombre, precio, costo, cantidad)
         select v_idpedido, p.idproducto, p.nombre, coalesce(nullif(p.preciorebajado, 0), p.precio),
-               coalesce(c.costo, 0), sum((x ->> 'cantidad')::int)
+               p.costo, sum((x ->> 'cantidad')::int)
         from jsonb_array_elements(p_productos) x
         join productos p on p.idproducto = (x ->> 'idproducto')::int
-        left join costos_productos c on c.idproducto = p.idproducto
-        group by p.idproducto, p.nombre, p.preciorebajado, p.precio, c.costo;
+        group by p.idproducto, p.nombre, p.preciorebajado, p.precio, p.costo;
 
     update productos p set stock = p.stock - d.cantidad
         from pedido_detalle d
@@ -343,6 +336,15 @@ create view resumen_proveedores with (security_invoker = on) as
          and exists (select 1 from pedidos x where x.idpedido = d.idpedido and x.estado <> 'anulado')
     group by v.idproveedor;
 
+-- Catálogo completo CON costo y ganancia unitaria, solo para el admin.
+-- (Esta vista se ejecuta con permisos de su dueño y filtra con es_admin(): un cliente recibe 0 filas.)
+create view productos_admin as
+    select p.*,
+           coalesce(nullif(p.preciorebajado, 0), p.precio) as precio_final,
+           coalesce(nullif(p.preciorebajado, 0), p.precio) - p.costo as ganancia_unitaria
+    from productos p
+    where es_admin();
+
 -- Productos con stock en el mínimo o por debajo, con el proveedor a quien pedirlos
 create view productos_por_reponer with (security_invoker = on) as
     select p.idproducto, p.nombre, p.stock, p.stock_minimo,
@@ -357,7 +359,6 @@ create view productos_por_reponer with (security_invoker = on) as
 
 alter table categorias             enable row level security;
 alter table productos              enable row level security;
-alter table costos_productos       enable row level security;
 alter table proveedores            enable row level security;
 alter table sedes                  enable row level security;
 alter table directores             enable row level security;
@@ -378,9 +379,6 @@ create policy "lectura publica" on directores for select using (true);
 create policy "solo admin"      on directores for all using (es_admin()) with check (es_admin());
 create policy "lectura publica" on asesores   for select using (true);
 create policy "solo admin"      on asesores   for all using (es_admin()) with check (es_admin());
-
--- Costos de compra: solo admin (incluso para leer)
-create policy "solo admin" on costos_productos for all using (es_admin()) with check (es_admin());
 
 -- Proveedores: solo admin (incluso para leer)
 create policy "solo admin" on proveedores for all using (es_admin()) with check (es_admin());
@@ -411,8 +409,13 @@ create policy "admin actualiza" on solicitudes_mayoristas for update to authenti
 -- Las reglas del punto 6 siguen decidiendo QUÉ filas puede tocar cada uno.
 
 grant usage on schema public to anon, authenticated;
-grant select on categorias, productos, categorias_con_total, sedes, directores, asesores to anon, authenticated;
-grant select, insert, update, delete on categorias, productos, costos_productos, proveedores, sedes, directores, asesores to authenticated;
+grant select on categorias, categorias_con_total, sedes, directores, asesores to anon, authenticated;
+-- productos: se pueden leer todas las columnas MENOS costo (permiso por columna)
+grant select (idproducto, nombre, precio, preciorebajado, imagenchica, idcategoria, idproveedor, stock, stock_minimo)
+    on productos to anon, authenticated;
+grant insert, update, delete on productos to authenticated;
+grant select, insert, update, delete on categorias, proveedores, sedes, directores, asesores to authenticated;
+grant select on productos_admin to authenticated;
 grant select on perfiles, pedidos, pedido_detalle, resumen_asesores, ventas_por_sede,
                 resumen_proveedores, productos_por_reponer to authenticated;
 grant update (estado) on pedidos to authenticated;

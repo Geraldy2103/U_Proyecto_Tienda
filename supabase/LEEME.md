@@ -12,15 +12,14 @@ perfiles ──< pedidos ──< pedido_detalle            │
    └──< solicitudes_mayoristas ── idasesor
 
 categorias ──< productos >── proveedores (solo admin)
-                  │  (stock, stock mínimo)
-                  └── costos_productos (solo admin)
+                (costo, stock, stock mínimo)
 ```
 
 | Tabla / vista | Para qué sirve |
 |---|---|
-| `categorias`, `productos` | Catálogo de la tienda, con proveedor, stock y stock mínimo |
+| `categorias`, `productos` | Catálogo de la tienda, con proveedor, **costo (simulado)**, stock y stock mínimo. La columna `costo` no la puede leer el público (permiso por columna) |
+| `productos_admin` (vista) | Productos con costo, precio final y ganancia unitaria; solo devuelve filas al admin |
 | `proveedores` | Proveedores (solo los ve el admin). La relación producto-proveedor es la de la base Northwind |
-| `costos_productos` | Costo de compra de cada producto (solo admin). **Valores simulados** |
 | `resumen_proveedores` (vista) | Por proveedor: productos, productos por reponer, unidades vendidas, ventas y margen |
 | `productos_por_reponer` (vista) | Productos en su stock mínimo o por debajo, con el contacto del proveedor |
 | `sedes` | Miraflores, San Isidro y Callao |

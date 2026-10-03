@@ -43,7 +43,10 @@
 
     const leerProductos = (idcategoria) => {
         // .eq("idcategoria", x) es el WHERE idcategoria = x de SQL
-        obtenerDatos(db.from("productos").select("*").eq("idcategoria", idcategoria).order("nombre"))
+        // columnas explícitas: el costo no es público (solo el admin puede leerlo)
+        obtenerDatos(db.from("productos")
+            .select("idproducto, nombre, precio, preciorebajado, imagenchica, stock, stock_minimo")
+            .eq("idcategoria", idcategoria).order("nombre"))
         .then(data => {
             if (data.length === 0) {
                 cuadriculaProductos.innerHTML = `<p>Esta categoría todavía no tiene productos.</p>`
