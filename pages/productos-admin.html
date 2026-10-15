@@ -1,0 +1,114 @@
+<!-- Intranet > Productos: formulario de registro/edición + lista de productos.
+     La lógica está en js/pages/productos-admin.js -->
+<header-component titulo="Productos" frase="Registra productos nuevos y edita los existentes"></header-component>
+
+<section class="padded">
+  <div class="container">
+    <div class="row g-4">
+
+      <!-- Formulario (sirve para registrar y para editar) -->
+      <div class="col-lg-5">
+        <div class="card">
+          <div class="card-body">
+            <h2 class="h5 mb-3" id="titulo-form">Registrar producto</h2>
+
+            <form id="form-producto" novalidate>
+              <input type="hidden" name="idproducto">
+
+              <div class="mb-3">
+                <label class="form-label">Nombre *</label>
+                <input type="text" class="form-control" name="nombre" maxlength="100" autocomplete="off">
+                <div class="invalid-feedback" data-error="nombre"></div>
+              </div>
+
+              <div class="row g-3 mb-3">
+                <div class="col-sm-6">
+                  <label class="form-label">Precio de venta (S/) *</label>
+                  <input type="number" class="form-control" name="precio" step="0.01" min="0">
+                  <div class="invalid-feedback" data-error="precio"></div>
+                </div>
+                <div class="col-sm-6">
+                  <label class="form-label">Precio rebajado (S/)</label>
+                  <input type="number" class="form-control" name="preciorebajado" step="0.01" min="0">
+                  <div class="form-text">Déjalo vacío si no tiene rebaja.</div>
+                  <div class="invalid-feedback" data-error="preciorebajado"></div>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Costo de compra (S/) *</label>
+                <input type="number" class="form-control" name="costo" step="0.01" min="0">
+                <div class="invalid-feedback" data-error="costo"></div>
+              </div>
+
+              <div class="row g-3 mb-3">
+                <div class="col-sm-6">
+                  <label class="form-label">Cantidad en stock *</label>
+                  <input type="number" class="form-control" name="stock" step="1" min="0">
+                  <div class="invalid-feedback" data-error="stock"></div>
+                </div>
+                <div class="col-sm-6">
+                  <label class="form-label">Stock mínimo *</label>
+                  <input type="number" class="form-control" name="stock_minimo" step="1" min="0">
+                  <div class="invalid-feedback" data-error="stock_minimo"></div>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Categoría *</label>
+                <select class="form-select" name="idcategoria"></select>
+                <div class="invalid-feedback" data-error="idcategoria"></div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Proveedor</label>
+                <select class="form-select" name="idproveedor"></select>
+                <div class="invalid-feedback" data-error="idproveedor"></div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Imagen (URL)</label>
+                <input type="text" class="form-control" name="imagenchica" placeholder="https://..." autocomplete="off">
+                <div class="invalid-feedback" data-error="imagenchica"></div>
+              </div>
+
+              <!-- Aquí aparece el mensaje de error o de confirmación -->
+              <div id="mensaje-form" class="mb-3" aria-live="polite"></div>
+
+              <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary" id="btn-guardar">Guardar producto</button>
+                <button type="button" class="btn btn-outline-secondary" id="btn-cancelar" hidden>Cancelar edición</button>
+              </div>
+              <p class="small text-body-secondary mt-3 mb-0">Los campos con * son obligatorios.</p>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lista de productos -->
+      <div class="col-lg-7">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+          <h2 class="h5 mb-0">Productos registrados</h2>
+          <input type="search" class="form-control w-auto" id="filtro-productos" placeholder="Filtrar por nombre" autocomplete="off">
+        </div>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th class="text-end">Precio</th>
+                <th class="text-end">Costo</th>
+                <th class="text-end">Stock</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="tabla-productos">
+              <tr><td colspan="5" class="text-body-secondary">Cargando…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
