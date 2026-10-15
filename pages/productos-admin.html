@@ -1,0 +1,121 @@
+<header-component titulo="Productos"
+  frase="Registra productos nuevos y edita los del catálogo">
+</header-component>
+
+
+<section class="padded">
+    <div class="container">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <button class="btn btn-primary" id="btn-nuevo-producto">
+                <i class="fa-solid fa-plus"></i> Nuevo producto
+            </button>
+            <input type="search" id="txt-filtro-producto" class="form-control w-auto"
+                placeholder="Filtrar por nombre" aria-label="Filtrar productos por nombre" autocomplete="off">
+        </div>
+
+        <!-- Aquí aparecen los avisos de "guardado" o de error -->
+        <div id="aviso-productos"></div>
+
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Producto</th>
+                        <th>Categoría</th>
+                        <th class="text-end">Precio</th>
+                        <th class="text-end">Costo</th>
+                        <th class="text-end">Stock</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-productos">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- Modal: el mismo formulario sirve para insertar y para actualizar -->
+<div class="modal fade" id="modal-producto" tabindex="-1" aria-labelledby="titulo-modal-producto" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="titulo-modal-producto">Nuevo producto</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <form id="form-producto" novalidate>
+        <div class="modal-body">
+            <!-- Vacío = insertar; con un código = actualizar ese producto -->
+            <input type="hidden" id="txt-idproducto">
+
+            <!-- Aquí aparece el error de la base de datos (el modal queda abierto para no perder lo escrito) -->
+            <div id="aviso-modal-producto"></div>
+
+            <div class="mb-3">
+                <label for="txt-nombre" class="form-label">Nombre *</label>
+                <input type="text" id="txt-nombre" class="form-control" minlength="3" maxlength="100" required>
+                <div class="invalid-feedback">El nombre es obligatorio (mínimo 3 caracteres).</div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-4 mb-3">
+                    <label for="txt-precio" class="form-label">Precio de venta (S/) *</label>
+                    <input type="number" id="txt-precio" class="form-control" min="0.01" max="99999999.99" step="0.01" required>
+                    <div class="invalid-feedback">Escribe un precio mayor a 0, con máximo 2 decimales.</div>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <label for="txt-preciorebajado" class="form-label">Precio rebajado (S/)</label>
+                    <input type="number" id="txt-preciorebajado" class="form-control" min="0.01" max="99999999.99" step="0.01">
+                    <div class="invalid-feedback">La rebaja debe ser mayor a 0 y menor que el precio de venta.</div>
+                    <div class="form-text">Déjalo vacío si no tiene rebaja.</div>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <label for="txt-costo" class="form-label">Costo de compra (S/) *</label>
+                    <input type="number" id="txt-costo" class="form-control" min="0" max="99999999.99" step="0.01" required>
+                    <div class="invalid-feedback">Escribe el costo (0 o más, con máximo 2 decimales).</div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6 mb-3">
+                    <label for="txt-stock" class="form-label">Cantidad en stock *</label>
+                    <input type="number" id="txt-stock" class="form-control" min="0" max="999999" step="1" required>
+                    <div class="invalid-feedback">Escribe un número entero de 0 o más.</div>
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <label for="txt-stockminimo" class="form-label">Stock mínimo *</label>
+                    <input type="number" id="txt-stockminimo" class="form-control" min="0" max="999999" step="1" required>
+                    <div class="invalid-feedback">Escribe un número entero de 0 o más.</div>
+                    <div class="form-text">Por debajo de esta cantidad hay que reponer.</div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6 mb-3">
+                    <label for="cbo-categoria" class="form-label">Categoría *</label>
+                    <select id="cbo-categoria" class="form-select" required></select>
+                    <div class="invalid-feedback">Elige una categoría.</div>
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <label for="cbo-proveedor" class="form-label">Proveedor</label>
+                    <select id="cbo-proveedor" class="form-select"></select>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="txt-imagen" class="form-label">Imagen (URL)</label>
+                <input type="text" id="txt-imagen" class="form-control" pattern="https?://\S+" placeholder="https://...">
+                <div class="invalid-feedback">Escribe una dirección que empiece con http:// o https://</div>
+            </div>
+
+            <p class="small text-body-secondary mb-0">Los campos con * son obligatorios.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="submit" class="btn btn-primary" id="btn-guardar-producto">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
