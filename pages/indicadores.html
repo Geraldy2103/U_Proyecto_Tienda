@@ -1,31 +1,55 @@
-<header-component titulo="Indicadores comerciales"
-  frase="Ventas por sede y desempeño de los asesores">
-</header-component>
-
-
-<section class="padded">
+<section class="padded-sm">
     <div class="container">
+        <!-- Título + período -->
+        <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-3">
+            <div>
+                <h1 class="h2 mb-0">Indicadores comerciales</h1>
+                <p class="text-body-secondary mb-0" id="texto-periodo"></p>
+            </div>
+            <div class="segmentador" role="group" aria-label="Período" id="filtro-periodo">
+                <button type="button" data-dias="7">7 días</button>
+                <button type="button" data-dias="30" class="activo">30 días</button>
+                <button type="button" data-dias="90">90 días</button>
+                <button type="button" data-dias="0">Todo</button>
+            </div>
+        </div>
         <div id="aviso-indicadores"></div>
 
-        <!-- Fila 1: totales -->
+        <!-- Fila 1: totales con variación -->
         <div class="row row-cols-2 row-cols-md-3 row-cols-xl-5 g-3 mb-4" id="tarjetas-totales"></div>
 
-        <!-- Fila 2: destacados + sedes | ranking -->
+        <!-- Fila 2: insights | tendencia -->
         <div class="row g-4 mb-4">
-            <div class="col-lg-4 d-flex flex-column gap-4">
-                <div class="panel">
-                    <h2 class="panel-titulo">Asesores destacados</h2>
-                    <div id="asesores-destacados"></div>
+            <div class="col-lg-5">
+                <div class="panel h-100">
+                    <h2 class="panel-titulo">Insights clave</h2>
+                    <ul class="lista-insights" id="lista-insights"></ul>
                 </div>
-                <div class="panel flex-grow-1">
+            </div>
+            <div class="col-lg-7">
+                <div class="panel h-100">
+                    <div class="d-flex justify-content-between align-items-start gap-2">
+                        <h2 class="panel-titulo mb-1">Tendencia de ventas</h2>
+                        <button type="button" class="btn btn-link btn-sm p-0" id="btn-ver-tabla">Ver tabla</button>
+                    </div>
+                    <div class="leyenda-grafico" id="leyenda-tendencia"></div>
+                    <div class="grafico" id="grafico-tendencia"></div>
+                    <div class="table-responsive" id="tabla-tendencia" hidden></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fila 3: sedes | asesores -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-4">
+                <div class="panel h-100">
                     <h2 class="panel-titulo">Ventas por sede</h2>
                     <div id="ventas-sedes"></div>
                 </div>
             </div>
-
             <div class="col-lg-8">
                 <div class="panel h-100">
-                    <h2 class="panel-titulo">Ranking de asesores</h2>
+                    <h2 class="panel-titulo">Desempeño de asesores</h2>
                     <div class="table-responsive">
                         <table class="table table-sm align-middle mb-0 tabla-compacta">
                             <thead>
@@ -33,9 +57,10 @@
                                     <th class="text-center">#</th>
                                     <th>Asesor</th>
                                     <th>Sede</th>
-                                    <th>Director</th>
-                                    <th class="text-end" title="Solicitudes mayoristas recibidas">Solic.</th>
-                                    <th class="text-end" title="Pedidos atendidos">Ped.</th>
+                                    <th class="text-end" title="Solicitudes mayoristas recibidas en el período">Solic.</th>
+                                    <th class="text-end" title="Pedidos pagados en el período">Ped.</th>
+                                    <th class="text-end" title="Pedidos ÷ solicitudes">Conversión</th>
+                                    <th class="text-end" title="Venta promedio por pedido">Ticket</th>
                                     <th class="text-end">Ventas</th>
                                     <th class="col-barra"></th>
                                 </tr>
@@ -47,18 +72,18 @@
             </div>
         </div>
 
-        <!-- Fila 3: productos por reponer -->
+        <!-- Fila 4: reposición priorizada -->
         <div class="panel">
-            <h2 class="panel-titulo">Productos por reponer <span class="text-body-secondary fw-normal" id="cantidad-reponer"></span></h2>
+            <h2 class="panel-titulo">Reposición priorizada <span class="text-body-secondary fw-normal" id="cantidad-reponer"></span></h2>
             <div class="table-responsive">
                 <table class="table table-sm align-middle mb-0 tabla-compacta">
                     <thead>
                         <tr>
+                            <th>Urgencia</th>
                             <th>Producto</th>
                             <th class="text-end">Stock</th>
                             <th class="text-end">Mínimo</th>
                             <th>Proveedor</th>
-                            <th>País</th>
                             <th>Contacto</th>
                             <th>Teléfono</th>
                         </tr>

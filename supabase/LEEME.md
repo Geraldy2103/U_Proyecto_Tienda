@@ -57,6 +57,7 @@ categorias ──< productos >── proveedores (solo admin)
 |---|---|
 | `01_esquema.sql` | Crea tablas, reglas, roles, la función de pedidos y las vistas de indicadores |
 | `02_datos.sql` | Datos iniciales: 8 categorías, 81 productos, 29 proveedores, 3 sedes, 9 directores, 10 asesores |
+| `04_indicadores_diarios.sql` | Función `indicadores_diarios` (ventas y margen por día) para filtrar Indicadores por período. Ejecutar una vez si la base ya existía |
 | `03_demo.sql` | **Opcional.** 80 pedidos y solicitudes de ejemplo para que los Indicadores tengan datos |
 
 ## Pasos (en Supabase > SQL Editor > New query)

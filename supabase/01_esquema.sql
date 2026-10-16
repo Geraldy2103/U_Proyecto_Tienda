@@ -21,6 +21,7 @@ drop function if exists confirmar_pedido(integer, integer, jsonb) cascade;
 drop function if exists confirmar_pedido(jsonb, jsonb, integer, text) cascade;
 drop function if exists cotizar_envio(integer, numeric) cascade;
 drop function if exists pagar_pedido(integer, text) cascade;
+drop function if exists indicadores_diarios() cascade;
 drop function if exists devolver_stock_al_anular() cascade;
 
 
@@ -483,6 +484,23 @@ create view productos_por_reponer with (security_invoker = on) as
     where p.stock <= p.stock_minimo;
 
 
+-- Ventas pagadas agrupadas por día, sede, tipo y asesor (con margen). Solo para el admin:
+-- la página de Indicadores la usa para filtrar por período y comparar con el período anterior.
+create function indicadores_diarios()
+returns table (fecha date, idsede integer, sede text, tipo text, idasesor integer,
+               pedidos integer, ventas numeric, margen numeric)
+language sql stable security definer set search_path = public as $$
+    select (p.fecha at time zone 'America/Lima')::date, p.idsede, s.nombre, p.tipo, p.idasesor,
+           count(*)::int,
+           sum(p.subtotal),
+           coalesce(sum((select sum(d.margen) from pedido_detalle d where d.idpedido = p.idpedido)), 0)
+    from pedidos p
+    join sedes s on s.idsede = p.idsede
+    where es_admin() and p.estado <> 'anulado' and p.pago_estado = 'pagado'
+    group by 1, 2, 3, 4, 5;
+$$;
+
+
 -- ---------- 6. Seguridad (Row Level Security) ----------
 -- Las aplica el SERVIDOR: aunque alguien llame a la API directamente, no puede saltárselas.
 
@@ -565,3 +583,5 @@ revoke execute on function cotizar_envio(integer, numeric) from public, anon;
 grant  execute on function cotizar_envio(integer, numeric) to authenticated;
 revoke execute on function pagar_pedido(integer, text) from public, anon;
 grant  execute on function pagar_pedido(integer, text) to authenticated;
+revoke execute on function indicadores_diarios() from public, anon;
+grant  execute on function indicadores_diarios() to authenticated;
