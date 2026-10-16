@@ -186,6 +186,7 @@ const menuItems = [
     {etiqueta: "Nosotros",     pagina: "pages/nosotros.html", grupo: "mas"},
     // Intranet (solo admin)
     {etiqueta: "Indicadores",  pagina: "pages/indicadores.html", codigo: "js/pages/indicadores.js", rol: "admin", grupo: "intranet"},
+   {etiqueta: "Monitoreo", pagina: "pages/monitoreo-admin.html", codigo: "js/pages/monitoreo-admin.js", rol: "admin", grupo: "intranet"},
     {etiqueta: "Pedidos",      pagina: "pages/pedidos-admin.html", codigo: "js/pages/pedidos-admin.js", rol: "admin", grupo: "intranet"},
     {etiqueta: "Productos", pagina: "pages/productos-admin.html", codigo: "js/pages/productos-admin.js", rol: "admin", grupo: "intranet"},
     {etiqueta: "Directores",   pagina: "pages/directores.html", codigo: "js/pages/directores.js", rol: "admin", grupo: "intranet"},
@@ -196,7 +197,6 @@ const menuItems = [
 
 /* La página de ingreso se abre desde "Mi cuenta" */
 const paginaIngresar = {etiqueta: "Ingresar", pagina: "pages/login.html", codigo: "js/pages/login.js"}
-
 const mainContent = document.getElementById("main-content")
 const zonaCuenta = document.getElementById("zona-cuenta")
 const menuCategorias = document.getElementById("menu-categorias")
