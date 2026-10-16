@@ -502,7 +502,7 @@ footer{
 
 .card-producto .foto{                               /* todas las fotos del mismo tamaño */
     aspect-ratio: 1 / 1;
-    padding: 18px;
+    padding: 6px;                                   /* la foto ocupa casi toda la tarjeta */
     background-color: #fff;
     display: flex;
     align-items: center;
@@ -526,7 +526,7 @@ footer{
 }
 
 .card-producto .nombre{
-    font-size: .93rem;
+    font-size: .88rem;
     font-weight: 600;
     line-height: 1.35;
     min-height: 2.7em;                              /* siempre el espacio de 2 líneas: precios alineados */
@@ -1042,8 +1042,8 @@ footer{
 .hero{                                              /* banner principal con la foto */
     position: relative;
     overflow: hidden;
-    border-radius: 16px;
-    min-height: 380px;
+    border-radius: 18px;
+    min-height: 500px;                              /* foto protagonista */
     display: flex;
     align-items: center;
     background-color: #fff;
@@ -1058,19 +1058,24 @@ footer{
     object-position: 70% center;
 }
 
-.hero::before{                                      /* velo blanco a la izquierda para leer el texto */
+.hero::before{                                      /* sombra suave a la izquierda (deja ver casi toda la foto) */
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, rgba(255,255,255,.97) 0%, rgba(255,255,255,.9) 30%, rgba(255,255,255,0) 58%);
+    background: linear-gradient(90deg, rgba(0,0,0,.28) 0%, rgba(0,0,0,0) 45%);
     z-index: 1;
 }
 
-.hero-texto{
+.hero-texto{                                        /* tarjeta translúcida sobre la foto */
     position: relative;
     z-index: 2;
-    max-width: 480px;
-    padding: 36px 44px;
+    max-width: 430px;
+    margin-left: 40px;
+    padding: 30px 32px;
+    border-radius: 16px;
+    background-color: rgba(255, 255, 255, .88);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, .18);
 }
 
 .hero-texto h1{
@@ -1090,9 +1095,9 @@ footer{
 
 @media (max-width: 767.98px){
     .hero{ flex-direction: column; align-items: stretch; min-height: 0; }
-    .hero-img{ position: relative; height: 200px; object-position: 75% center; }
+    .hero-img{ position: relative; height: 260px; object-position: 75% center; }
     .hero::before{ display: none; }
-    .hero-texto{ padding: 22px 20px 26px; max-width: none; }
+    .hero-texto{ margin: 0; padding: 22px 20px 26px; max-width: none; border-radius: 0; box-shadow: none; background-color: #fff; }
 }
 
 .franja-beneficios{
@@ -1121,17 +1126,13 @@ footer{
     text-decoration: none;
 }
 
-@media (min-width: 1200px){                         /* 8 categorías en una fila (Bootstrap solo llega a 6) */
-    .grilla-categorias > .col{ flex: 0 0 12.5%; max-width: 12.5%; }
-}
-
-.tarjeta-categoria{                                 /* foto de la categoría + nombre */
+.tarjeta-categoria{                                 /* foto grande de la categoría con el nombre encima */
+    position: relative;
     display: block;
     overflow: hidden;
-    border-radius: 12px;
+    border-radius: 16px;
     background-color: #fff;
-    border: 1px solid var(--borde);
-    text-align: center;
+    text-align: left;
     text-decoration: none;
     color: var(--texto);
     cursor: pointer;
@@ -1149,14 +1150,31 @@ footer{
     aspect-ratio: 4 / 3;
     object-fit: cover;
     background-color: var(--marca-claro);
+    transition: transform .4s;
+}
+
+.tarjeta-categoria:hover img{ transform: scale(1.06); }
+
+.tarjeta-categoria::after{                          /* degradado oscuro abajo para leer el nombre */
+    content: "";
+    position: absolute;
+    inset: 45% 0 0 0;
+    background: linear-gradient(to top, rgba(0,0,0,.65), rgba(0,0,0,0));
 }
 
 .tarjeta-categoria span{
-    display: block;
-    padding: 9px 6px;
-    font-weight: 600;
-    font-size: .88rem;
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 12px;
+    z-index: 1;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.05rem;
+    text-shadow: 0 1px 3px rgba(0,0,0,.4);
 }
+
+.tarjeta-categoria:hover{ color: #fff; }
 
 .pildoras{                                          /* filtros "Todos | Bebidas | ..." */
     display: flex;
@@ -1185,9 +1203,9 @@ footer{
 
 .banner-mayorista{
     display: grid;
-    grid-template-columns: 1.1fr 1fr;
+    grid-template-columns: 1fr 1.35fr;              /* la foto ocupa más de la mitad */
     overflow: hidden;
-    border-radius: 16px;
+    border-radius: 18px;
     background-color: var(--marca);
     color: #fff;
 }
@@ -1213,14 +1231,14 @@ footer{
 .banner-mayorista img{
     width: 100%;
     height: 100%;
-    min-height: 220px;
+    min-height: 320px;
     object-fit: cover;
-    object-position: 15% center;                    /* muestra el pasillo del almacén */
+    object-position: 30% center;                    /* pasillo del almacén y el carrito */
 }
 
 @media (max-width: 767.98px){
     .banner-mayorista{ grid-template-columns: 1fr; }
-    .banner-mayorista img{ min-height: 160px; max-height: 180px; }
+    .banner-mayorista img{ min-height: 220px; max-height: 240px; order: -1; }
     .banner-mayorista .texto{ padding: 26px 22px; }
 }
 
