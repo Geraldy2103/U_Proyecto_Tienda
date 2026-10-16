@@ -33,6 +33,14 @@
                     <div class="segmentador" role="group" aria-label="Mostrar" id="filtro-alerta"></div>
                     <input type="search" id="txt-filtro-producto" class="form-control w-auto"
                         placeholder="Filtrar por nombre" aria-label="Filtrar productos por nombre" autocomplete="off">
+                    <button class="btn btn-outline-secondary" id="btn-limpiar-filtros" type="button"
+                        title="Limpiar filtros" aria-label="Limpiar filtros">
+                        <i class="fa-solid fa-filter-circle-xmark"></i>
+                    </button>
+                    <button class="btn btn-outline-primary" id="btn-actualizar-productos" type="button"
+                        title="Actualizar lista" aria-label="Actualizar lista">
+                        <i class="fa-solid fa-rotate"></i>
+                    </button>
                 </div>
             </div>
             <div class="pildoras" id="filtro-categoria"></div>
@@ -47,7 +55,8 @@
                             <th class="text-end">Costo</th>
                             <th class="text-end" title="(precio de venta − costo) ÷ precio de venta">Margen</th>
                             <th class="text-end">Stock</th>
-                            <th></th>
+                            <th>Estado</th>
+                            <th class="text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="tbody-productos">
@@ -139,6 +148,27 @@
           <button type="submit" class="btn btn-primary" id="btn-guardar-producto">Guardar</button>
         </div>
       </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: confirma la eliminación de un producto -->
+<div class="modal fade" id="modal-eliminar-producto" tabindex="-1" aria-labelledby="titulo-modal-eliminar" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="titulo-modal-eliminar">Eliminar producto</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-0">¿Seguro que quieres eliminar <strong id="nombre-eliminar-producto"></strong>?
+            Si el producto ya forma parte de un pedido, la base no lo permitirá.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="btn-confirmar-eliminar">
+            <i class="fa-regular fa-trash-can"></i> Eliminar</button>
+      </div>
     </div>
   </div>
 </div>
