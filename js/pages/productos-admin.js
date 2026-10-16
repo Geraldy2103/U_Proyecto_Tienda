@@ -19,12 +19,22 @@
     const cboProveedor = document.getElementById("cbo-proveedor")
     const txtImagen = document.getElementById("txt-imagen")
 
+    /* Filtros y acciones de la tabla (parte de Gabriel) */
+    const btnLimpiar = document.getElementById("btn-limpiar-filtros")
+    const btnActualizar = document.getElementById("btn-actualizar-productos")
+
     /* Objeto de Bootstrap para abrir y cerrar el modal desde JavaScript */
     const modalProducto = bootstrap.Modal.getOrCreateInstance(document.getElementById("modal-producto"))
+
+    /* Modal de confirmación de borrado (parte de Gabriel) */
+    const modalEliminar = bootstrap.Modal.getOrCreateInstance(document.getElementById("modal-eliminar-producto"))
+    const nombreEliminar = document.getElementById("nombre-eliminar-producto")
+    const btnConfirmarEliminar = document.getElementById("btn-confirmar-eliminar")
 
     let productos = []      // última lista leída, para buscar un producto por su código
     let categorias = []
     let proveedores = []
+    let productoAEliminar = null  // producto que el admin confirmó eliminar (parte de Gabriel)
 
     /* ---------- Panel de resumen (indicadores, insight y gráfico) ---------- */
     const kpis = document.getElementById("kpis-productos")
@@ -50,6 +60,13 @@
     const estadoStock = (p) => p.stock === 0 ? `<span class="estado-kpi bajo"><i class="fa-solid fa-circle-xmark"></i> Agotado</span>` :
         p.stock <= p.stock_minimo ? `<span class="estado-kpi bajo"><i class="fa-solid fa-triangle-exclamation"></i> ${p.stock}</span>` :
         `<span>${p.stock}</span>`
+
+    /* Estado del producto según el stock (parte de Gabriel): Agotado / Por reponer / Disponible */
+    const estadoProducto = (stock, stockMinimo) => {
+        if (stock === 0) return { texto: "Agotado", clase: "text-bg-danger" }
+        if (stock <= stockMinimo) return { texto: "Por reponer", clase: "text-bg-warning" }
+        return { texto: "Disponible", clase: "text-bg-success" }
+    }
 
     const dibujarResumen = () => {
         const agotados = productos.filter(p => p.stock === 0).length
@@ -179,12 +196,13 @@
             (!soloAlertas || tieneAlerta(item)))
         resumenTabla.textContent = `${visibles.length} de ${productos.length} productos`
         if (visibles.length === 0) {
-            tbodyProductos.innerHTML = `<tr><td colspan="7" class="text-center text-body-secondary py-4">No hay productos que mostrar</td></tr>`
+            tbodyProductos.innerHTML = `<tr><td colspan="8" class="text-center text-body-secondary py-4">No hay productos que mostrar</td></tr>`
             return
         }
         let filas = ""
         visibles.forEach(item => {
             const descuento = item.preciorebajado ? Math.round((1 - item.preciorebajado / item.precio) * 100) : 0
+            const est = estadoProducto(item.stock, item.stock_minimo)
             filas += `<tr>
                     <td>
                         <div class="producto-fila">
@@ -199,7 +217,11 @@
                     <td class="text-end text-nowrap text-body-secondary">${soles(item.costo)}</td>
                     <td class="text-end text-nowrap">${estadoMargen(margen(item))}</td>
                     <td class="text-end text-nowrap">${estadoStock(item)}<br><small class="text-body-secondary">mín. ${item.stock_minimo}</small></td>
-                    <td><i class="fa-regular fa-pen-to-square icono-actualizar" data-id="${item.idproducto}" title="Editar"></i></td>
+                    <td><span class="badge ${est.clase}">${est.texto}</span></td>
+                    <td class="text-center text-nowrap">
+                        <i class="fa-regular fa-pen-to-square icono-actualizar" data-id="${item.idproducto}" title="Editar" role="button"></i>
+                        <i class="fa-regular fa-trash-can icono-eliminar text-danger ms-2" data-id="${item.idproducto}" title="Eliminar" role="button"></i>
+                    </td>
                   </tr>`
         })
         tbodyProductos.innerHTML = filas
@@ -216,11 +238,23 @@
             })
             .catch(error => {
                 console.error(error)
-                tbodyProductos.innerHTML = `<tr><td colspan="7">${mensajeError("No se pudo cargar la lista de productos. Verifica que hayas iniciado sesión como administrador.")}</td></tr>`
+                tbodyProductos.innerHTML = `<tr><td colspan="8">${mensajeError("No se pudo cargar la lista de productos. Verifica que hayas iniciado sesión como administrador.")}</td></tr>`
             })
     }
 
     txtFiltro.addEventListener("input", dibujarTabla)
+
+    /* Limpia la búsqueda y los filtros (parte de Gabriel) */
+    btnLimpiar.addEventListener("click", () => {
+        txtFiltro.value = ""
+        categoriaElegida = null
+        soloAlertas = false
+        dibujarFiltros()
+        dibujarTabla()
+    })
+
+    /* Vuelve a leer la lista desde la base de datos (parte de Gabriel) */
+    btnActualizar.addEventListener("click", leerProductos)
 
     /* ---------- Listas desplegables del formulario ---------- */
     const llenarListas = () => {
@@ -271,9 +305,43 @@
     /* Un solo "escucha" en el tbody para todos los iconos (delegación de eventos) */
     tbodyProductos.addEventListener("click", (event) => {
         const icono = event.target
-        if (!icono.classList.contains("icono-actualizar")) return
         const producto = productos.find(p => p.idproducto == icono.dataset.id)
-        if (producto) abrirModal(producto)
+        if (!producto) return
+
+        if (icono.classList.contains("icono-actualizar")) {
+            abrirModal(producto)
+        }
+
+        /* ---------- ELIMINAR (Delete): primero se pide confirmación (parte de Gabriel) ---------- */
+        if (icono.classList.contains("icono-eliminar")) {
+            productoAEliminar = producto
+            nombreEliminar.textContent = producto.nombre
+            modalEliminar.show()
+        }
+    })
+
+    /* Confirmación aceptada: se elimina el producto de la base (parte de Gabriel) */
+    btnConfirmarEliminar.addEventListener("click", () => {
+        if (!productoAEliminar) return
+        btnConfirmarEliminar.disabled = true // evita doble clic
+        /* .select("idproducto"): pedimos solo el código (no todas las columnas, por el permiso de costo) */
+        obtenerDatos(db.from("productos").delete().eq("idproducto", productoAEliminar.idproducto).select("idproducto"))
+            .then(verificarCambio)
+            .then(() => {
+                modalEliminar.hide()
+                mostrarAviso(avisoProductos, `Se eliminó el producto ${escaparHTML(productoAEliminar.nombre)}.`, "success")
+                productoAEliminar = null
+                leerProductos()
+            })
+            .catch(error => {
+                console.error(error)
+                modalEliminar.hide()
+                /* La base rechaza el borrado (23503) si el producto ya está en un pedido: mensajeDeLaBase lo explica */
+                mostrarAviso(avisoProductos, mensajeDeLaBase(error, "No se pudo eliminar el producto. Intenta nuevamente."), "danger")
+            })
+            .finally(() => {
+                btnConfirmarEliminar.disabled = false
+            })
     })
 
     /* ---------- GUARDAR: insertar (Create) o actualizar (Update) ---------- */
