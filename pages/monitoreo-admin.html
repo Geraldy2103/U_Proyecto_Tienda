@@ -1,0 +1,61 @@
+<header-component titulo="Monitoreo"
+  frase="Alertas de stock y pedidos que necesitan atención">
+</header-component>
+
+<section class="padded">
+    <div class="container">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <small class="text-body-secondary" id="txt-actualizado"></small>
+            <button class="btn btn-outline-primary btn-sm" id="btn-actualizar">
+                <i class="fa-solid fa-rotate"></i> Actualizar
+            </button>
+        </div>
+
+        <div id="aviso-monitoreo"></div>
+
+        <div class="row row-cols-2 row-cols-lg-5 g-3 mb-4" id="tarjetas-monitoreo"></div>
+
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h2 class="fs-5 mb-0">Alertas de stock</h2>
+                    <a class="small" role="button" onclick="irAPagina('Productos')">Ir a Productos</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th class="text-end">Stock</th>
+                                <th class="text-end">Mínimo</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-alertas-stock"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h2 class="fs-5 mb-0">Pedidos por atender</h2>
+                    <a class="small" role="button" onclick="irAPagina('Pedidos')">Ir a Pedidos</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>N.°</th>
+                                <th>Fecha</th>
+                                <th>Cliente</th>
+                                <th class="text-end">Total</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-pedidos-atender"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
