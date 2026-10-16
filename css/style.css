@@ -1127,6 +1127,31 @@ footer{
 .tooltip-grafico .fila span{ color: var(--texto-suave); }
 .tooltip-grafico .total{ border-top: 1px solid var(--borde); margin-top: 4px; padding-top: 4px; padding-left: 16px; }
 
+/* Insight destacado (Solicitudes) */
+.insight-principal{
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 18px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    background-color: #fff;
+    border: 1px solid var(--borde);
+    border-left: 5px solid var(--texto-suave);
+}
+
+.insight-principal > i{ font-size: 1.2rem; margin-top: 2px; }
+.insight-principal em{ display: block; font-style: normal; font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+.insight-principal.bueno{ border-left-color: #1d7a35; }
+.insight-principal.bueno > i, .insight-principal.bueno em{ color: #1d7a35; }
+.insight-principal.atencion{ border-left-color: #c98500; }
+.insight-principal.atencion > i, .insight-principal.atencion em{ color: #a86d00; }
+.insight-principal.alerta{ border-left-color: var(--acento); }
+.insight-principal.alerta > i, .insight-principal.alerta em{ color: var(--acento); }
+
+.grafico .eje-nombre{ fill: var(--texto); font-size: 13px; font-family: inherit; }
+.grafico .valor{ fill: var(--texto); font-size: 13px; font-weight: 700; font-family: inherit; }
+
 .kpi{
     border-left: 3px solid var(--marca);
 }
