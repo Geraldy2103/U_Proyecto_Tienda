@@ -1322,125 +1322,76 @@ footer{
 .contador-menu.urgente{ background-color: var(--amarillo); color: #1d2420; }
 
 /* ---------- Mis pedidos (cliente) ---------- */
-.pedido-cliente{
+.pedido-cliente{                                    /* pedido en curso */
     background-color: #fff;
     border: 1px solid var(--borde);
-    border-left: 5px solid var(--marca);
-    border-radius: 14px;
-    padding: 18px 20px;
-    margin-bottom: 16px;
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 12px;
 }
 
-.pedido-cliente.accion{ border-left-color: var(--amarillo); }
-.pedido-cliente.espera{ border-left-color: #2a78d6; }
-.pedido-cliente.listo{ border-left-color: #9aa19d; }
-.pedido-cliente.anulado{ border-left-color: var(--acento); opacity: .85; }
-
-.pedido-cliente header{
+.fila-principal{
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    gap: 10px;
+    align-items: center;
+    gap: 8px 16px;
 }
 
-.estado-cliente{
-    font-size: 1.1rem;
-    font-weight: 700;
-}
+.estado-cliente{ font-weight: 700; }
+.estado-cliente i, .pedido-historial .fila-principal i{ margin-right: 4px; color: var(--marca); }
+.por-pagar .estado-cliente i{ color: #b07d00; }
+.espera .estado-cliente i{ color: #2a78d6; }
+.pedido-historial.listo .fila-principal i{ color: #9aa19d; }
+.pedido-historial.anulado .fila-principal i{ color: var(--acento); }
 
-.estado-cliente i{ color: var(--marca); margin-right: 4px; }
-.pedido-cliente.accion .estado-cliente i{ color: #b07d00; }
-.pedido-cliente.espera .estado-cliente i{ color: #2a78d6; }
-.pedido-cliente.listo .estado-cliente i{ color: #6c757d; }
-.pedido-cliente.anulado .estado-cliente i{ color: var(--acento); }
-
-.total-pedido{ font-size: 1.2rem; font-weight: 800; }
+.total-pedido{ font-size: 1.1rem; font-weight: 800; }
 .total-pedido small{ font-size: .75rem; font-weight: 500; color: var(--texto-suave); }
 
-.pasos-pedido{                                      /* barra de progreso por pasos */
-    display: flex;
-    list-style: none;
-    padding: 0;
-    margin: 18px 0 10px;
-}
-
-.pasos-pedido li{
-    flex: 1;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 6px;
-    font-size: .78rem;
-    color: var(--texto-suave);
-}
-
-.pasos-pedido li::before{                           /* línea que une los pasos */
-    content: "";
-    position: absolute;
-    top: 13px;
-    left: -50%;
-    width: 100%;
-    height: 3px;
-    background-color: var(--borde);
-    z-index: 0;
-}
-
-.pasos-pedido li:first-child::before{ display: none; }
-.pasos-pedido li.hecho::before, .pasos-pedido li.actual::before{ background-color: var(--marca); }
-
-.marca-paso{
-    position: relative;
-    z-index: 1;
-    width: 28px;
-    height: 28px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background-color: #fff;
-    border: 2px solid var(--borde);
-    font-weight: 700;
-    font-size: .8rem;
-}
-
-.pasos-pedido li.hecho .marca-paso{ background-color: var(--marca); border-color: var(--marca); color: #fff; }
-.pasos-pedido li.actual .marca-paso{ border-color: var(--marca); color: var(--marca); box-shadow: 0 0 0 4px var(--marca-claro); }
-.pasos-pedido li.actual{ color: var(--texto); font-weight: 600; }
+.progreso-pedido{ margin: 10px 0 4px; }
+.progreso-pedido .barra{ margin: 0 0 4px; height: 5px; }
+.por-pagar .progreso-pedido .barra span{ background-color: var(--amarillo); }
+.progreso-pedido small{ color: var(--texto-suave); font-weight: 500; }
 
 .mensaje-estado{
-    margin: 6px 0 12px;
-    padding: 10px 12px;
-    border-radius: 10px;
-    background-color: var(--fondo-suave);
-    font-size: .92rem;
+    margin: 0 0 10px;
+    font-size: .88rem;
+    color: var(--texto-suave);
 }
 
 .pie-pedido{
     display: flex;
-    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
     gap: 10px;
 }
 
-.fotos-pedido{ display: flex; gap: 6px; align-items: center; }
+.fotos-pedido{ display: flex; gap: 4px; align-items: center; }
 
 .fotos-pedido img{
-    width: 44px;
-    height: 44px;
+    width: 36px;
+    height: 36px;
     object-fit: contain;
-    border-radius: 8px;
+    border-radius: 6px;
     border: 1px solid var(--borde);
     background-color: #fff;
 }
 
-.mas-fotos{ font-size: .8rem; color: var(--texto-suave); font-weight: 600; }
+.mas-fotos{ font-size: .78rem; color: var(--texto-suave); font-weight: 600; margin-left: 2px; }
 
-@media (max-width: 575.98px){
-    .texto-paso{ font-size: .68rem; }
+.enlace-detalle{
+    font-size: .85rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
 }
+
+.pedido-historial{                                  /* entregados y anulados: una fila */
+    padding: 10px 4px;
+    border-bottom: 1px solid var(--borde);
+}
+
+.pedido-historial.anulado{ opacity: .75; }
 
 .kpi{
     border-left: 3px solid var(--marca);

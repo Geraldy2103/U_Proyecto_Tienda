@@ -27,7 +27,7 @@
         switch (p.estado) {
             case "por_cotizar": return { titulo: "Cotizando tu envío", tono: "espera", icono: "fa-calculator",
                 mensaje: `Tu asesor está calculando el costo del envío a ${lugar}. Te avisaremos para que puedas pagar.` }
-            case "cotizado": return { titulo: "Pendiente de pago", tono: "accion", icono: "fa-credit-card",
+            case "cotizado": return { titulo: "Pendiente de pago", tono: "por-pagar", icono: "fa-credit-card",
                 mensaje: `El envío cuesta ${soles(p.costo_envio)}. Paga ${soles(p.total)} para que preparemos tu pedido.` }
             case "registrado": return recojo ?
                 { titulo: "Preparando tu pedido", tono: "proceso", icono: "fa-box-open",
@@ -41,88 +41,98 @@
         }
     }
 
-    /* ---------- Barra de pasos ---------- */
-    const pasos = (p) => {
+    /* ---------- Progreso: "Paso 3 de 4 · Preparando" + barra fina ---------- */
+    const progreso = (p) => {
         const recojo = p.entrega !== "delivery"
-        const nombres = p.costo_envio === null || p.estado === "cotizado" || (p.entrega === "delivery" && p.plazo === "Según cotización") ?
-            ["Pedido recibido", "Envío cotizado", "Pago confirmado", "Preparando", recojo ? "Recogido" : "Entregado"] :
+        const cotizado = p.plazo === "Según cotización"
+        const nombres = cotizado ?
+            ["Pedido recibido", "Cotizando envío", "Pendiente de pago", "Preparando", recojo ? "Recogido" : "Entregado"] :
             ["Pedido recibido", "Pago confirmado", "Preparando", recojo ? "Recogido" : "Entregado"]
-        // cuántos pasos están completos según el estado
-        const hechos = {
-            por_cotizar: 1,
-            cotizado: 2,
-            registrado: nombres.length - 2,     // pagado: se está preparando
-            entregado: nombres.length,
-            anulado: 0
-        }[p.estado]
-        if (p.estado === "anulado") return ""
-        return `<ol class="pasos-pedido">${nombres.map((n, i) => {
-            const clase = i < hechos ? "hecho" : i === hechos ? "actual" : ""
-            return `<li class="${clase}"><span class="marca-paso">${i < hechos ? `<i class="fa-solid fa-check"></i>` : i + 1}</span><span class="texto-paso">${n}</span></li>`
-        }).join("")}</ol>`
+        const actual = { por_cotizar: 2, cotizado: 3, registrado: nombres.length - 1 }[p.estado]   // número de paso (1..n)
+        return `<div class="progreso-pedido">
+                <div class="barra"><span style="width: ${actual / nombres.length * 100}%"></span></div>
+                <small>Paso ${actual} de ${nombres.length} · ${nombres[actual - 1]}</small>
+            </div>`
     }
 
-    /* ---------- Tarjeta de un pedido ---------- */
-    const tarjetaPedido = (p) => {
-        const e = explicar(p)
-        const unidades = p.pedido_detalle.reduce((t, d) => t + d.cantidad, 0)
+    const fotos = (p, maximo) => p.pedido_detalle.slice(0, maximo).map(d =>
+        `<img src="${(d.productos && d.productos.imagenchica) || IMAGEN_SIN_FOTO}" alt="" loading="lazy">`).join("") +
+        (p.pedido_detalle.length > maximo ? `<span class="mas-fotos">+${p.pedido_detalle.length - maximo}</span>` : "")
+
+    const detalle = (p) => {
         const envio = p.entrega !== "delivery" ? "Gratis (recojo)" : p.costo_envio === null ? "Por cotizar" : soles(p.costo_envio)
-        const fotos = p.pedido_detalle.slice(0, 4).map(d =>
-            `<img src="${(d.productos && d.productos.imagenchica) || IMAGEN_SIN_FOTO}" alt="" loading="lazy">`).join("") +
-            (p.pedido_detalle.length > 4 ? `<span class="mas-fotos">+${p.pedido_detalle.length - 4}</span>` : "")
+        return `<div class="collapse" id="detalle-${p.idpedido}">
+            <table class="table table-sm mb-0 mt-2 tabla-detalle">
+                <tbody>
+                    ${p.pedido_detalle.map(d => `
+                    <tr>
+                        <td>${escaparHTML(d.nombre)}</td>
+                        <td class="text-end text-nowrap">${d.cantidad} × ${soles(d.precio)}</td>
+                        <td class="text-end text-nowrap fw-semibold">${soles(d.subtotal)}</td>
+                    </tr>`).join("")}
+                    <tr class="fila-envio"><td>Envío</td><td></td><td class="text-end text-nowrap">${envio}</td></tr>
+                </tbody>
+            </table>
+        </div>`
+    }
+
+    /* ---------- Pedido en curso: tarjeta limpia ---------- */
+    const tarjetaEnCurso = (p) => {
+        const e = explicar(p)
         return `
         <article class="pedido-cliente ${e.tono}">
-            <header>
+            <div class="fila-principal">
                 <div>
                     <div class="estado-cliente"><i class="fa-solid ${e.icono}"></i> ${e.titulo}</div>
-                    <small class="text-body-secondary">Pedido N° ${p.idpedido} · ${formatearFecha(p.fecha)}
-                        ${p.tipo === "mayorista" ? " · Compra mayorista" : ""}</small>
+                    <small class="text-body-secondary">N° ${p.idpedido} · ${formatearFecha(p.fecha)}</small>
                 </div>
-                <div class="text-end">
-                    <div class="total-pedido">${soles(p.total)}${p.costo_envio === null && p.entrega === "delivery" ? " <small>+ envío</small>" : ""}</div>
-                    <small class="text-body-secondary">${unidades} unidades${p.pago_estado === "pagado" ? ` · pagado con ${p.metodo_pago === "yape" ? "Yape" : "tarjeta"}` : ""}</small>
-                </div>
-            </header>
-
-            ${pasos(p)}
+                <div class="total-pedido">${soles(p.total)}${p.costo_envio === null && p.entrega === "delivery" ? " <small>+ envío</small>" : ""}</div>
+            </div>
+            ${progreso(p)}
             <p class="mensaje-estado">${e.mensaje}</p>
-
             <div class="pie-pedido">
-                <div class="fotos-pedido">${fotos}</div>
-                <div class="d-flex flex-wrap gap-2">
-                    ${p.estado === "cotizado" ? `<button class="btn btn-primary btn-sm btn-pagar-pedido" data-id="${p.idpedido}"><i class="fa-solid fa-credit-card"></i> Pagar ${soles(p.total)}</button>` : ""}
-                    <button class="btn btn-outline-primary btn-sm btn-volver-comprar" data-id="${p.idpedido}"><i class="fa-solid fa-rotate-right"></i> Volver a comprar</button>
-                    <button class="btn btn-link btn-sm" data-bs-toggle="collapse" data-bs-target="#detalle-${p.idpedido}">Ver detalle</button>
+                <div class="fotos-pedido">${fotos(p, 3)}</div>
+                <div class="d-flex gap-2 align-items-center">
+                    <a class="enlace-detalle" data-bs-toggle="collapse" href="#detalle-${p.idpedido}" role="button">Ver detalle</a>
+                    ${p.estado === "cotizado" ? `<button class="btn btn-primary btn-sm btn-pagar-pedido" data-id="${p.idpedido}">Pagar ${soles(p.total)}</button>` : ""}
                 </div>
             </div>
-
-            <div class="collapse" id="detalle-${p.idpedido}">
-                <table class="table table-sm mb-0 mt-3 tabla-detalle">
-                    <tbody>
-                        ${p.pedido_detalle.map(d => `
-                        <tr>
-                            <td>${escaparHTML(d.nombre)}</td>
-                            <td class="text-end text-nowrap">${d.cantidad} × ${soles(d.precio)}</td>
-                            <td class="text-end text-nowrap fw-semibold">${soles(d.subtotal)}</td>
-                        </tr>`).join("")}
-                        <tr class="fila-envio"><td>Envío</td><td></td><td class="text-end text-nowrap">${envio}</td></tr>
-                    </tbody>
-                </table>
-            </div>
+            ${detalle(p)}
         </article>`
     }
 
+    /* ---------- Historial (entregado / anulado): una fila compacta ---------- */
+    const filaHistorial = (p) => {
+        const e = explicar(p)
+        return `
+        <article class="pedido-historial ${e.tono}">
+            <div class="fila-principal">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="fotos-pedido">${fotos(p, 2)}</div>
+                    <div>
+                        <div class="fw-semibold"><i class="fa-solid ${e.icono}"></i> ${e.titulo}</div>
+                        <small class="text-body-secondary">N° ${p.idpedido} · ${formatearFecha(p.fecha)}</small>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <span class="fw-bold">${soles(p.total)}</span>
+                    <a class="enlace-detalle" data-bs-toggle="collapse" href="#detalle-${p.idpedido}" role="button">Detalle</a>
+                    <button class="btn btn-outline-primary btn-sm btn-volver-comprar" data-id="${p.idpedido}">Volver a comprar</button>
+                </div>
+            </div>
+            ${detalle(p)}
+        </article>`
+    }
+
+    const tarjetaPedido = (p) => grupoDe(p) === "en_curso" ? tarjetaEnCurso(p) : filaHistorial(p)
+
     /* ---------- Resumen superior y filtro ---------- */
     const dibujarTodo = () => {
-        const enCurso = pedidos.filter(p => grupoDe(p) === "en_curso")
         const porPagar = pedidos.filter(p => p.estado === "cotizado")
         resumenCliente.innerHTML = porPagar.length ?
             `<div class="insight-principal atencion"><i class="fa-solid fa-credit-card"></i><span><em>Tienes un pago pendiente</em>
                 ${porPagar.length === 1 ? `Tu envío del pedido N° ${porPagar[0].idpedido} ya fue cotizado. Paga para que lo preparemos.` :
-                `${porPagar.length} pedidos tienen el envío cotizado y esperan tu pago.`}</span></div>` :
-            enCurso.length ?
-            `<div class="insight-principal bueno"><i class="fa-solid fa-box-open"></i><span><em>En curso</em>
-                Tienes <strong>${enCurso.length} pedido(s) en camino o en preparación</strong>. Aquí verás cada paso.</span></div>` : ""
+                `${porPagar.length} pedidos tienen el envío cotizado y esperan tu pago.`}</span></div>` : ""
 
         const opciones = [["en_curso", "En curso"], ["entregado", "Entregados"], ["anulado", "Anulados"], ["todos", "Todos"]]
         const cantidad = (v) => v === "todos" ? pedidos.length : pedidos.filter(p => grupoDe(p) === v).length
