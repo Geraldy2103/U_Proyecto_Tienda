@@ -1212,6 +1212,52 @@ footer{
     font-size: .72rem;
 }
 
+/* Proveedores: matriz y grupos */
+.chip-cuadrante{
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border: 1px solid var(--borde);
+    border-radius: 999px;
+    background-color: #fff;
+    font-size: .82rem;
+    font-weight: 500;
+    color: var(--texto);
+}
+
+.chip-cuadrante i{ width: 10px; height: 10px; border-radius: 50%; }
+.chip-cuadrante span{ color: var(--texto-suave); }
+.chip-cuadrante:hover, .chip-cuadrante.activo{ border-color: var(--texto); }
+.chip-cuadrante.activo{ background-color: var(--fondo-suave); font-weight: 700; }
+
+.grafico .linea-promedio{ stroke: #9aa19d; stroke-width: 1.5; stroke-dasharray: 5 4; }
+.grafico .etiqueta-cuadrante{ fill: #9aa19d; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; font-family: inherit; }
+.grafico .etiqueta-punto{ fill: var(--texto); font-size: 11px; font-weight: 600; font-family: inherit; }
+.grafico .zona-punto{ fill: transparent; cursor: pointer; outline: none; }
+.grafico .zona-punto:hover, .grafico .zona-punto:focus{ fill: rgba(29, 36, 32, .08); }
+
+.guia-cuadrante{
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--borde);
+}
+
+.guia-cuadrante:last-child{ border-bottom: 0; }
+.guia-cuadrante i{ font-size: 1.1rem; margin-top: 3px; width: 20px; text-align: center; }
+.guia-cuadrante p{ margin: 2px 0 0; font-size: .85rem; color: var(--texto-suave); }
+
+.grupo-cuadrante{
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: .85rem;
+    font-weight: 500;
+}
+
+.grupo-cuadrante i{ width: 10px; height: 10px; border-radius: 50%; }
+
 .kpi{
     border-left: 3px solid var(--marca);
 }

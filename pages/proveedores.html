@@ -5,52 +5,66 @@
 
 <section class="padded-sm">
     <div class="container">
+        <div id="aviso-proveedores"></div>
+
         <!-- Indicadores clave (los llena proveedores.js) -->
-        <div class="row row-cols-2 row-cols-lg-4 g-3 mb-4" id="kpis-proveedores"></div>
+        <div class="row row-cols-2 row-cols-lg-4 g-3 mb-3" id="kpis-proveedores"></div>
 
-        <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-2">
-            <div class="small text-body-secondary">
-                <span class="muestra-degradado"></span> Color más intenso = valor más alto ·
-                Costos simulados
+        <!-- Insight principal -->
+        <div id="insight-proveedores"></div>
+
+        <!-- Matriz: participación en ventas vs. % de ganancia -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-8">
+                <div class="panel h-100">
+                    <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2">
+                        <h2 class="panel-titulo mb-1">Matriz de proveedores</h2>
+                        <span class="small text-body-secondary">Cada punto es un proveedor · las líneas marcan el promedio</span>
+                    </div>
+                    <div class="leyenda-grafico leyenda-cuadrantes" id="leyenda-cuadrantes"></div>
+                    <div class="grafico" id="grafico-matriz"></div>
+                </div>
             </div>
-            <a class="small" data-bs-toggle="collapse" href="#ayuda-proveedores" role="button" aria-expanded="false">
-                <i class="fa-regular fa-circle-question"></i> ¿Cómo leer esta tabla?
-            </a>
-        </div>
-        <div class="collapse" id="ayuda-proveedores">
-            <div class="card card-body small mb-3">
-                <dl class="row mb-0">
-                    <dt class="col-sm-3">Productos</dt><dd class="col-sm-9">Productos del catálogo que le compramos.</dd>
-                    <dt class="col-sm-3">Por reponer</dt><dd class="col-sm-9">De esos, cuántos están en su stock mínimo o por debajo.</dd>
-                    <dt class="col-sm-3">Ventas</dt><dd class="col-sm-9">Lo cobrado a clientes por sus productos.</dd>
-                    <dt class="col-sm-3">Participación</dt><dd class="col-sm-9">Qué parte de las ventas totales viene de este proveedor.</dd>
-                    <dt class="col-sm-3">Ganancia</dt><dd class="col-sm-9">Ventas menos costo de compra, y su % sobre las ventas.</dd>
-                </dl>
+            <div class="col-lg-4">
+                <div class="panel h-100">
+                    <h2 class="panel-titulo">Qué hacer con cada grupo</h2>
+                    <div id="guia-cuadrantes"></div>
+                </div>
             </div>
         </div>
 
-        <div class="table-responsive">
-            <table class="table align-middle tabla-proveedores">
-                <thead>
-                    <tr class="grupos">
-                        <th colspan="2">Proveedor</th>
-                        <th colspan="2" class="text-center">Abastecimiento</th>
-                        <th colspan="4" class="text-center">Desempeño en ventas</th>
-                    </tr>
-                    <tr>
-                        <th>Empresa</th>
-                        <th>Contacto</th>
-                        <th class="text-center" title="Productos del catálogo que vienen de este proveedor">Productos</th>
-                        <th class="text-center" title="Productos en su stock mínimo o por debajo">Por reponer</th>
-                        <th class="text-end" title="Unidades vendidas a clientes">Unidades</th>
-                        <th class="text-end" title="Total cobrado a clientes">Ventas</th>
-                        <th class="text-end" title="Porcentaje de las ventas totales">Participación</th>
-                        <th class="text-end" title="Ventas menos costo de compra">Ganancia</th>
-                    </tr>
-                </thead>
-                <tbody id = "tbody-proveedores">
-                </tbody>
-            </table>
+        <!-- Tabla -->
+        <div class="panel">
+            <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-2">
+                <div class="small text-body-secondary">
+                    <span class="muestra-degradado"></span> Color más intenso = valor más alto · Costos simulados
+                </div>
+                <span class="small text-body-secondary" id="resumen-tabla-proveedores"></span>
+            </div>
+            <div class="table-responsive">
+                <table class="table align-middle mb-0 tabla-proveedores">
+                    <thead>
+                        <tr class="grupos">
+                            <th colspan="3">Proveedor</th>
+                            <th colspan="2" class="text-center">Abastecimiento</th>
+                            <th colspan="4" class="text-center">Desempeño en ventas</th>
+                        </tr>
+                        <tr>
+                            <th>Empresa</th>
+                            <th>Contacto</th>
+                            <th title="Ubicación en la matriz de proveedores">Grupo</th>
+                            <th class="text-center" title="Productos del catálogo que vienen de este proveedor">Productos</th>
+                            <th class="text-center" title="Productos en su stock mínimo o por debajo">Por reponer</th>
+                            <th class="text-end" title="Unidades vendidas a clientes">Unidades</th>
+                            <th class="text-end" title="Total cobrado a clientes">Ventas</th>
+                            <th class="text-end" title="Porcentaje de las ventas totales">Participación</th>
+                            <th class="text-end" title="Ventas menos costo de compra">Ganancia</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-proveedores">
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </section>
