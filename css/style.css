@@ -413,6 +413,26 @@ h1, h2, h3, h4, h5, h6{
 
 .lista-menu small{ color: var(--texto-suave); }
 
+.bloque-intranet{                                   /* Intranet del panel ☰, separada del resto */
+    margin-top: 22px;
+    padding: 14px 14px 6px;
+    border-radius: 12px;
+    background-color: var(--fondo-suave);
+}
+
+.titulo-intranet{
+    margin: 0;
+    font-weight: 700;
+    color: var(--marca-oscuro);
+}
+
+.bloque-intranet .titulo-seccion{ margin-top: 12px; }
+
+.lista-menu a i{
+    color: var(--marca);
+    margin-right: 6px;
+}
+
 /* ---------- Título de cada página (<header-component>) ----------
    Sin caja ni bordes: el título se integra al fondo de la página */
 #main-header{

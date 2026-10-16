@@ -185,14 +185,24 @@ const menuItems = [
     {etiqueta: "Mayoristas",   pagina: "pages/mayoristas.html", grupo: "mas"},
     {etiqueta: "Nosotros",     pagina: "pages/nosotros.html", grupo: "mas"},
     // Intranet (solo admin)
-    {etiqueta: "Indicadores",  pagina: "pages/indicadores.html", codigo: "js/pages/indicadores.js", rol: "admin", grupo: "intranet"},
-   {etiqueta: "Monitoreo", pagina: "pages/monitoreo-admin.html", codigo: "js/pages/monitoreo-admin.js", rol: "admin", grupo: "intranet"},
-    {etiqueta: "Pedidos",      pagina: "pages/pedidos-admin.html", codigo: "js/pages/pedidos-admin.js", rol: "admin", grupo: "intranet"},
-    {etiqueta: "Productos", pagina: "pages/productos-admin.html", codigo: "js/pages/productos-admin.js", rol: "admin", grupo: "intranet"},
-    {etiqueta: "Directores",   pagina: "pages/directores.html", codigo: "js/pages/directores.js", rol: "admin", grupo: "intranet"},
-    {etiqueta: "Asesores",     pagina: "pages/asesores-admin.html", codigo: "js/pages/asesores-admin.js", rol: "admin", grupo: "intranet"},
-    {etiqueta: "Solicitudes",  pagina: "pages/solicitudes.html", codigo: "js/pages/solicitudes.js", rol: "admin", grupo: "intranet"},
-    {etiqueta: "Proveedores",  pagina: "pages/proveedores.html", codigo: "js/pages/proveedores.js", rol: "admin", grupo: "intranet"}
+    /* Intranet (solo admin). "texto" es lo que se ve en el menú; "etiqueta" es el nombre interno
+       que usa el código (irAPagina("Productos"), etc.). "seccion" agrupa las opciones en el panel ☰. */
+    {etiqueta: "Indicadores",  texto: "Indicadores del negocio", seccion: "Resumen", icono: "fa-chart-line",
+        pagina: "pages/indicadores.html", codigo: "js/pages/indicadores.js", rol: "admin", grupo: "intranet"},
+    {etiqueta: "Monitoreo",    texto: "Alertas del día", seccion: "Resumen", icono: "fa-bell",
+        pagina: "pages/monitoreo-admin.html", codigo: "js/pages/monitoreo-admin.js", rol: "admin", grupo: "intranet"},
+    {etiqueta: "Pedidos",      texto: "Pedidos de clientes", seccion: "Ventas", icono: "fa-receipt",
+        pagina: "pages/pedidos-admin.html", codigo: "js/pages/pedidos-admin.js", rol: "admin", grupo: "intranet"},
+    {etiqueta: "Solicitudes",  texto: "Solicitudes mayoristas", seccion: "Ventas", icono: "fa-inbox",
+        pagina: "pages/solicitudes.html", codigo: "js/pages/solicitudes.js", rol: "admin", grupo: "intranet"},
+    {etiqueta: "Productos",    texto: "Productos y precios", seccion: "Inventario", icono: "fa-box",
+        pagina: "pages/productos-admin.html", codigo: "js/pages/productos-admin.js", rol: "admin", grupo: "intranet"},
+    {etiqueta: "Proveedores",  texto: "Proveedores", seccion: "Inventario", icono: "fa-truck",
+        pagina: "pages/proveedores.html", codigo: "js/pages/proveedores.js", rol: "admin", grupo: "intranet"},
+    {etiqueta: "Directores",   texto: "Directores de venta", seccion: "Equipo comercial", icono: "fa-user-tie",
+        pagina: "pages/directores.html", codigo: "js/pages/directores.js", rol: "admin", grupo: "intranet"},
+    {etiqueta: "Asesores",     texto: "Asesores comerciales", seccion: "Equipo comercial", icono: "fa-users",
+        pagina: "pages/asesores-admin.html", codigo: "js/pages/asesores-admin.js", rol: "admin", grupo: "intranet"}
 ]
 
 /* La página de ingreso se abre desde "Mi cuenta" */
@@ -330,8 +340,19 @@ const dibujarMenu = () => {
         <ul class="lista-menu">
             ${items.map(item => `<li><a data-etiqueta="${item.etiqueta}" onclick="irAPagina('${item.etiqueta}')">${item.etiqueta}</a></li>`).join("")}
         </ul>`
+    // Intranet: un bloque por sección (Resumen, Ventas, Inventario, Equipo comercial), en el orden del menú
+    const intranet = delGrupo("intranet")
+    const secciones = [...new Set(intranet.map(item => item.seccion))]
+    const enlaceIntranet = (item) => `<li><a data-etiqueta="${item.etiqueta}" onclick="irAPagina('${item.etiqueta}')">
+        <span><i class="fa-solid ${item.icono} fa-fw"></i> ${item.texto}</span></a></li>`
     menuSecciones.innerHTML = seccion("Conócenos", delGrupo("mas")) +
-        (esAdmin() ? seccion(`<i class="fa-solid fa-lock"></i> Intranet`, delGrupo("intranet")) : "")
+        (esAdmin() ? `
+        <div class="bloque-intranet">
+            <p class="titulo-intranet"><i class="fa-solid fa-lock"></i> Intranet</p>
+            ${secciones.map(nombre => `
+                <p class="titulo-seccion">${nombre}</p>
+                <ul class="lista-menu">${intranet.filter(item => item.seccion === nombre).map(enlaceIntranet).join("")}</ul>`).join("")}
+        </div>` : "")
 
     if (usuarioActual === null) {
         zonaCuenta.innerHTML = `
