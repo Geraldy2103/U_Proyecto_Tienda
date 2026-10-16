@@ -1409,13 +1409,7 @@ footer{
 .pasos-pedido li.actual .marca-paso{ border-color: var(--marca); color: var(--marca); box-shadow: 0 0 0 4px var(--marca-claro); }
 .pasos-pedido li.actual{ color: var(--texto); font-weight: 600; }
 
-.mensaje-estado{
-    margin: 4px 0 20px;
-    padding: 10px 12px;
-    border-radius: 10px;
-    background-color: var(--fondo-suave);
-    font-size: .92rem;
-}
+/* (el mensaje de cada estado se quitó de la tarjeta) */
 
 .pie-pedido{
     display: flex;

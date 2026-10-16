@@ -85,7 +85,6 @@
             </header>
 
             ${pasos(p)}
-            <p class="mensaje-estado">${e.mensaje}</p>
 
             <div class="pie-pedido">
                 <div class="fotos-pedido">${fotos}</div>
