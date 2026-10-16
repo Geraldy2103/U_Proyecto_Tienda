@@ -8,14 +8,15 @@
 
 :root{
     /* Colores de marca: verde bosque sobrio + marfil */
-    --marca:          #1f5c45;   /* verde bosque (botones, enlaces, activos) */
-    --marca-oscuro:   #163f30;   /* hover y textos destacados */
-    --marca-claro:    #eef3ef;   /* fondos suaves */
-    --acento:         #b42318;   /* rojo vino: ofertas y contador del carrito */
+    --marca:          #1d7a35;   /* verde (botones, enlaces, encabezado) */
+    --marca-oscuro:   #145a27;   /* barra de categorías, hover */
+    --marca-claro:    #eaf5ec;   /* fondos suaves */
+    --acento:         #d62828;   /* rojo: precios, ofertas */
+    --amarillo:       #ffc72c;   /* botones de llamada a la acción, contador del carrito */
     --texto:          #1d2420;
     --texto-suave:    #69716c;
     --borde:          #e6e3dc;
-    --fondo:          #faf9f6;   /* marfil: fondo general */
+    --fondo:          #f6faf5;   /* verde muy claro: fondo general */
     --fondo-suave:    #f3f1ec;
 
     /* Forma */
@@ -25,15 +26,15 @@
 
     /* Bootstrap usa estas variables: su "primary" pasa a ser nuestro verde */
     --bs-primary:            var(--marca);
-    --bs-primary-rgb:        31, 92, 69;
+    --bs-primary-rgb:        29, 122, 53;
     --bs-success:            var(--marca);
-    --bs-success-rgb:        31, 92, 69;
-    --bs-danger-rgb:         180, 35, 24;
+    --bs-success-rgb:        29, 122, 53;
+    --bs-danger-rgb:         214, 40, 40;
     --bs-link-color:         var(--marca);
-    --bs-link-color-rgb:     31, 92, 69;
+    --bs-link-color-rgb:     29, 122, 53;
     --bs-link-hover-color:   var(--marca-oscuro);
-    --bs-link-hover-color-rgb: 22, 63, 48;
-    --bs-body-font-family:   "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --bs-link-hover-color-rgb: 20, 90, 39;
+    --bs-body-font-family:   "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     --bs-body-color:         var(--texto);
     --bs-border-color:       var(--borde);
     --bs-border-radius:      .5rem;
@@ -149,48 +150,77 @@ h1, h2, h3, h4, h5, h6{
 .icono-eliminar:hover{ color: var(--acento); background-color: #f8eceb; }
 
 /* =====================================================================
-   Encabezado de la tienda (logo, ☰, buscador, Mis pedidos, Mi cuenta, carrito)
+   Encabezado: barra principal verde + barra de categorías
    ===================================================================== */
 
 .cabecera{
-    background-color: #fff;
-    border-bottom: 1px solid var(--borde);
     z-index: 1030;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+}
+
+.cabecera-principal{
+    background-color: var(--marca);
+    color: #fff;
 }
 
 .cabecera-fila{
     display: grid;
-    grid-template-columns: auto auto 1fr auto;     /* logo | ☰ | buscador | acciones */
-    grid-template-areas: "logo menu buscador acciones";
+    grid-template-columns: auto 1fr auto;          /* logo | buscador | acciones */
+    grid-template-areas: "logo buscador acciones";
     align-items: center;
-    gap: 14px 22px;
+    gap: 14px 28px;
     padding-top: 12px;
     padding-bottom: 12px;
 }
 
 .marca{
     grid-area: logo;
-    font-size: 1.35rem;
-    font-weight: 800;
-    letter-spacing: -.03em;
-    color: var(--marca-oscuro);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
     text-decoration: none;
+}
+
+.marca:hover{ color: #fff; }
+
+.marca-icono{                                       /* carrito amarillo del logo */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background-color: var(--amarillo);
+    color: var(--marca-oscuro);
+    font-size: 1.3rem;
+}
+
+.marca-texto{
+    display: flex;
+    flex-direction: column;
+    font-size: 1.2rem;
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -.02em;
     white-space: nowrap;
 }
 
-.marca:hover{ color: var(--marca); }
-
-.marca span{
+.marca-texto small{
+    font-size: .72rem;
     font-weight: 500;
-    color: var(--texto-suave);
+    font-style: italic;
+    color: rgba(255, 255, 255, .85);
+    letter-spacing: 0;
+    margin-top: 3px;
 }
 
-.btn-menu{                                          /* las tres rayitas */
+.btn-menu{                                          /* ☰ (solo celular) */
     grid-area: menu;
     border: 0;
     background: none;
     font-size: 1.4rem;
-    color: var(--texto);
+    color: #fff;
     padding: 4px 6px;
     line-height: 1;
 }
@@ -198,53 +228,52 @@ h1, h2, h3, h4, h5, h6{
 .buscador{
     grid-area: buscador;
     position: relative;
+    display: flex;
     max-width: 640px;
     width: 100%;
+    justify-self: center;
 }
 
 .buscador input{
-    width: 100%;
-    height: 44px;
-    padding: 0 52px 0 20px;
-    border: 1px solid var(--borde);
-    border-radius: 999px;
-    background-color: var(--fondo);
+    flex: 1;
+    height: 46px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 10px 0 0 10px;
+    background-color: #fff;
     font-size: .95rem;
     outline: none;
-    transition: border-color .15s, background-color .15s;
 }
 
 .buscador input:focus{
-    border-color: var(--marca);
-    background-color: #fff;
+    box-shadow: inset 0 0 0 2px var(--amarillo);
 }
 
 .buscador button{
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    width: 34px;
-    height: 34px;
+    width: 54px;
     border: 0;
-    border-radius: 50%;
-    background-color: var(--marca);
+    border-radius: 0 10px 10px 0;
+    background-color: var(--marca-oscuro);
     color: #fff;
+    font-size: 1.05rem;
 }
+
+.buscador button:hover{ background-color: #0e4320; }
 
 .acciones{
     grid-area: acciones;
     display: flex;
     align-items: center;
-    gap: 22px;
+    gap: 24px;
 }
 
-.accion{                                            /* "Mis pedidos", "Mi cuenta" */
+.accion{                                            /* "Mis pedidos", "Ingresar / nombre" */
     display: flex;
     align-items: center;
     gap: 8px;
-    color: var(--texto);
-    font-weight: 600;
-    font-size: .92rem;
+    color: #fff;
+    font-weight: 500;
+    font-size: .88rem;
     text-decoration: none;
     cursor: pointer;
     white-space: nowrap;
@@ -253,40 +282,88 @@ h1, h2, h3, h4, h5, h6{
     padding: 0;
 }
 
-.accion i{ font-size: 1.15rem; }
-.accion:hover, .accion.active{ color: var(--marca); }
+.accion i{ font-size: 1.2rem; }
+.accion:hover, .accion.active{ color: var(--amarillo); }
 
 .btn-carrito{
     position: relative;
-    color: var(--texto);
-    font-size: 1.35rem;
+    color: #fff;
+    font-size: 1.45rem;
     cursor: pointer;
     text-decoration: none;
 }
 
-.btn-carrito:hover, .btn-carrito.active{ color: var(--marca); }
+.btn-carrito:hover, .btn-carrito.active{ color: var(--amarillo); }
 
 .btn-carrito .badge{                                /* número de unidades sobre el carrito */
     position: absolute;
     top: -8px;
-    right: -11px;
+    right: -12px;
     font-size: .68rem;
-    background-color: var(--acento) !important;
+    background-color: var(--amarillo) !important;
+    color: #1d2420;
 }
 
-/* Celular: el buscador baja a una segunda fila y se ocultan los textos de las acciones */
-@media (max-width: 767.98px){
+/* Barra de categorías */
+.barra-categorias{
+    background-color: var(--marca-oscuro);
+}
+
+.lista-barra{
+    display: flex;
+    flex-wrap: nowrap;
+    list-style: none;
+    margin: 0 0 0 8px;
+    padding: 0;
+    flex: 1;
+    justify-content: space-between;
+}
+
+.enlace-categoria{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 14px;
+    color: #fff;
+    font-size: .9rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    white-space: nowrap;
+    background: none;
+    border: 0;
+}
+
+.enlace-categoria:hover, .enlace-categoria.show{ color: var(--amarillo); }
+
+.enlace-categoria.todas{
+    padding-left: 0;
+    padding-right: 20px;
+    border-right: 1px solid rgba(255, 255, 255, .2);
+}
+
+/* Celular: ☰ | logo | acciones, y el buscador en una segunda fila */
+@media (max-width: 991.98px){
     .cabecera-fila{
         grid-template-columns: auto 1fr auto;
         grid-template-areas: "menu logo acciones"
                              "buscador buscador buscador";
         gap: 10px 12px;
     }
-    .marca{ font-size: 1.15rem; }
-    .marca span{ display: none; }
+    .marca-texto{ font-size: 1rem; }
+    .marca-texto small{ display: none; }
+    .marca-icono{ width: 36px; height: 36px; font-size: 1.05rem; }
     .accion span{ display: none; }
     .acciones{ gap: 16px; }
     .buscador{ max-width: none; }
+    .marca{ min-width: 0; }                         /* el logo puede encogerse para que todo entre */
+    .marca-texto{ overflow: hidden; text-overflow: ellipsis; }
+}
+
+@media (max-width: 575.98px){                       /* celulares: "Mis pedidos" queda dentro de la cuenta */
+    .acciones .accion[data-etiqueta="Mis pedidos"]{ display: none; }
+    .cabecera-fila{ gap: 10px 10px; }
+    .marca{ gap: 8px; }
 }
 
 /* ---------- Panel lateral (☰) ---------- */
@@ -294,8 +371,13 @@ h1, h2, h3, h4, h5, h6{
     --bs-offcanvas-width: 300px;
 }
 
+.menu-lateral .offcanvas-header{
+    background-color: var(--marca);
+    color: #fff;
+}
+
 .menu-lateral .offcanvas-title{
-    font-size: 1.15rem;
+    font-size: 1.1rem;
 }
 
 .menu-lateral .titulo-seccion{
@@ -353,13 +435,54 @@ h1, h2, h3, h4, h5, h6{
 }
 
 footer{
-    background-color: var(--texto);
-    color: rgba(255, 255, 255, .7);
     font-size: .88rem;
+}
+
+.pie-beneficios{
+    background-color: #fff;
+    border-top: 1px solid var(--borde);
     padding: 22px 0;
 }
 
-footer strong{ color: #fff; }
+.beneficio{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.beneficio i{
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: var(--marca-claro);
+    color: var(--marca);
+    font-size: 1.15rem;
+}
+
+.beneficio span{
+    display: flex;
+    flex-direction: column;
+    color: var(--texto-suave);
+    font-size: .8rem;
+    line-height: 1.3;
+}
+
+.beneficio strong{
+    color: var(--texto);
+    font-size: .88rem;
+}
+
+.pie-legal{
+    background-color: var(--marca-oscuro);
+    color: rgba(255, 255, 255, .8);
+    padding: 16px 0;
+}
+
+.pie-legal strong{ color: #fff; }
 
 /* =====================================================================
    Tarjeta de producto (una sola para Tienda e Inicio)
@@ -415,10 +538,26 @@ footer strong{ color: #fff; }
 }
 
 .card-producto .precio{
-    font-size: 1.12rem;
-    font-weight: 800;
-    color: var(--texto);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--acento);
 }
+
+.btn-favorito{                                      /* ❤️ arriba a la derecha de la tarjeta */
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 2;
+    width: 32px;
+    height: 32px;
+    border: 0;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, .92);
+    color: #9aa19d;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .12);
+}
+
+.btn-favorito:hover, .btn-favorito.marcado{ color: var(--acento); }
 
 .precio-anterior{
     text-decoration: line-through;
@@ -884,6 +1023,206 @@ footer strong{ color: #fff; }
 }
 
 .tabla-proveedores thead th[title]{ cursor: help; }
+
+/* =====================================================================
+   Inicio: banner, beneficios, categorías, destacados y banner mayorista
+   ===================================================================== */
+
+.btn-amarillo{
+    background-color: var(--amarillo);
+    color: #1d2420;
+    font-weight: 700;
+    border: 0;
+    border-radius: 10px;
+    padding: 12px 24px;
+}
+
+.btn-amarillo:hover{ background-color: #f2b600; color: #1d2420; }
+
+.hero{                                              /* banner principal con la foto */
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    min-height: 380px;
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+}
+
+.hero-img{
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 70% center;
+}
+
+.hero::before{                                      /* velo blanco a la izquierda para leer el texto */
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(255,255,255,.97) 0%, rgba(255,255,255,.9) 30%, rgba(255,255,255,0) 58%);
+    z-index: 1;
+}
+
+.hero-texto{
+    position: relative;
+    z-index: 2;
+    max-width: 480px;
+    padding: 36px 44px;
+}
+
+.hero-texto h1{
+    font-size: clamp(1.8rem, 3.4vw, 2.6rem);
+    font-weight: 800;
+    line-height: 1.12;
+    color: #1d2420;
+}
+
+.hero-texto h1 span{ color: var(--marca); }
+
+.hero-texto p{
+    font-size: 1.05rem;
+    color: var(--texto-suave);
+    margin: 14px 0 22px;
+}
+
+@media (max-width: 767.98px){
+    .hero{ flex-direction: column; align-items: stretch; min-height: 0; }
+    .hero-img{ position: relative; height: 200px; object-position: 75% center; }
+    .hero::before{ display: none; }
+    .hero-texto{ padding: 22px 20px 26px; max-width: none; }
+}
+
+.franja-beneficios{
+    background-color: #fff;
+    border: 1px solid var(--borde);
+    border-radius: 14px;
+    padding: 16px 20px;
+}
+
+.titulo-seccion-inicio{
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 14px;
+}
+
+.titulo-seccion-inicio h2{
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.titulo-seccion-inicio a{
+    font-weight: 600;
+    font-size: .9rem;
+    text-decoration: none;
+}
+
+@media (min-width: 1200px){                         /* 8 categorías en una fila (Bootstrap solo llega a 6) */
+    .grilla-categorias > .col{ flex: 0 0 12.5%; max-width: 12.5%; }
+}
+
+.tarjeta-categoria{                                 /* foto de la categoría + nombre */
+    display: block;
+    overflow: hidden;
+    border-radius: 12px;
+    background-color: #fff;
+    border: 1px solid var(--borde);
+    text-align: center;
+    text-decoration: none;
+    color: var(--texto);
+    cursor: pointer;
+    transition: box-shadow .2s, transform .2s;
+}
+
+.tarjeta-categoria:hover{
+    transform: translateY(-3px);
+    box-shadow: var(--sombra-hover);
+    color: var(--marca);
+}
+
+.tarjeta-categoria img{
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    background-color: var(--marca-claro);
+}
+
+.tarjeta-categoria span{
+    display: block;
+    padding: 9px 6px;
+    font-weight: 600;
+    font-size: .88rem;
+}
+
+.pildoras{                                          /* filtros "Todos | Bebidas | ..." */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.pildoras button{
+    border: 1px solid var(--borde);
+    background-color: #fff;
+    border-radius: 999px;
+    padding: 6px 16px;
+    font-size: .85rem;
+    font-weight: 500;
+    color: var(--texto);
+}
+
+.pildoras button:hover{ border-color: var(--marca); color: var(--marca); }
+
+.pildoras button.activo{
+    background-color: var(--marca);
+    border-color: var(--marca);
+    color: #fff;
+}
+
+.banner-mayorista{
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    overflow: hidden;
+    border-radius: 16px;
+    background-color: var(--marca);
+    color: #fff;
+}
+
+.banner-mayorista .texto{
+    padding: 36px 40px;
+    align-self: center;
+}
+
+.banner-mayorista h2{
+    font-size: clamp(1.5rem, 2.8vw, 2.1rem);
+    font-weight: 800;
+    line-height: 1.15;
+}
+
+.banner-mayorista h2 span{ color: var(--amarillo); }
+
+.banner-mayorista p{
+    color: rgba(255, 255, 255, .88);
+    margin: 10px 0 20px;
+}
+
+.banner-mayorista img{
+    width: 100%;
+    height: 100%;
+    min-height: 220px;
+    object-fit: cover;
+    object-position: 15% center;                    /* muestra el pasillo del almacén */
+}
+
+@media (max-width: 767.98px){
+    .banner-mayorista{ grid-template-columns: 1fr; }
+    .banner-mayorista img{ min-height: 160px; max-height: 180px; }
+    .banner-mayorista .texto{ padding: 26px 22px; }
+}
 
 /* =====================================================================
    Animación de carga

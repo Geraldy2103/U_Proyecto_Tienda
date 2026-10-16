@@ -1,99 +1,59 @@
 <section class="padded-sm">
     <div class="container">
 
-        <!-- Presentación -->
-        <div class="row align-items-center g-4 mb-5">
-            <div class="col-lg-7">
-                <p class="text-uppercase text-success fw-bold small mb-1">Minorista y mayorista · Lima</p>
-                <h2 class="display-6 fw-bold">Compra como en almacén, aunque lleves una sola unidad</h2>
-                <p class="lead">
-                    Somos un galpón de abarrotes con productos de 16 países y marcas peruanas.
-                    Compramos en volumen directamente a nuestros proveedores para que tú pagues
-                    lo más cerca posible del costo.
-                </p>
-                <div class="d-flex flex-wrap gap-2">
-                    <button class="btn btn-primary btn-lg" onclick="irAPagina('Tienda')">
-                        <i class="fa-solid fa-basket-shopping"></i> Ver la tienda
-                    </button>
-                    <button class="btn btn-outline-dark btn-lg" onclick="irAPagina('Mayoristas')">
-                        <i class="fa-solid fa-boxes-stacked"></i> Soy negocio
-                    </button>
-                </div>
-            </div>
-            <div class="col-lg-5">
-                <div class="row row-cols-2 g-3 text-center">
-                    <div class="col"><div class="cifra"><strong>81</strong><span>productos</span></div></div>
-                    <div class="col"><div class="cifra"><strong>16</strong><span>países de origen</span></div></div>
-                    <div class="col"><div class="cifra"><strong>3</strong><span>sedes en Lima</span></div></div>
-                    <div class="col"><div class="cifra"><strong>21</strong><span>productos en oferta</span></div></div>
-                </div>
+        <!-- Banner principal -->
+        <div class="hero mb-4">
+            <img class="hero-img" src="img/banner-inicio.webp"
+                alt="Carrito lleno de abarrotes en el almacén de El Galpón del Costo">
+            <div class="hero-texto">
+                <h1>Todo lo que necesitas para tu hogar, <span>al mejor precio</span></h1>
+                <p>Compra al por mayor o por unidad desde la comodidad de tu casa.</p>
+                <button class="btn btn-amarillo" onclick="irAPagina('Tienda')">
+                    ¡Comprar ahora! <i class="fa-solid fa-arrow-right"></i>
+                </button>
             </div>
         </div>
 
-        <!-- Ofertas: los productos con mayor descuento (los llena inicio.js) -->
-        <div class="d-flex justify-content-between align-items-end mb-3">
-            <h3 class="mb-0">Ofertas de la semana</h3>
-            <a href="#" class="small" onclick="irAPagina('Tienda'); return false">Ver todo el catálogo <i class="fa-solid fa-arrow-right"></i></a>
-        </div>
-        <div class="row row-cols-2 row-cols-md-4 g-3 mb-5" id="ofertas-inicio"></div>
-
-        <!-- Por qué comprar aquí -->
-        <h3 class="mb-3">¿Por qué El Galpón?</h3>
-        <div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
-            <div class="col">
-                <div class="card h-100 tarjeta-beneficio">
-                    <div class="card-body">
-                        <i class="fa-solid fa-tags fa-2x text-success mb-3"></i>
-                        <h5 class="card-title">Precios de galpón</h5>
-                        <p class="card-text">Sin intermediarios: compramos por contenedor a 29 proveedores y
-                            trasladamos ese ahorro a cada producto.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card h-100 tarjeta-beneficio">
-                    <div class="card-body">
-                        <i class="fa-solid fa-box-open fa-2x text-success mb-3"></i>
-                        <h5 class="card-title">Por unidad o por caja</h5>
-                        <p class="card-text">Lleva lo que necesites para tu casa. Y si llevas 12 unidades o más de
-                            un producto, un asesor comercial te atiende personalmente.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card h-100 tarjeta-beneficio">
-                    <div class="card-body">
-                        <i class="fa-solid fa-earth-americas fa-2x text-success mb-3"></i>
-                        <h5 class="card-title">Del mundo a tu mesa</h5>
-                        <p class="card-text">Tés, quesos europeos, conservas y repostería importada junto a las marcas
-                            peruanas de siempre, en 8 categorías.</p>
-                    </div>
-                </div>
+        <!-- Beneficios -->
+        <div class="franja-beneficios mb-5">
+            <div class="row row-cols-2 row-cols-lg-4 g-3">
+                <div class="col"><div class="beneficio"><i class="fa-solid fa-truck-fast"></i>
+                    <span><strong>Envíos rápidos</strong>en Lima Metropolitana</span></div></div>
+                <div class="col"><div class="beneficio"><i class="fa-solid fa-tags"></i>
+                    <span><strong>Precios de mayor y menor</strong>desde 1 unidad</span></div></div>
+                <div class="col"><div class="beneficio"><i class="fa-solid fa-award"></i>
+                    <span><strong>Productos de calidad</strong>y marcas confiables</span></div></div>
+                <div class="col"><div class="beneficio"><i class="fa-solid fa-lock"></i>
+                    <span><strong>Compra segura</strong>y fácil</span></div></div>
             </div>
         </div>
 
-        <!-- Sedes -->
-        <h3 class="mb-3">Encuéntranos</h3>
-        <div class="row row-cols-1 row-cols-md-3 g-3 mb-5">
-            <div class="col">
-                <div class="sede">
-                    <h6><i class="fa-solid fa-location-dot text-danger"></i> Miraflores</h6>
-                    <p class="mb-0 small">Av. José Larco 1150</p>
-                </div>
-            </div>
-            <div class="col">
-                <div class="sede">
-                    <h6><i class="fa-solid fa-location-dot text-danger"></i> San Isidro</h6>
-                    <p class="mb-0 small">Av. Camino Real 1050</p>
-                </div>
-            </div>
-            <div class="col">
-                <div class="sede">
-                    <h6><i class="fa-solid fa-location-dot text-danger"></i> Callao</h6>
-                    <p class="mb-0 small">Av. Sáenz Peña 600</p>
-                </div>
-            </div>
+        <!-- Compra por categorías (las llena inicio.js) -->
+        <div class="titulo-seccion-inicio">
+            <h2>Compra por categorías</h2>
+            <a href="#" onclick="irAPagina('Tienda'); return false">Ver todas <i class="fa-solid fa-arrow-right"></i></a>
         </div>
-        <p class="small text-body-secondary mb-0">Lunes a sábado de 8:00 a.m. a 9:00 p.m. · Domingos de 9:00 a.m. a 6:00 p.m.</p>
+        <div class="row row-cols-2 row-cols-sm-4 g-3 mb-5 grilla-categorias" id="categorias-inicio"></div>
+
+        <!-- Productos destacados con filtros por categoría -->
+        <div class="titulo-seccion-inicio">
+            <h2>Productos destacados</h2>
+            <a href="#" onclick="irAPagina('Tienda'); return false">Ver catálogo <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+        <div class="pildoras" id="filtros-destacados"></div>
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3 mb-5" id="destacados-inicio"></div>
+
+        <!-- Compras al por mayor -->
+        <div class="banner-mayorista">
+            <div class="texto">
+                <h2>También compras <span>al por mayor</span></h2>
+                <p>Precios especiales para tu negocio y grandes cantidades: desde 12 unidades por producto
+                    te atiende un asesor comercial.</p>
+                <button class="btn btn-amarillo" onclick="irAPagina('Mayoristas')">
+                    Cotiza aquí <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+            <img src="img/banner-inicio.webp" alt="Almacén de El Galpón del Costo" loading="lazy">
+        </div>
     </div>
 </section>

@@ -289,13 +289,32 @@ document.getElementById("form-buscar").addEventListener("submit", (event) => {
     irAPagina("Tienda")
 })
 
-/* ---------- Panel lateral: categorías (se leen una vez de la base) ---------- */
+/* ---------- Categorías: barra verde (escritorio) y panel lateral ☰ (se leen una vez de la base) ---------- */
+const barraCategorias = document.getElementById("barra-categorias")
+const CATEGORIAS_EN_BARRA = 6   // las demás van dentro de "Más"
+
 obtenerDatos(db.from("categorias_con_total").select("idcategoria, nombre, total").order("nombre"))
     .then(categorias => {
+        // Panel lateral: todas
         menuCategorias.innerHTML = categorias.map(c => `
             <li><a data-categoria="${c.idcategoria}">${escaparHTML(c.nombre)} <small>${c.total}</small></a></li>`).join("") +
             `<li><a data-categoria=""><strong>Ver todo el catálogo</strong> <i class="fa-solid fa-arrow-right small"></i></a></li>`
-        menuCategorias.querySelectorAll("a").forEach(a =>
+
+        // Barra verde: las primeras + "Más ▾" con el resto, Mayoristas y Nosotros
+        const resto = categorias.slice(CATEGORIAS_EN_BARRA)
+        barraCategorias.innerHTML = categorias.slice(0, CATEGORIAS_EN_BARRA).map(c =>
+            `<li><a class="enlace-categoria" data-categoria="${c.idcategoria}">${escaparHTML(c.nombre)}</a></li>`).join("") + `
+            <li class="dropdown">
+                <a class="enlace-categoria dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">Más</a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    ${resto.map(c => `<li><a class="dropdown-item" data-categoria="${c.idcategoria}">${escaparHTML(c.nombre)}</a></li>`).join("")}
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" onclick="irAPagina('Mayoristas')">Compras mayoristas</a></li>
+                    <li><a class="dropdown-item" onclick="irAPagina('Nosotros')">Nosotros</a></li>
+                </ul>
+            </li>`
+
+        document.querySelectorAll("#menu-categorias a, #barra-categorias [data-categoria]").forEach(a =>
             a.addEventListener("click", () => verCategoria(a.dataset.categoria ? Number(a.dataset.categoria) : null)))
     })
     .catch(error => {
@@ -317,7 +336,7 @@ const dibujarMenu = () => {
     if (usuarioActual === null) {
         zonaCuenta.innerHTML = `
             <a class="accion dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fa-regular fa-user"></i><span>Mi cuenta</span>
+                <i class="fa-regular fa-user"></i><span>Ingresar</span>
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
                 <li><a class="dropdown-item" onclick="irAPagina('Ingresar')">Iniciar sesión</a></li>
@@ -364,19 +383,44 @@ class HeaderComponent extends HTMLElement { /*"HeaderComponent" es el nombre de 
 customElements.define("header-component", HeaderComponent) /*Cuando veas <header-component>, utiliza la clase HeaderComponent*/
 
 
+/* ---------- Favoritos (❤️) ----------
+   Se guardan en este navegador (localStorage). Si el navegador no permite guardar, simplemente no se recuerdan. */
+const leerFavoritos = () => {
+    try { return JSON.parse(localStorage.getItem("favoritos")) || [] } catch (error) { return [] }
+}
+const esFavorito = (idproducto) => leerFavoritos().includes(idproducto)
+const alternarFavorito = (idproducto) => {
+    const favoritos = leerFavoritos()
+    const nuevos = favoritos.includes(idproducto) ? favoritos.filter(id => id !== idproducto) : [...favoritos, idproducto]
+    try { localStorage.setItem("favoritos", JSON.stringify(nuevos)) } catch (error) { /* sin almacenamiento */ }
+    return nuevos.includes(idproducto)
+}
+
+/* Un solo "escucha" para todos los corazones de la página */
+document.addEventListener("click", (event) => {
+    const boton = event.target.closest(".btn-favorito")
+    if (!boton) return
+    const marcado = alternarFavorito(Number(boton.dataset.id))
+    boton.classList.toggle("marcado", marcado)
+    boton.querySelector("i").className = marcado ? "fa-solid fa-heart" : "fa-regular fa-heart"
+    boton.setAttribute("aria-pressed", marcado)
+})
+
 /* ---------- Tarjeta de producto (la misma en Tienda e Inicio) ---------- */
 /* Devuelve el HTML de la tarjeta. El botón "Agregar" lleva data-id con el código del producto. */
 const tarjetaProducto = (item) => {
     const precioFinal = item.preciorebajado ? item.preciorebajado : item.precio
     const descuento = item.preciorebajado ? Math.round((1 - item.preciorebajado / item.precio) * 100) : 0
     const agotado = item.stock === 0
+    const favorito = esFavorito(item.idproducto)
     const estadoStock = agotado ? `<span>Agotado</span>` :
-        item.stock <= item.stock_minimo ? `<span class="text-danger">Últimas ${item.stock} unidades</span>` :
-        `<span>Disponible</span>`
+        item.stock <= item.stock_minimo ? `<span class="text-danger">Últimas ${item.stock} unidades</span>` : ""
     return `
         <div class="col">
             <div class="card card-producto ${agotado ? "producto-agotado" : ""}">
                 ${descuento > 0 ? `<span class="etiqueta-descuento">-${descuento}%</span>` : ""}
+                <button type="button" class="btn-favorito ${favorito ? "marcado" : ""}" data-id="${item.idproducto}"
+                    aria-label="Favorito" aria-pressed="${favorito}"><i class="${favorito ? "fa-solid" : "fa-regular"} fa-heart"></i></button>
                 <div class="foto">
                     <img src="${item.imagenchica || IMAGEN_SIN_FOTO}" alt="${escaparHTML(item.nombre)}" loading="lazy">
                 </div>
@@ -386,7 +430,7 @@ const tarjetaProducto = (item) => {
                         ${descuento > 0 ? `<span class="precio-anterior">${soles(item.precio)}</span>` : ""}</div>
                     <div class="estado-stock">${estadoStock}</div>
                     <button class="btn btn-primary btn-sm w-100 btn-agregar" data-id="${item.idproducto}" ${agotado ? "disabled" : ""}>
-                        ${agotado ? "Sin stock" : "Agregar al carrito"}
+                        ${agotado ? "Sin stock" : `Agregar <i class="fa-solid fa-cart-shopping"></i>`}
                     </button>
                 </div>
             </div>
