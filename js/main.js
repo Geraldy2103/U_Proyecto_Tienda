@@ -366,6 +366,24 @@ const dibujarMenu = () => {
                 <li><a class="dropdown-item" onclick="irAPagina('Ingresar')">Crear cuenta</a></li>
             </ul>`
     } else {
+        /* Intranet dentro del menú de cuenta: todas sus opciones, agrupadas por sección y en dos columnas */
+        const intranetEnCuenta = () => {
+            const items = menuItems.filter(item => item.grupo === "intranet")
+            const secciones = [...new Set(items.map(item => item.seccion))]
+            return `<hr class="dropdown-divider">
+                <div class="intranet-cuenta">
+                    <p class="titulo-intranet-cuenta"><i class="fa-solid fa-lock"></i> Intranet</p>
+                    <div class="columnas-intranet">
+                        ${secciones.map(nombre => `
+                        <div>
+                            <p class="seccion-intranet-cuenta">${nombre}</p>
+                            ${items.filter(item => item.seccion === nombre).map(item => `
+                            <a class="dropdown-item" data-etiqueta="${item.etiqueta}" onclick="irAPagina('${item.etiqueta}')">
+                                <i class="fa-solid ${item.icono} fa-fw"></i> ${item.texto}</a>`).join("")}
+                        </div>`).join("")}
+                    </div>
+                </div>`
+        }
         const iniciales = usuarioActual.nombre.split(" ").filter(Boolean).slice(0, 2).map(p => p[0]).join("").toUpperCase()
         zonaCuenta.innerHTML = `
             <a class="accion dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -389,7 +407,7 @@ const dibujarMenu = () => {
                 <a class="dropdown-item" onclick="irAPagina('Mayoristas')">
                     <i class="fa-solid fa-boxes-stacked fa-fw"></i> Compras mayoristas
                 </a>
-                ${esAdmin() ? `<a class="dropdown-item" onclick="irAPagina('Indicadores')"><i class="fa-solid fa-chart-line fa-fw"></i> Ir a la Intranet</a>` : ""}
+                ${esAdmin() ? intranetEnCuenta() : ""}
                 <hr class="dropdown-divider">
                 <a class="dropdown-item salir" id="btn-cerrar-sesion"><i class="fa-solid fa-right-from-bracket fa-fw"></i> Cerrar sesión</a>
             </div>`

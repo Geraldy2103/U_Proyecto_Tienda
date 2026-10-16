@@ -1319,6 +1319,40 @@ footer{
     font-weight: 600;
 }
 
+.menu-cuenta:has(.intranet-cuenta){ min-width: 460px; }   /* más ancho para el admin */
+
+.titulo-intranet-cuenta{
+    margin: 4px 10px 2px;
+    font-weight: 700;
+    color: var(--marca-oscuro);
+    font-size: .88rem;
+}
+
+.columnas-intranet{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 4px;
+}
+
+.seccion-intranet-cuenta{
+    margin: 8px 10px 2px;
+    font-size: .68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--texto-suave);
+}
+
+.intranet-cuenta .dropdown-item{
+    font-size: .88rem;
+    padding: 6px 10px;
+}
+
+@media (max-width: 575.98px){                       /* en celular, una sola columna */
+    .menu-cuenta:has(.intranet-cuenta){ min-width: 280px; }
+    .columnas-intranet{ grid-template-columns: 1fr; }
+}
+
 .contador-menu.urgente{ background-color: var(--amarillo); color: #1d2420; }
 
 /* ---------- Mis pedidos (cliente) ---------- */
