@@ -99,6 +99,8 @@ const actualizarContadorCarrito = () => {
     contador.textContent = unidades
     contador.style.display = unidades > 0 ? "inline-block" : "none" // si está vacío no se muestra
     document.getElementById("btn-carrito-nav").title = unidades > 0 ? `Carrito: ${unidades} unidad(es)` : "Carrito vacío"
+    const enCuenta = document.getElementById("contador-carrito-cuenta")
+    if (enCuenta) { enCuenta.textContent = unidades; enCuenta.hidden = unidades === 0 }
 }
 
 /* Muestra un aviso pequeño abajo a la derecha que desaparece solo (Toast de Bootstrap) */
@@ -364,20 +366,56 @@ const dibujarMenu = () => {
                 <li><a class="dropdown-item" onclick="irAPagina('Ingresar')">Crear cuenta</a></li>
             </ul>`
     } else {
+        const iniciales = usuarioActual.nombre.split(" ").filter(Boolean).slice(0, 2).map(p => p[0]).join("").toUpperCase()
         zonaCuenta.innerHTML = `
             <a class="accion dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fa-regular fa-user"></i><span>${escaparHTML(usuarioActual.nombre.split(" ")[0])}</span>
+                <span class="avatar-mini">${escaparHTML(iniciales)}</span><span>${escaparHTML(usuarioActual.nombre.split(" ")[0])}</span>
             </a>
-            <ul class="dropdown-menu dropdown-menu-end">
-                <li><span class="dropdown-item-text small text-body-secondary">${escaparHTML(usuarioActual.correo)}</span></li>
-                <li><a class="dropdown-item" onclick="irAPagina('Mis pedidos')">Mis pedidos</a></li>
-                ${esAdmin() ? `<li><a class="dropdown-item" onclick="irAPagina('Indicadores')">Intranet</a></li>` : ""}
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" id="btn-cerrar-sesion">Cerrar sesión</a></li>
-            </ul>`
+            <div class="dropdown-menu dropdown-menu-end menu-cuenta">
+                <div class="cabecera-cuenta">
+                    <span class="avatar">${escaparHTML(iniciales)}</span>
+                    <div>
+                        <strong>${escaparHTML(usuarioActual.nombre)}</strong>
+                        <small>${escaparHTML(usuarioActual.correo)}</small>
+                        ${esAdmin() ? `<span class="rol-cuenta"><i class="fa-solid fa-lock"></i> Administrador</span>` : ""}
+                    </div>
+                </div>
+                <a class="dropdown-item" onclick="irAPagina('Mis pedidos')">
+                    <i class="fa-solid fa-receipt fa-fw"></i> Mis pedidos <span class="contador-menu" id="contador-pedidos-cuenta" hidden></span>
+                </a>
+                <a class="dropdown-item" onclick="irAPagina('Carrito')">
+                    <i class="fa-solid fa-cart-shopping fa-fw"></i> Mi carrito <span class="contador-menu" id="contador-carrito-cuenta" hidden></span>
+                </a>
+                <a class="dropdown-item" onclick="irAPagina('Mayoristas')">
+                    <i class="fa-solid fa-boxes-stacked fa-fw"></i> Compras mayoristas
+                </a>
+                ${esAdmin() ? `<a class="dropdown-item" onclick="irAPagina('Indicadores')"><i class="fa-solid fa-chart-line fa-fw"></i> Ir a la Intranet</a>` : ""}
+                <hr class="dropdown-divider">
+                <a class="dropdown-item salir" id="btn-cerrar-sesion"><i class="fa-solid fa-right-from-bracket fa-fw"></i> Cerrar sesión</a>
+            </div>`
         document.getElementById("btn-cerrar-sesion").addEventListener("click", cerrarSesion)
+        actualizarResumenCuenta()
     }
     actualizarContadorCarrito()
+}
+
+/* Números del menú de cuenta: pedidos en curso (consulta liviana) y unidades del carrito */
+const actualizarResumenCuenta = () => {
+    const contadorPedidos = document.getElementById("contador-pedidos-cuenta")
+    const contadorCarrito = document.getElementById("contador-carrito-cuenta")
+    if (!contadorPedidos || usuarioActual === null) return
+    const unidades = leerCarrito().reduce((t, i) => t + i.cantidad, 0)
+    contadorCarrito.textContent = unidades
+    contadorCarrito.hidden = unidades === 0
+    obtenerDatos(db.from("pedidos").select("idpedido, estado").eq("idusuario", usuarioActual.id)
+            .in("estado", ["por_cotizar", "cotizado", "registrado"]))
+        .then(enCurso => {
+            const porPagar = enCurso.filter(p => p.estado === "cotizado").length
+            contadorPedidos.textContent = porPagar ? `${porPagar} por pagar` : `${enCurso.length} en curso`
+            contadorPedidos.classList.toggle("urgente", porPagar > 0)
+            contadorPedidos.hidden = enCurso.length === 0
+        })
+        .catch(error => console.error(error))
 }
 
 /* Al abrir la página: primero vemos si hay sesión, luego armamos el menú y mostramos Inicio */
@@ -469,7 +507,7 @@ const activarBotonesAgregar = (contenedor, productos) => {
 const ESTADOS_PEDIDO = {
     por_cotizar: { texto: "Por cotizar", plural: "Por cotizar", clase: "estado-alerta" },
     cotizado:    { texto: "Pendiente de pago", plural: "Por pagar", clase: "estado-alerta" },
-    registrado:  { texto: "Registrado", plural: "Registrados", clase: "estado-info" },
+    registrado:  { texto: "En preparación", plural: "En preparación", clase: "estado-info" },
     entregado:   { texto: "Entregado",  plural: "Entregados",  clase: "estado-ok" },
     anulado:     { texto: "Anulado",    plural: "Anulados",    clase: "estado-anulado" }
 }
