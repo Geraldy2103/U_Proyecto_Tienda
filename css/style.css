@@ -1173,6 +1173,45 @@ footer{
 .metodo i{ width: 12px; height: 12px; border-radius: 3px; }
 .metodo small{ grid-column: 2; color: var(--texto-suave); }
 
+/* Productos y precios */
+.producto-fila{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 220px;
+}
+
+.producto-fila img{
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    object-fit: contain;
+    border-radius: 8px;
+    background-color: #fff;
+    border: 1px solid var(--borde);
+}
+
+.etiqueta-categoria{
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background-color: var(--marca-claro);
+    color: var(--marca-oscuro);
+    font-size: .78rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.etiqueta-oferta{
+    display: inline-block;
+    padding: 0 6px;
+    border-radius: 4px;
+    background-color: var(--acento);
+    color: #fff;
+    font-weight: 700;
+    font-size: .72rem;
+}
+
 .kpi{
     border-left: 3px solid var(--marca);
 }

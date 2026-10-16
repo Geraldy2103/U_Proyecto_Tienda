@@ -5,33 +5,56 @@
 
 <section class="padded">
     <div class="container">
-        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-            <button class="btn btn-primary" id="btn-nuevo-producto">
-                <i class="fa-solid fa-plus"></i> Nuevo producto
-            </button>
-            <input type="search" id="txt-filtro-producto" class="form-control w-auto"
-                placeholder="Filtrar por nombre" aria-label="Filtrar productos por nombre" autocomplete="off">
-        </div>
-
         <!-- Aquí aparecen los avisos de "guardado" o de error -->
         <div id="aviso-productos"></div>
 
-        <div class="table-responsive">
-            <table class="table align-middle">
-                <thead>
-                    <tr>
-                        <th>Código</th>
-                        <th>Producto</th>
-                        <th>Categoría</th>
-                        <th class="text-end">Precio</th>
-                        <th class="text-end">Costo</th>
-                        <th class="text-end">Stock</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody id="tbody-productos">
-                </tbody>
-            </table>
+        <!-- Indicadores -->
+        <div class="row row-cols-2 row-cols-lg-4 g-3 mb-3" id="kpis-productos"></div>
+
+        <!-- Insight principal -->
+        <div id="insight-productos"></div>
+
+        <!-- Gráfico: margen por categoría -->
+        <div class="panel mb-4">
+            <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2">
+                <h2 class="panel-titulo mb-1">Margen por categoría</h2>
+                <span class="small text-body-secondary">Margen = (precio de venta − costo) ÷ precio de venta</span>
+            </div>
+            <div class="grafico" id="grafico-margen"></div>
+        </div>
+
+        <!-- Catálogo -->
+        <div class="panel">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                <button class="btn btn-primary" id="btn-nuevo-producto">
+                    <i class="fa-solid fa-plus"></i> Nuevo producto
+                </button>
+                <div class="d-flex flex-wrap gap-2 align-items-center">
+                    <div class="segmentador" role="group" aria-label="Mostrar" id="filtro-alerta"></div>
+                    <input type="search" id="txt-filtro-producto" class="form-control w-auto"
+                        placeholder="Filtrar por nombre" aria-label="Filtrar productos por nombre" autocomplete="off">
+                </div>
+            </div>
+            <div class="pildoras" id="filtro-categoria"></div>
+
+            <div class="table-responsive">
+                <table class="table align-middle mb-0 tabla-compacta">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Categoría</th>
+                            <th class="text-end">Precio</th>
+                            <th class="text-end">Costo</th>
+                            <th class="text-end" title="(precio de venta − costo) ÷ precio de venta">Margen</th>
+                            <th class="text-end">Stock</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-productos">
+                    </tbody>
+                </table>
+            </div>
+            <p class="small text-body-secondary mt-2 mb-0" id="resumen-tabla"></p>
         </div>
     </div>
 </section>

@@ -26,6 +26,138 @@
     let categorias = []
     let proveedores = []
 
+    /* ---------- Panel de resumen (indicadores, insight y gráfico) ---------- */
+    const kpis = document.getElementById("kpis-productos")
+    const insight = document.getElementById("insight-productos")
+    const graficoMargen = document.getElementById("grafico-margen")
+    const filtroCategoria = document.getElementById("filtro-categoria")
+    const filtroAlerta = document.getElementById("filtro-alerta")
+    const resumenTabla = document.getElementById("resumen-tabla")
+    const MARGEN_BAJO = 15, MARGEN_BUENO = 30     // % para colorear el margen
+    let categoriaElegida = null                    // null = todas
+    let soloAlertas = false
+
+    const precioVenta = (p) => Number(p.preciorebajado || p.precio)
+    const margen = (p) => precioVenta(p) > 0 ? (precioVenta(p) - Number(p.costo)) / precioVenta(p) * 100 : 0
+    const tieneAlerta = (p) => p.stock <= p.stock_minimo || margen(p) < MARGEN_BAJO
+
+    /* Margen con ícono + texto + color (nunca solo color) */
+    const estadoMargen = (m) => m >= MARGEN_BUENO ?
+        `<span class="estado-kpi bueno"><i class="fa-solid fa-circle-check"></i> ${m.toFixed(0)}%</span>` :
+        m >= MARGEN_BAJO ? `<span class="estado-kpi medio"><i class="fa-solid fa-circle-minus"></i> ${m.toFixed(0)}%</span>` :
+        `<span class="estado-kpi bajo"><i class="fa-solid fa-triangle-exclamation"></i> ${m.toFixed(0)}%</span>`
+
+    const estadoStock = (p) => p.stock === 0 ? `<span class="estado-kpi bajo"><i class="fa-solid fa-circle-xmark"></i> Agotado</span>` :
+        p.stock <= p.stock_minimo ? `<span class="estado-kpi bajo"><i class="fa-solid fa-triangle-exclamation"></i> ${p.stock}</span>` :
+        `<span>${p.stock}</span>`
+
+    const dibujarResumen = () => {
+        const agotados = productos.filter(p => p.stock === 0).length
+        const porReponer = productos.filter(p => p.stock <= p.stock_minimo).length
+        const enOferta = productos.filter(p => p.preciorebajado)
+        const descuentoProm = enOferta.length ? enOferta.reduce((t, p) => t + (1 - p.preciorebajado / p.precio), 0) / enOferta.length * 100 : 0
+        const ventaTotal = productos.reduce((t, p) => t + precioVenta(p) * p.stock, 0)
+        const costoTotal = productos.reduce((t, p) => t + Number(p.costo) * p.stock, 0)
+        const margenProm = productos.length ? productos.reduce((t, p) => t + margen(p), 0) / productos.length : 0
+        const tarjeta = (titulo, valor, detalle) => `
+            <div class="col"><div class="indicador">
+                <div class="indicador-titulo">${titulo}</div>
+                <div class="indicador-valor">${valor}</div>
+                <div class="indicador-detalle">${detalle}</div>
+            </div></div>`
+        kpis.innerHTML =
+            tarjeta("Productos", productos.length, agotados || porReponer ?
+                `<span class="estado-kpi bajo"><i class="fa-solid fa-triangle-exclamation"></i> ${porReponer} por reponer · ${agotados} agotados</span>` :
+                `<span class="estado-kpi bueno"><i class="fa-solid fa-circle-check"></i> Stock suficiente</span>`) +
+            tarjeta("Margen promedio", `${margenProm.toFixed(0)}%`, estadoMargen(margenProm).replace(/\d+%/, margenProm >= MARGEN_BUENO ? "Saludable" : margenProm >= MARGEN_BAJO ? "Ajustado" : "Bajo")) +
+            tarjeta("En oferta", enOferta.length, `Descuento promedio ${descuentoProm.toFixed(0)}%`) +
+            tarjeta("Valor del inventario", soles(costoTotal), `${soles(ventaTotal)} a precio de venta`)
+
+        // Insight: lo más importante primero (margen bajo/negativo, luego stock)
+        const bajos = productos.filter(p => margen(p) < MARGEN_BAJO).sort((a, b) => margen(a) - margen(b))
+        const negativos = bajos.filter(p => margen(p) < 0)
+        if (bajos.length) {
+            insight.innerHTML = `<div class="insight-principal ${negativos.length ? "alerta" : "atencion"}">
+                <i class="fa-solid fa-${negativos.length ? "triangle-exclamation" : "tags"}"></i><span><em>${negativos.length ? "Alerta" : "Atención"}</em>
+                <strong>${bajos.length} producto(s) con margen menor a ${MARGEN_BAJO}%</strong>${negativos.length ? `, ${negativos.length} se venden por debajo del costo` : ""}.
+                El más crítico es <strong>${escaparHTML(bajos[0].nombre)}</strong> (${margen(bajos[0]).toFixed(0)}%): revisa su precio, rebaja o costo.</span></div>`
+        } else if (porReponer) {
+            insight.innerHTML = `<div class="insight-principal atencion"><i class="fa-solid fa-box-open"></i><span><em>Atención</em>
+                Los márgenes están sanos, pero <strong>${porReponer} productos</strong> están en su stock mínimo o por debajo.</span></div>`
+        } else {
+            insight.innerHTML = `<div class="insight-principal bueno"><i class="fa-solid fa-circle-check"></i><span><em>Bien</em>
+                Márgenes sanos y stock suficiente en todo el catálogo.</span></div>`
+        }
+        dibujarGrafico()
+        dibujarFiltros()
+    }
+
+    /* Gráfico: barras horizontales del margen promedio por categoría (una serie) */
+    const dibujarGrafico = () => {
+        const datos = categorias.map(c => {
+            const suyos = productos.filter(p => p.idcategoria === c.idcategoria)
+            return { nombre: c.nombre, idcategoria: c.idcategoria, cantidad: suyos.length,
+                     margen: suyos.length ? suyos.reduce((t, p) => t + margen(p), 0) / suyos.length : 0,
+                     bajos: suyos.filter(p => margen(p) < MARGEN_BAJO).length }
+        }).filter(d => d.cantidad).sort((a, b) => b.margen - a.margen)
+        if (!datos.length) { graficoMargen.innerHTML = ""; return }
+        const W = 640, izquierda = 140, derecha = 70, alto = 30, H = datos.length * alto + 6
+        const maximo = Math.max(...datos.map(d => d.margen), 1)
+        const escala = (v) => Math.max(v, 0) / maximo * (W - izquierda - derecha)
+        let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Margen promedio por categoría">`
+        datos.forEach((d, i) => {
+            const y = i * alto + 3
+            svg += `<text x="${izquierda - 10}" y="${y + alto / 2}" class="eje-nombre" text-anchor="end" dominant-baseline="middle"></text>
+                <rect x="${izquierda}" y="${y + 7}" width="${Math.max(escala(d.margen), 2)}" height="${alto - 14}" rx="4" fill="#1d7a35"/>
+                <text x="${izquierda + escala(d.margen) + 8}" y="${y + alto / 2}" class="valor" dominant-baseline="middle">${d.margen.toFixed(0)}%${d.bajos ? " ⚠" : ""}</text>
+                <rect x="0" y="${y}" width="${W}" height="${alto}" class="zona-hover" data-i="${i}" tabindex="0"/>`
+        })
+        svg += `</svg><div class="tooltip-grafico" hidden></div>`
+        graficoMargen.innerHTML = svg
+        graficoMargen.querySelectorAll(".eje-nombre").forEach((t, i) => t.textContent = datos[i].nombre)
+        const tooltip = graficoMargen.querySelector(".tooltip-grafico")
+        graficoMargen.querySelectorAll(".zona-hover").forEach(z => {
+            const mostrar = () => {
+                const d = datos[z.dataset.i]
+                tooltip.innerHTML = `<div class="titulo"></div>
+                    <div class="fila"><strong>${d.margen.toFixed(1)}%</strong> <span>margen promedio</span></div>
+                    <div class="fila"><strong>${d.cantidad}</strong> <span>productos</span></div>
+                    <div class="fila"><strong>${d.bajos}</strong> <span>con margen bajo</span></div>
+                    <div class="fila"><span>Clic para filtrar la tabla</span></div>`
+                tooltip.querySelector(".titulo").textContent = d.nombre
+                tooltip.hidden = false
+                const caja = z.getBoundingClientRect(), cont = graficoMargen.getBoundingClientRect()
+                tooltip.style.left = Math.min(cont.width - 90, 320) + "px"
+                tooltip.style.top = (caja.top - cont.top + caja.height) + "px"
+                graficoMargen.querySelectorAll(".zona-hover").forEach(x => x.classList.toggle("activa", x === z))
+            }
+            z.addEventListener("pointerenter", mostrar)
+            z.addEventListener("focus", mostrar)
+            z.addEventListener("click", () => { categoriaElegida = datos[z.dataset.i].idcategoria; dibujarFiltros(); dibujarTabla() })
+        })
+        graficoMargen.querySelector("svg").addEventListener("pointerleave", () => {
+            tooltip.hidden = true
+            graficoMargen.querySelectorAll(".zona-hover").forEach(x => x.classList.remove("activa"))
+        })
+    }
+
+    /* Píldoras de categoría y "Todos / Con alerta" */
+    const dibujarFiltros = () => {
+        filtroCategoria.innerHTML = `<button type="button" class="${categoriaElegida === null ? "activo" : ""}" data-id="">Todas</button>` +
+            categorias.map(c => `<button type="button" class="${categoriaElegida === c.idcategoria ? "activo" : ""}" data-id="${c.idcategoria}">${escaparHTML(c.nombre)}</button>`).join("")
+        filtroCategoria.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+            categoriaElegida = b.dataset.id ? Number(b.dataset.id) : null
+            dibujarFiltros(); dibujarTabla()
+        }))
+        const alertas = productos.filter(tieneAlerta).length
+        filtroAlerta.innerHTML = `<button type="button" class="${!soloAlertas ? "activo" : ""}" data-alerta="no">Todos <span>${productos.length}</span></button>
+            <button type="button" class="${soloAlertas ? "activo" : ""}" data-alerta="si">Con alerta <span>${alertas}</span></button>`
+        filtroAlerta.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+            soloAlertas = b.dataset.alerta === "si"
+            dibujarFiltros(); dibujarTabla()
+        }))
+    }
+
     /* Muestra un aviso en el contenedor indicado. tipo: "success" (verde) o "danger" (rojo) */
     const mostrarAviso = (contenedor, texto, tipo) => {
         contenedor.innerHTML = tipo === "danger" ? mensajeError(texto) :
@@ -42,21 +174,31 @@
     /* Se lee la vista productos_admin porque incluye el costo, que solo puede ver el administrador */
     const dibujarTabla = () => {
         const texto = txtFiltro.value.trim().toLowerCase()
-        const visibles = productos.filter(item => item.nombre.toLowerCase().includes(texto))
+        const visibles = productos.filter(item => item.nombre.toLowerCase().includes(texto) &&
+            (categoriaElegida === null || item.idcategoria === categoriaElegida) &&
+            (!soloAlertas || tieneAlerta(item)))
+        resumenTabla.textContent = `${visibles.length} de ${productos.length} productos`
         if (visibles.length === 0) {
-            tbodyProductos.innerHTML = `<tr><td colspan="7" class="text-center">No hay productos que mostrar</td></tr>`
+            tbodyProductos.innerHTML = `<tr><td colspan="7" class="text-center text-body-secondary py-4">No hay productos que mostrar</td></tr>`
             return
         }
         let filas = ""
         visibles.forEach(item => {
-            const pocoStock = item.stock <= item.stock_minimo   // por reponer: se marca en rojo
+            const descuento = item.preciorebajado ? Math.round((1 - item.preciorebajado / item.precio) * 100) : 0
             filas += `<tr>
-                    <td>${item.idproducto}</td>
-                    <td>${escaparHTML(item.nombre)}</td>
-                    <td><span class="badge text-bg-secondary">${escaparHTML(nombreCategoria(item.idcategoria))}</span></td>
-                    <td class="text-end">${soles(item.preciorebajado || item.precio)}</td>
-                    <td class="text-end">${soles(item.costo)}</td>
-                    <td class="text-end ${pocoStock ? "text-danger fw-semibold" : ""}">${item.stock}</td>
+                    <td>
+                        <div class="producto-fila">
+                            <img src="${item.imagenchica || IMAGEN_SIN_FOTO}" alt="" loading="lazy">
+                            <div><span class="fw-semibold">${escaparHTML(item.nombre)}</span>
+                                <br><small class="text-body-secondary">Código ${item.idproducto}</small></div>
+                        </div>
+                    </td>
+                    <td><span class="etiqueta-categoria">${escaparHTML(nombreCategoria(item.idcategoria))}</span></td>
+                    <td class="text-end text-nowrap">${soles(precioVenta(item))}
+                        ${descuento ? `<br><small><span class="etiqueta-oferta">-${descuento}%</span> <span class="precio-anterior ms-0">${soles(item.precio)}</span></small>` : ""}</td>
+                    <td class="text-end text-nowrap text-body-secondary">${soles(item.costo)}</td>
+                    <td class="text-end text-nowrap">${estadoMargen(margen(item))}</td>
+                    <td class="text-end text-nowrap">${estadoStock(item)}<br><small class="text-body-secondary">mín. ${item.stock_minimo}</small></td>
                     <td><i class="fa-regular fa-pen-to-square icono-actualizar" data-id="${item.idproducto}" title="Editar"></i></td>
                   </tr>`
         })
@@ -69,6 +211,7 @@
             .order("nombre"))
             .then(data => {
                 productos = data
+                dibujarResumen()
                 dibujarTabla()
             })
             .catch(error => {
