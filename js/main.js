@@ -125,6 +125,7 @@ const mostrarNotificacion = (texto, icono = "fa-check") => {
 let usuarioActual = null
 
 const esAdmin = () => usuarioActual !== null && usuarioActual.rol === "admin"
+const esAsesor = () => usuarioActual !== null && usuarioActual.rol === "asesor"
 
 /* Pregunta a Supabase si hay una sesión abierta y lee el rol del usuario en la tabla perfiles.
    Supabase recuerda la sesión en el navegador, por eso sigue abierta al recargar la página. */
@@ -139,6 +140,12 @@ const cargarUsuario = () => {
         return obtenerDatos(db.from("perfiles").select("nombre, rol").eq("id", usuario.id).single())
             .then(perfil => {
                 usuarioActual = { id: usuario.id, correo: usuario.email, nombre: perfil.nombre || usuario.email, rol: perfil.rol }
+                if (perfil.rol !== "asesor") return
+                // el asesor necesita su código para filtrar sus pedidos y solicitudes
+                return obtenerDatos(db.rpc("mi_idasesor")).then(id => {
+                    if (id === null) usuarioActual.rol = "cliente"   // su correo ya no está en la tabla asesores
+                    else usuarioActual.idasesor = id
+                })
             })
             .catch(error => { // si no se pudo leer el perfil, por seguridad lo tratamos como cliente
                 console.error(error)
@@ -152,7 +159,7 @@ const alIniciarSesion = () => {
     return cargarUsuario().then(() => {
         dibujarMenu()
         mostrarNotificacion(`Hola, ${escaparHTML(usuarioActual.nombre)}`)
-        irAPagina(esAdmin() ? "Indicadores" : "Tienda")
+        irAPagina(esAdmin() ? "Indicadores" : esAsesor() ? "Mi panel" : "Tienda")
     })
 }
 
@@ -175,7 +182,9 @@ codigo es el JavaScript de esa página (opcional).
 grupo: dónde aparece en el panel lateral (☰): "mas" = sección "Conócenos",
    "intranet" = sección "Intranet" (solo admin). Sin grupo = se abre desde otro lugar
    (Inicio con el logo, Tienda con las categorías o el buscador, Carrito con 🛒, etc.).
-rol: "admin" = solo administradores; "cuenta" = hay que haber iniciado sesión.
+rol: "admin" = solo administradores; "asesor" = solo asesores; "cuenta" = hay que haber iniciado sesión.
+asesor: true = una página admin que el asesor también abre, pero viendo solo lo suyo
+   (la base de datos lo filtra); textoAsesor es el nombre que ve el asesor en el menú.
 */
 const menuItems = [
     {etiqueta: "Inicio",       pagina: "pages/inicio.html", codigo: "js/pages/inicio.js"},
@@ -189,14 +198,18 @@ const menuItems = [
     // Intranet (solo admin)
     /* Intranet (solo admin). "texto" es lo que se ve en el menú; "etiqueta" es el nombre interno
        que usa el código (irAPagina("Productos"), etc.). "seccion" agrupa las opciones en el panel ☰. */
+    {etiqueta: "Mi panel",     texto: "Mi panel comercial", seccion: "Resumen", icono: "fa-gauge",
+        pagina: "pages/panel-asesor.html", codigo: "js/pages/panel-asesor.js", rol: "asesor", grupo: "intranet"},
     {etiqueta: "Indicadores",  texto: "Indicadores del negocio", seccion: "Resumen", icono: "fa-chart-line",
         pagina: "pages/indicadores.html", codigo: "js/pages/indicadores.js", rol: "admin", grupo: "intranet"},
     {etiqueta: "Monitoreo",    texto: "Alertas del día", seccion: "Resumen", icono: "fa-bell",
         pagina: "pages/monitoreo-admin.html", codigo: "js/pages/monitoreo-admin.js", rol: "admin", grupo: "intranet"},
     {etiqueta: "Pedidos",      texto: "Pedidos de clientes", seccion: "Ventas", icono: "fa-receipt",
-        pagina: "pages/pedidos-admin.html", codigo: "js/pages/pedidos-admin.js", rol: "admin", grupo: "intranet"},
+        pagina: "pages/pedidos-admin.html", codigo: "js/pages/pedidos-admin.js", rol: "admin", grupo: "intranet",
+        asesor: true, textoAsesor: "Mis pedidos asignados"},
     {etiqueta: "Solicitudes",  texto: "Solicitudes mayoristas", seccion: "Ventas", icono: "fa-inbox",
-        pagina: "pages/solicitudes.html", codigo: "js/pages/solicitudes.js", rol: "admin", grupo: "intranet"},
+        pagina: "pages/solicitudes.html", codigo: "js/pages/solicitudes.js", rol: "admin", grupo: "intranet",
+        asesor: true, textoAsesor: "Mis solicitudes"},
     {etiqueta: "Productos",    texto: "Productos y precios", seccion: "Inventario", icono: "fa-box",
         pagina: "pages/productos-admin.html", codigo: "js/pages/productos-admin.js", rol: "admin", grupo: "intranet"},
     {etiqueta: "Proveedores",  texto: "Proveedores", seccion: "Inventario", icono: "fa-truck",
@@ -223,7 +236,14 @@ const VERSION_CARGA = Date.now()
 const filtroTienda = { idcategoria: null, texto: "" }
 
 /* ¿El usuario actual puede ver esta página? */
-const puedeVer = (item) => item.rol !== "admin" || esAdmin()
+const puedeVer = (item) =>
+    item.rol === "admin" ? esAdmin() || (item.asesor === true && esAsesor()) :
+    item.rol === "asesor" ? esAsesor() : true
+
+/* Nombre de una opción de la intranet según quién la ve */
+const textoMenu = (item) => esAsesor() && item.textoAsesor ? item.textoAsesor : item.texto
+/* Título del bloque de intranet */
+const tituloIntranet = () => esAsesor() ? "Zona del asesor" : "Intranet"
 
 /* Carga una página dentro de <main> */
 const cargarPagina = (item) => {
@@ -234,7 +254,7 @@ const cargarPagina = (item) => {
 
     if (!puedeVer(item)) { // protección extra: aunque alguien llame irAPagina("Directores") sin ser admin
         mainContent.innerHTML = `<section class="padded"><div class="container">
-            ${mensajeError("Esta sección es solo para administradores.")}</div></section>`
+            ${mensajeError("No tienes acceso a esta sección.")}</div></section>`
         return
     }
     if (item.rol === "cuenta" && usuarioActual === null) { // ej. "Mis pedidos" sin haber ingresado
@@ -346,11 +366,11 @@ const dibujarMenu = () => {
     const intranet = delGrupo("intranet")
     const secciones = [...new Set(intranet.map(item => item.seccion))]
     const enlaceIntranet = (item) => `<li><a data-etiqueta="${item.etiqueta}" onclick="irAPagina('${item.etiqueta}')">
-        <span><i class="fa-solid ${item.icono} fa-fw"></i> ${item.texto}</span></a></li>`
+        <span><i class="fa-solid ${item.icono} fa-fw"></i> ${textoMenu(item)}</span></a></li>`
     menuSecciones.innerHTML = seccion("Conócenos", delGrupo("mas")) +
-        (esAdmin() ? `
+        (intranet.length ? `
         <div class="bloque-intranet">
-            <p class="titulo-intranet"><i class="fa-solid fa-lock"></i> Intranet</p>
+            <p class="titulo-intranet"><i class="fa-solid fa-lock"></i> ${tituloIntranet()}</p>
             ${secciones.map(nombre => `
                 <p class="titulo-seccion">${nombre}</p>
                 <ul class="lista-menu">${intranet.filter(item => item.seccion === nombre).map(enlaceIntranet).join("")}</ul>`).join("")}
@@ -368,18 +388,18 @@ const dibujarMenu = () => {
     } else {
         /* Intranet dentro del menú de cuenta: todas sus opciones, agrupadas por sección y en dos columnas */
         const intranetEnCuenta = () => {
-            const items = menuItems.filter(item => item.grupo === "intranet")
+            const items = menuItems.filter(item => item.grupo === "intranet" && puedeVer(item))
             const secciones = [...new Set(items.map(item => item.seccion))]
             return `<hr class="dropdown-divider">
                 <div class="intranet-cuenta">
-                    <p class="titulo-intranet-cuenta"><i class="fa-solid fa-lock"></i> Intranet</p>
+                    <p class="titulo-intranet-cuenta"><i class="fa-solid fa-lock"></i> ${tituloIntranet()}</p>
                     <div class="columnas-intranet">
                         ${secciones.map(nombre => `
                         <div>
                             <p class="seccion-intranet-cuenta">${nombre}</p>
                             ${items.filter(item => item.seccion === nombre).map(item => `
                             <a class="dropdown-item" data-etiqueta="${item.etiqueta}" onclick="irAPagina('${item.etiqueta}')">
-                                <i class="fa-solid ${item.icono} fa-fw"></i> ${item.texto}</a>`).join("")}
+                                <i class="fa-solid ${item.icono} fa-fw"></i> ${textoMenu(item)}</a>`).join("")}
                         </div>`).join("")}
                     </div>
                 </div>`
@@ -395,7 +415,8 @@ const dibujarMenu = () => {
                     <div>
                         <strong>${escaparHTML(usuarioActual.nombre)}</strong>
                         <small>${escaparHTML(usuarioActual.correo)}</small>
-                        ${esAdmin() ? `<span class="rol-cuenta"><i class="fa-solid fa-lock"></i> Administrador</span>` : ""}
+                        ${esAdmin() ? `<span class="rol-cuenta"><i class="fa-solid fa-lock"></i> Administrador</span>` :
+                          esAsesor() ? `<span class="rol-cuenta"><i class="fa-solid fa-handshake"></i> Asesor comercial</span>` : ""}
                     </div>
                 </div>
                 <a class="dropdown-item" onclick="irAPagina('Mis pedidos')">
@@ -407,7 +428,7 @@ const dibujarMenu = () => {
                 <a class="dropdown-item" onclick="irAPagina('Mayoristas')">
                     <i class="fa-solid fa-boxes-stacked fa-fw"></i> Compras mayoristas
                 </a>
-                ${esAdmin() ? intranetEnCuenta() : ""}
+                ${esAdmin() || esAsesor() ? intranetEnCuenta() : ""}
                 <hr class="dropdown-divider">
                 <a class="dropdown-item salir" id="btn-cerrar-sesion"><i class="fa-solid fa-right-from-bracket fa-fw"></i> Cerrar sesión</a>
             </div>`

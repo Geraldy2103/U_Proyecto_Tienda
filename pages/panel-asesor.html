@@ -1,0 +1,43 @@
+<section class="padded-sm">
+    <div class="container">
+        <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-3">
+            <div>
+                <h1 class="h2 mb-0">Mi panel comercial</h1>
+                <p class="text-body-secondary mb-0" id="texto-asesor"></p>
+            </div>
+            <div class="segmentador" role="group" aria-label="Período" id="filtro-periodo-asesor">
+                <button type="button" data-dias="7">7 días</button>
+                <button type="button" data-dias="30" class="activo">30 días</button>
+                <button type="button" data-dias="0">Todo</button>
+            </div>
+        </div>
+        <div id="aviso-panel-asesor"></div>
+
+        <!-- Lo más importante primero -->
+        <div id="insight-asesor"></div>
+
+        <!-- Totales del período -->
+        <div class="row row-cols-2 row-cols-lg-4 g-3 mb-4" id="tarjetas-asesor"></div>
+
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="panel h-100">
+                    <div class="d-flex justify-content-between align-items-start gap-2">
+                        <h2 class="panel-titulo">Para atender hoy</h2>
+                        <a class="enlace-detalle" onclick="irAPagina('Solicitudes')">Ver solicitudes</a>
+                    </div>
+                    <ul class="lista-insights" id="lista-pendientes-asesor"></ul>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="panel h-100">
+                    <div class="d-flex justify-content-between align-items-start gap-2">
+                        <h2 class="panel-titulo">Mis pedidos en curso</h2>
+                        <a class="enlace-detalle" onclick="irAPagina('Pedidos')">Ver todos</a>
+                    </div>
+                    <ul class="lista-insights" id="lista-pedidos-asesor"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

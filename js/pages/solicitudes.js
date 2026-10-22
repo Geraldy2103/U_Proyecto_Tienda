@@ -180,9 +180,11 @@
 
     const leerSolicitudes = () => {
         // perfiles(...) y asesores(...) traen los datos relacionados (como un JOIN de SQL)
-        obtenerDatos(db.from("solicitudes_mayoristas")
+        let consulta = db.from("solicitudes_mayoristas")
             .select("*, perfiles(nombre, correo), asesores(nombres, apellidos, directores(sedes(nombre)))")
-            .order("fecha"))
+            .order("fecha")
+        if (esAsesor()) consulta = consulta.eq("idasesor", usuarioActual.idasesor)   // solo sus solicitudes
+        obtenerDatos(consulta)
             .then(data => { solicitudes = data; dibujar() })
             .catch(error => {
                 console.error(error)

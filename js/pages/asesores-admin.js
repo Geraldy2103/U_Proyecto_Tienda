@@ -16,6 +16,7 @@
 
     const MAXIMO_ASESORES = 10  // la base de datos aplica la misma regla
     let asesores = []
+    let correosConAcceso = new Set()   // cuentas con rol asesor
 
     const mostrarAviso = (texto, tipo) => {
         avisoAsesores.innerHTML = tipo === "danger" ? mensajeError(texto) :
@@ -25,14 +26,18 @@
     /* ---------- LEER ---------- */
     const leerAsesores = () => {
         // directores(...) y dentro sedes(nombre): el asesor trae a su director y la sede del director
-        obtenerDatos(db.from("asesores").select("*, directores(nombres, apellidos, sedes(nombre))").order("idasesor"))
-            .then(data => {
+        Promise.all([
+            obtenerDatos(db.from("asesores").select("*, directores(nombres, apellidos, sedes(nombre))").order("idasesor")),
+            obtenerDatos(db.from("perfiles").select("correo").eq("rol", "asesor")).catch(() => [])
+        ])
+            .then(([data, cuentas]) => {
+                correosConAcceso = new Set(cuentas.map(c => (c.correo || "").toLowerCase()))
                 asesores = data
                 contadorAsesores.textContent = `${data.length} de ${MAXIMO_ASESORES} asesores`
                 btnNuevoAsesor.disabled = data.length >= MAXIMO_ASESORES
                 btnNuevoAsesor.title = data.length >= MAXIMO_ASESORES ? "Ya hay 10 asesores (es el máximo)" : ""
                 if (data.length === 0) {
-                    tbodyAsesores.innerHTML = `<tr><td colspan="7" class="text-center">No hay asesores registrados</td></tr>`
+                    tbodyAsesores.innerHTML = `<tr><td colspan="8" class="text-center">No hay asesores registrados</td></tr>`
                     return
                 }
                 let filas = ""
@@ -43,6 +48,11 @@
                         <td>${escaparHTML(item.correo || "")}</td>
                         <td>${escaparHTML(item.directores.nombres + " " + item.directores.apellidos)}</td>
                         <td><span class="badge text-bg-secondary">${escaparHTML(item.directores.sedes.nombre)}</span></td>
+                        <td class="text-nowrap">${correosConAcceso.has((item.correo || "").toLowerCase()) ?
+                            `<span class="estado-kpi bueno"><i class="fa-solid fa-circle-check"></i> Con acceso</span>
+                             <button class="btn btn-link btn-sm text-danger btn-acceso" data-id="${item.idasesor}" data-accion="quitar">Quitar</button>` :
+                            `<button class="btn btn-outline-primary btn-sm btn-acceso" data-id="${item.idasesor}" data-accion="dar"
+                                ${item.correo ? "" : "disabled title='Primero registra su correo'"}><i class="fa-solid fa-key"></i> Dar acceso</button>`}</td>
                         <td><i class="fa-regular fa-pen-to-square icono-actualizar" data-id="${item.idasesor}" title="Editar"></i></td>
                         <td><i class="fa-regular fa-trash-can icono-eliminar" data-id="${item.idasesor}" title="Eliminar"></i></td>
                     </tr>`
@@ -51,9 +61,30 @@
             })
             .catch(error => {
                 console.error(error)
-                tbodyAsesores.innerHTML = `<tr><td colspan="7">${mensajeError("No se pudo cargar la lista de asesores.")}</td></tr>`
+                tbodyAsesores.innerHTML = `<tr><td colspan="8">${mensajeError("No se pudo cargar la lista de asesores.")}</td></tr>`
             })
     }
+
+    /* Dar o quitar acceso a la intranet del asesor (se vincula por correo) */
+    tbodyAsesores.addEventListener("click", (event) => {
+        const boton = event.target.closest(".btn-acceso")
+        if (!boton) return
+        const id = Number(boton.dataset.id)
+        const dar = boton.dataset.accion === "dar"
+        if (!dar && !confirm("¿Quitar el acceso? La cuenta volverá a ser de cliente.")) return
+        boton.disabled = true
+        obtenerDatos(db.rpc(dar ? "dar_acceso_asesor" : "quitar_acceso_asesor", { p_idasesor: id }))
+            .then(() => {
+                avisoAsesores.innerHTML = ""
+                mostrarNotificacion(dar ? "Acceso concedido: verá su panel al iniciar sesión" : "Acceso retirado")
+                leerAsesores()
+            })
+            .catch(error => {
+                console.error(error)
+                boton.disabled = false
+                mostrarAviso(mensajeDeLaBase(error, "No se pudo cambiar el acceso."), "danger")
+            })
+    })
 
     /* Lista de directores agrupada por sede (<optgroup>) */
     const leerDirectores = () => {

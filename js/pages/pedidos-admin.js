@@ -205,9 +205,11 @@
     }
 
     const leer = () => {
-        obtenerDatos(db.from("pedidos")
+        let consulta = db.from("pedidos")
             .select("*, perfiles(nombre, correo), sedes(nombre), asesores(nombres, apellidos)")
-            .order("fecha", { ascending: false }))
+            .order("fecha", { ascending: false })
+        if (esAsesor()) consulta = consulta.eq("idasesor", usuarioActual.idasesor)   // solo sus pedidos
+        obtenerDatos(consulta)
             .then(data => {
                 pedidos = data
                 if (!estadoElegido) elegirFiltroInicial()
