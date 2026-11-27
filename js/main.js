@@ -194,6 +194,7 @@ const menuItems = [
     {etiqueta: "Finalizar compra", pagina: "pages/checkout.html", codigo: "js/pages/checkout.js", rol: "cuenta"},
     {etiqueta: "Asesores comerciales", pagina: "pages/asesores.html", codigo: "js/pages/asesores.js"},
     {etiqueta: "Mayoristas",   pagina: "pages/mayoristas.html", grupo: "mas"},
+    {etiqueta: "Sedes", pagina: "pages/mapa.html", codigo: "js/pages/mapa.js", grupo: "mas"},
     {etiqueta: "Nosotros",     pagina: "pages/nosotros.html", grupo: "mas"},
     // Intranet (solo admin)
     /* Intranet (solo admin). "texto" es lo que se ve en el menú; "etiqueta" es el nombre interno
@@ -729,4 +730,4 @@ const agregarItemCarrito = (nuevoItem, cantidad) => {
     JSON.stringify() Convierte este objeto/array de JavaScript en un texto JSON*/
 
     mostrarNotificacion(`${escaparHTML(itemCarrito.nombre)} se agregó al carrito`)
-}
+               }
