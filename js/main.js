@@ -20,11 +20,54 @@ const IMAGEN_SIN_FOTO = "https://servicios.campus.pe/imagenes/nofoto.jpg"
 const obtenerDatos = (consulta) => {
     return consulta.then(({ data, error }) => {
         if (error) {
+            registrarEvento("error_api", error.message, error.code)   // monitoreo: queda registrado
             throw error
         }
         return data
     })
 }
+
+/* ---------- Monitoreo técnico (Integrante 5) ----------
+   Todo error de la página (JavaScript o de la base de datos) se guarda:
+   1) en este navegador (sessionStorage, últimos 50) y
+   2) en la tabla registro_eventos de Supabase (supabase/06_monitoreo.sql), que solo lee el admin.
+   Si esa tabla todavía no existe, se usa solo el registro local y la página sigue normal. */
+const REGISTRO_LOCAL = "registro-eventos"
+const MAX_EVENTOS_LOCALES = 50
+const MAX_ENVIOS_POR_SESION = 20       // para no llenar la base si algo falla en bucle
+let enviosRegistro = 0
+let tablaEventosDisponible = true
+let paginaActual = "Inicio"
+
+const leerRegistroLocal = () => {
+    try { return JSON.parse(sessionStorage.getItem(REGISTRO_LOCAL)) || [] } catch (error) { return [] }
+}
+
+const registrarEvento = (tipo, mensaje, detalle = "") => {
+    const evento = {
+        fecha: new Date().toISOString(),
+        tipo,
+        mensaje: String(mensaje || "Error sin mensaje").slice(0, 500),
+        detalle: String(detalle || "").slice(0, 500),
+        pagina: paginaActual
+    }
+    try {
+        sessionStorage.setItem(REGISTRO_LOCAL, JSON.stringify([evento, ...leerRegistroLocal()].slice(0, MAX_EVENTOS_LOCALES)))
+    } catch (error) { /* sin almacenamiento: no pasa nada */ }
+
+    if (!tablaEventosDisponible || enviosRegistro >= MAX_ENVIOS_POR_SESION || typeof db === "undefined") return
+    enviosRegistro++
+    // se llama a db directamente (no a obtenerDatos) para no registrar en bucle los errores del propio registro
+    db.from("registro_eventos")
+        .insert({ ...evento, fecha: undefined, navegador: navigator.userAgent.slice(0, 200) })
+        .then(({ error }) => {
+            if (error && (error.code === "PGRST205" || error.code === "42P01")) tablaEventosDisponible = false // falta 06_monitoreo.sql
+        })
+}
+
+window.addEventListener("error", (e) => registrarEvento("error", e.message, `${e.filename || ""}:${e.lineno || ""}`))
+window.addEventListener("unhandledrejection", (e) =>
+    registrarEvento("error", (e.reason && e.reason.message) || String(e.reason), "Promesa sin .catch()"))
 
 /* Convierte un error de la base de datos en un mensaje para el usuario.
    P0001 = mensaje escrito por nosotros en la base (ej. "La sede ya tiene 3 directores...")
@@ -203,7 +246,7 @@ const menuItems = [
         pagina: "pages/panel-asesor.html", codigo: "js/pages/panel-asesor.js", rol: "asesor", grupo: "intranet"},
     {etiqueta: "Indicadores",  texto: "Indicadores del negocio", seccion: "Resumen", icono: "fa-chart-line",
         pagina: "pages/indicadores.html", codigo: "js/pages/indicadores.js", rol: "admin", grupo: "intranet"},
-    {etiqueta: "Monitoreo",    texto: "Alertas del día", seccion: "Resumen", icono: "fa-bell",
+    {etiqueta: "Monitoreo",    texto: "Monitoreo y alertas", seccion: "Resumen", icono: "fa-bell",
         pagina: "pages/monitoreo-admin.html", codigo: "js/pages/monitoreo-admin.js", rol: "admin", grupo: "intranet"},
     {etiqueta: "Pedidos",      texto: "Pedidos de clientes", seccion: "Ventas", icono: "fa-receipt",
         pagina: "pages/pedidos-admin.html", codigo: "js/pages/pedidos-admin.js", rol: "admin", grupo: "intranet",
@@ -252,6 +295,7 @@ const cargarPagina = (item) => {
     document.querySelectorAll("[data-etiqueta]").forEach(a => a.classList.toggle("active", a.dataset.etiqueta === item.etiqueta))
     bootstrap.Offcanvas.getOrCreateInstance(menuLateral).hide()   // cierra el panel ☰ si estaba abierto
     window.scrollTo(0, 0)
+    paginaActual = item.etiqueta   // el monitoreo anota en qué sección ocurrió cada error
 
     if (!puedeVer(item)) { // protección extra: aunque alguien llame irAPagina("Directores") sin ser admin
         mainContent.innerHTML = `<section class="padded"><div class="container">
@@ -286,6 +330,7 @@ const cargarPagina = (item) => {
     })
     .catch(error => { /*si algo falló arriba, mostramos un aviso en lugar de dejar la página en blanco*/
         console.error(error)
+        registrarEvento("error", error.message, item.pagina)
         mainContent.innerHTML = `
         <section class="padded">
             <div class="container">

@@ -1,5 +1,5 @@
-<header-component titulo="Alertas del día"
-  frase="Alertas de stock y pedidos que necesitan atención">
+<header-component titulo="Monitoreo y alertas"
+  frase="Estado del sistema, errores registrados y alertas de stock y pedidos">
 </header-component>
 
 <section class="padded">
@@ -13,6 +13,12 @@
 
         <div id="aviso-monitoreo"></div>
 
+        <!-- Estado del sistema: prueba en vivo cada servicio del que depende la tienda -->
+        <h2 class="fs-5 mb-2"><i class="fa-solid fa-heart-pulse text-success"></i> Estado del sistema</h2>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-3 mb-3" id="chequeos-sistema"></div>
+        <div class="d-flex flex-wrap gap-2 mb-4" id="resumen-sistema"></div>
+
+        <h2 class="fs-5 mb-2"><i class="fa-solid fa-bell text-warning"></i> Alertas del negocio</h2>
         <div class="row row-cols-2 row-cols-lg-5 g-3 mb-4" id="tarjetas-monitoreo"></div>
 
         <div class="row g-4">
@@ -56,6 +62,25 @@
                     </table>
                 </div>
             </div>
+        </div>
+
+        <!-- Errores registrados (tabla registro_eventos, o solo este navegador si no existe) -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-4 mb-2">
+            <h2 class="fs-5 mb-0"><i class="fa-solid fa-bug text-danger"></i> Errores registrados</h2>
+            <small class="text-body-secondary" id="txt-origen-eventos"></small>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-sm align-middle">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Tipo</th>
+                        <th>Sección</th>
+                        <th>Mensaje</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-eventos"></tbody>
+            </table>
         </div>
     </div>
 </section>
