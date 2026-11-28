@@ -59,6 +59,7 @@ categorias ──< productos >── proveedores (solo admin)
 | `02_datos.sql` | Datos iniciales: 8 categorías, 81 productos, 29 proveedores, 3 sedes, 9 directores, 10 asesores |
 | `04_indicadores_diarios.sql` | Función `indicadores_diarios` (ventas y margen por día) para filtrar Indicadores por período. Ejecutar una vez si la base ya existía |
 | `05_rol_asesor.sql` | Rol **asesor**: cada asesor ve y atiende solo sus solicitudes y pedidos. Ejecutar una vez si la base ya existía |
+| `06_monitoreo.sql` | **Monitoreo:** tabla `registro_eventos` (errores de la página; solo el admin los lee), función `estado_sistema()` y coordenadas de las sedes para el mapa. Ejecutar una vez; sin él la página funciona igual con registro local |
 | `03_demo.sql` | **Opcional.** 80 pedidos y solicitudes de ejemplo para que los Indicadores tengan datos |
 
 ## Pasos (en Supabase > SQL Editor > New query)
